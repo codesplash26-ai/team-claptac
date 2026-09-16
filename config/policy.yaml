@@ -1,0 +1,22 @@
+# Policy & Authority Engine configuration.
+# Each agent may only emit the action types listed for it.
+# Anything marked consequence: high is routed to the Human Incident Commander.
+
+agents:
+  a8_dispatch:
+    allowed_actions: [create_mission, update_mission, cancel_mission, reroute_group]
+  a9_comms:
+    allowed_actions: [publish_alert, publish_sitrep, cancel_alert]
+
+actions:
+  reroute_group:     { consequence: low }
+  update_mission:    { consequence: low }
+  publish_sitrep:    { consequence: low }
+  create_mission:    { consequence: high, when: { resources_committed_gt: 2 } }
+  cancel_mission:    { consequence: high }
+  publish_alert:     { consequence: high, when: { scope: district } }
+  cancel_alert:      { consequence: high }
+  close_major_route: { consequence: high }
+
+gateway:
+  max_retries: 3
