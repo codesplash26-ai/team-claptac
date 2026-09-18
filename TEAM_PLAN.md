@@ -2,57 +2,79 @@
 
 The work is split into **four workstreams**, one per person. Each owner builds their modules and writes the tests for them. They also demo their part at each weekly sync.
 
-> The names below are a starting suggestion. Swap them based on who knows what, especially if someone already built the Agent 4 cognitive-map engine. That person should take **Workstream C**.
-
 | Workstream | Owner | Owns |
 |---|---|---|
-| **A — Platform & Sensing** | Sumudu Ratnayake | `core/`, `memory/`, `ingest/`, A1 Sentinel, A2 Hazard Intel |
-| **B — Orchestration & Triage** | Dinuka Wickramasinghe (lead) | `tools/llm.py`, A3 Incident Commander, A5 Triage, end-to-end integration |
-| **C — Routing & Optimization** | Hasindu Viduranga | `tools/cognitive_map/`, `tools/geo.py`, `tools/optimisation.py`, A4 Evacuation, A6 Logistics, A7 Shelter, `eval/` |
-| **D — Control Boundary & Action** | Aeshan Rosa | `control/`, `config/policy.yaml`, A8 Dispatch, A9 Comms, `tools/cap.py`, `tools/translation.py`, `api/`, `dashboard/` |
+| **A — Platform, Sensing & Hardware** | Aeshan Rosa | `core/`, `memory/`, `ingest/`, `hardware/`, A1 Sentinel |
+| **B — Orchestration & Intelligence** | Hasindu Viduranga | `tools/llm.py`, A2 Hazard Intel, A3 Incident Commander, A5 Triage, end-to-end integration |
+| **C — Routing & Optimization** | Sumudu Ratnayake | `tools/cognitive_map/`, `tools/geo.py`, `tools/optimisation.py`, A4 Evacuation, A6 Logistics, A7 Shelter, `eval/` |
+| **D — Control Boundary & Action** | Dinuka Wickramasinghe (team lead) | `control/`, `config/policy.yaml`, A8 Dispatch, A9 Comms, `tools/cap.py`, `tools/translation.py`, `api/`, `dashboard/` |
+
+### What changed with the hardware addition
+
+- **A takes the Raspberry Pi work.** A already feeds A1, so the sensor pipeline stays in one person's hands, from the physical sensor to the trigger.
+- **A2 Hazard Intel moves from A to B** to make room for the hardware. It fits well with A5 Triage, since A2's vulnerability signals feed straight into A5.
+- **C maps sensors onto the road network**: a node's `area_id` / lat-lon becomes an OSM edge or area in the COP.
+- **D adds a live sensor panel** to the dashboard.
+- **Everyone helps build the tabletop flood model** in Week 4.
 
 ---
 
 ## Workstream details
 
-### A — Platform & Sensing
-The foundation the other three workstreams build on. Ship it first.
+### A — Platform, Sensing & Hardware (Aeshan)
+The foundation the other three workstreams build on, plus the physical sensor node. Ship the platform first.
+
+**Platform**
 - [ ] Freeze `core/events.py` contracts together with the team (Week 0)
 - [ ] In-process async event bus, which can later be swapped for Redis or NATS
 - [ ] Common Operating Picture on SQLite: beliefs with confidence, provenance and TTL
 - [ ] Append-only Action Ledger with idempotency keys and receipts
 - [ ] Temporal knowledge graph that projects ledger events (NetworkX to start)
 - [ ] Feed adapters plus a **scenario replayer** that plays DMC warnings, river sensors and field reports from `data/scenarios/`
-- [ ] **A1 Sentinel**: normalize, deduplicate, corroborate, score confidence, rolling anomaly score, emit a trigger when the score crosses the threshold, flag conflicts
-- [ ] **A2 Hazard Intel**: risk-zone layer, overlay with vulnerable populations, information-gap reports
 
-### B — Orchestration & Triage
+**A1 Sentinel**
+- [ ] Normalize, deduplicate, corroborate, score confidence
+- [ ] Rolling anomaly score; emit a trigger when the score crosses the threshold; flag conflicting reports
+- [ ] Sensor rules: water-level threshold and rate of rise, rainfall accumulation, soil saturation
+- [ ] Give each sensor a reliability weight so that one faulty sensor alone can't fire a trigger unless nothing contradicts it
+
+**Hardware** (`hardware/`; the starter code is already in place)
+- [ ] Order parts in **Week 0** (see the parts list in `hardware/README.md`)
+- [ ] Set up the Pi OS, enable I2C, bench-test each sensor on its own
+- [ ] Calibrate: ultrasonic mount height, rain gauge mm per tip, soil sensor dry and wet voltages
+- [ ] Run Mosquitto on the demo laptop; Pi → MQTT → `atlas/ingest/sensors.py` → bus
+- [ ] Start on boot with systemd, check offline buffering (unplug Wi-Fi, confirm the readings flush later)
+- [ ] Lead the **tabletop flood model** build and the demo-day fallback, switching to `mock` + `flood_ramp`
+
+### B — Orchestration & Intelligence (Hasindu)
 The agent's reasoning core and the person who makes the whole thing run end to end.
 - [ ] LLM client wrapper: tool-calling, retries, rate limiting, prompt logging
+- [ ] **A2 Hazard Intel**: risk-zone layer from observations (including sensor readings), overlay with vulnerable populations, information-gap reports
 - [ ] **A3 Incident Commander**: wake on a trigger, assess, delegate to A4–A7 as LLM tools, reconcile candidate plans (for example, a route that leads to a full shelter), submit to the Gateway, decide when to replan, return to standby
 - [ ] Handle several incidents at once, each running its own cycle
 - [ ] **A5 Triage**: transparent scoring of urgency × vulnerability, continuous re-ranking, explanations
 - [ ] Fallback: if the LLM is down, keep A4 routing running without it
 - [ ] Owns the **end-to-end demo script** and integration tests
 
-### C — Routing & Optimization
+### C — Routing & Optimization (Sumudu)
 The most mature part of the system. Bring the existing engine in, then extend it.
 - [ ] Port the existing simulation core into `tools/cognitive_map/` (beliefs.py, routing.py)
 - [ ] Load and cache the OSM graphs for Colombo Fort, Ratnapura and Kandy, with elevation, in `data/osm/`
+- [ ] **Sensor-to-map mapping**: resolve each node's lat/lon or `area_id` to the nearest OSM edges; turn water-level readings into belief updates on those edges
 - [ ] **A4 Evacuation**: wrap the engine as an agent and tool; routes, alternatives, per-route risk and uncertainty; proactive replanning
 - [ ] **A6 Logistics**: resource inventory in the COP, CP-SAT model matching resources to tasks, shortage alerts
 - [ ] **A7 Shelter**: capacity and reservation state, CP-SAT shelter assignment, resupply requests to A6
-- [ ] `eval/`: re-run the A/B/C scenarios against the baselines and add the section 8 metrics
+- [ ] `eval/`: re-run the A/B/C scenarios against the baselines and add the section 8 metrics, including **sensor-to-trigger latency**
 
-### D — Control Boundary & Action
+### D — Control Boundary & Action (Dinuka)
 The safety story, and the part the judges will look at.
 - [ ] **Policy & Authority Engine**: load `policy.yaml`, check each agent's role scope, classify consequence
 - [ ] **Action Gateway**: preflight → authorize, escalate or block → execute with verify, retry and compensate → write to the ledger
 - [ ] **Human approval queue**: approve, edit or reject, exposed through the API
 - [ ] **A8 Dispatch**: mission tickets, acknowledgement and progress tracking, exception reports
 - [ ] **A9 Comms**: CAP 1.2 XML, translation into Sinhala, Tamil and English, periodic SITREPs, cancellation notices
-- [ ] **FastAPI** endpoints: incidents, approvals, ledger, missions, alerts
-- [ ] **Dashboard**: Folium map of hazards and routes, agent activity feed, pending approvals, mission board
+- [ ] **FastAPI** endpoints: incidents, approvals, ledger, missions, alerts (`/ingest/sensor` already exists)
+- [ ] **Dashboard**: Folium map of hazards and routes, agent activity feed, pending approvals, mission board, **live sensor panel** (current value, sparkline, threshold line, node online/offline)
 - [ ] Red-team tests: 100% of out-of-scope actions blocked
 
 ---
@@ -61,33 +83,46 @@ The safety story, and the part the judges will look at.
 
 It follows the proposal's roadmap, with the phases run in parallel. Adjust the week lengths to fit the competition deadline.
 
-| Week | A — Platform & Sensing | B — Orchestration | C — Routing & Optimization | D — Control & Action | Team milestone |
+| Week | A — Aeshan | B — Hasindu | C — Sumudu | D — Dinuka | Team milestone |
 |---|---|---|---|---|---|
-| **0** | Draft event contracts | LLM provider chosen, API key | Audit existing engine | Draft policy.yaml | **Contracts frozen**, repo set up |
-| **1** | Event bus, COP, ledger | LLM wrapper, A3 skeleton with mock tools | Port the engine; A4 as a tool | Policy engine, Gateway skeleton | — |
-| **2** | A1 Sentinel + scenario replayer | A3 calls A4 on a real trigger | OSM graphs for 3 sites | Gateway + ledger writes + approval queue | **Phase 1+2:** trigger → A3 → A4 → Gateway → ledger |
-| **3** | A2 Hazard Intel, knowledge graph | A5 Triage, plan reconciliation | A6 Logistics, A7 Shelter (CP-SAT) | A8 Dispatch, FastAPI endpoints | **Phase 3:** all planning agents live |
-| **4** | Feed hardening, dedup tuning | Multi-incident cycles, LLM fallback | Eval harness + metrics | A9 Comms (CAP + translation), dashboard | **Phase 4:** full 9-agent loop |
-| **5** | Bug fixes, latency metrics | End-to-end demo script | A/B/C evaluation runs | Red-team tests, dashboard polish | **Phase 5:** demo, Dockerfile, reproducibility guide |
+| **0** | Draft event contracts; **order hardware parts** | LLM provider chosen, API key | Audit existing engine | Draft policy.yaml | **Contracts frozen**, repo set up, parts ordered |
+| **1** | Event bus, COP, ledger; Pi OS setup, sensor bench tests | LLM wrapper, A3 skeleton with mock tools | Port the engine; A4 as a tool | Policy engine, Gateway skeleton | — |
+| **2** | A1 Sentinel + scenario replayer; Pi → MQTT → ingest live | A3 calls A4 on a real trigger | OSM graphs for 3 sites; sensor-to-edge mapping | Gateway + ledger writes + approval queue | **Phase 1+2:** trigger → A3 → A4 → Gateway → ledger |
+| **3** | Knowledge graph; A1 sensor rules + calibration | A2 Hazard Intel, A5 Triage, plan reconciliation | A6 Logistics, A7 Shelter (CP-SAT) | A8 Dispatch, FastAPI endpoints | **Phase 3:** all planning agents live; **real sensor fires a real trigger** |
+| **4** | Feed hardening; systemd + offline buffering; **tabletop model build** (all help) | Multi-incident cycles, LLM fallback | Eval harness + metrics | A9 Comms (CAP + translation), dashboard + sensor panel | **Phase 4:** full 9-agent loop driven by hardware |
+| **5** | Latency metrics; demo fallback drill | End-to-end demo script | A/B/C evaluation runs | Red-team tests, dashboard polish | **Phase 5:** demo, Dockerfile, reproducibility guide |
 
 ## Dependencies and handoffs
 
 - **A → everyone:** event contracts and the COP interface are the first blocker. Freeze them in Week 0, and until then each workstream uses in-memory mocks.
+- **A → C:** the sensor reading format is `atlas/ingest/sensors.py::SensorReading`, which is already defined. C can build the sensor-to-edge mapping against `mock` readings before the hardware arrives.
+- **A → D:** the ledger API, which the Gateway writes to, and the sensor event stream for the dashboard panel.
 - **C → B:** A4 exposes `plan_evacuation(origin, destinations) -> RoutePlan`. B can start against a stub that returns fixed data.
 - **D → B:** the Gateway exposes `submit(ProposedAction) -> Decision`. B can use a stub that approves everything until D is ready.
-- **A → D:** the ledger API, which the Gateway writes to.
-- **C ↔ A:** A6 and A7 read state from the COP, and A4 writes road beliefs to it.
+- **Hardware is never a blocker.** Until the parts arrive, everyone uses `hardware/pi/sensor_node.py` with `driver: mock`. It sends exactly the same messages.
 
 ## Working agreements
 
 - **Daily:** a 10-minute async check-in in the group chat covering what you did, what's next and what's blocking you.
 - **Weekly sync:** each owner gives a live demo. Merge to `main` only when the end-to-end smoke test passes.
-- **PRs:** at least one reviewer, small and frequent. Changes to `events.py` need everyone's approval.
-- **Definition of done:** the code, tests, a short docstring on the module's inputs and outputs, and the code runs from the scenario replayer.
+- **PRs:** at least one reviewer, small and frequent. Changes to `events.py` or the sensor message format need everyone's approval.
+- **Definition of done:** the code, tests, a short docstring on the module's inputs and outputs, and the code runs from the scenario replayer (and from live sensors, where relevant).
+
+## Risks specific to the hardware
+
+| Risk | Mitigation |
+|---|---|
+| Parts arrive late | Order in Week 0; use mock mode until they arrive |
+| A 5V echo pin damages the Pi | Voltage divider on ECHO (see the wiring table) |
+| Wi-Fi at the venue is unreliable | Run the broker on the demo laptop and connect it and the Pi through a phone hotspot or a travel router |
+| Hardware fails on demo day | Switch the node to `mock` + `flood_ramp`; the same pipeline, the same story |
+| Water near electronics | Only the waterproof probe goes near the container; keep the Pi and breadboard in a box, well away |
 
 ## Decisions to make in Week 0
 
 1. **Backend:** the proposal names both Flask (section 6.2) and FastAPI (section 6.1). This skeleton uses FastAPI for the API and Folium for the maps. Decide whether to reuse the existing Flask demo or migrate it.
 2. **LLM provider and model**, plus the budget and rate limits.
 3. **Translation:** use the LLM or a dedicated API for Sinhala and Tamil.
-4. **Demo scenario:** a flood in Ratnapura is the suggested default.
+4. **Demo scenario:** a flood in Ratnapura is the suggested default, and it fits the water-level sensor.
+5. **Which sensors to use:** water level + rain gauge + BME280 is the minimum. Add soil moisture only if there's time left in Week 3.
+6. **Proposal update:** mention the hardware node in the final pitch as an addition to "machine feeds (weather stations, river-level sensors)". The guidelines ask you to explain any deviation from the proposal.

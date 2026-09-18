@@ -1,0 +1,8 @@
+# Runs on the Raspberry Pi (Raspberry Pi OS, Python 3.11+).
+pyyaml>=6.0
+paho-mqtt>=2.0
+requests>=2.31
+gpiozero>=2.0
+smbus2>=0.4
+RPi.bme280>=0.2.4
+adafruit-circuitpython-ads1x15>=2.2

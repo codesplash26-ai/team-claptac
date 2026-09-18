@@ -63,6 +63,7 @@ Feeds ──► A1 Sentinel ──(anomaly > threshold)──► TRIGGER
 | Dashboard | Folium map + responder dashboard |
 | Storage | SQLite for the COP and ledger (Postgres later) |
 | Alerting | CAP 1.2; Sinhala, Tamil and English |
+| Hardware | Raspberry Pi sensor node (water level, rainfall, BME280, soil moisture) over MQTT (Mosquitto) |
 | Deploy | Docker on a cloud VM or lab server |
 
 ---
@@ -85,9 +86,12 @@ team-claptac/
 │   ├── tools/
 │   │   ├── cognitive_map/ #   ← existing belief-weighted routing engine goes here
 │   │   ├── llm.py, geo.py, optimisation.py, cap.py, translation.py, ocr_stt.py
-│   ├── ingest/            # Feed adapters + scenario simulator/replayer
+│   ├── ingest/            # Feed adapters, sensor ingest (MQTT/HTTP), scenario replayer
 │   ├── api/               # FastAPI app
 │   └── dashboard/         # Folium map + responder dashboard
+├── hardware/              # Raspberry Pi sensor node
+│   ├── pi/                #   sensor_node.py, sensor drivers, config, systemd unit
+│   └── mosquitto/         #   MQTT broker config
 ├── config/policy.yaml     # Per-agent permissions and consequence thresholds
 ├── data/                  # osm/ graphs, scenarios/, reference/ (vulnerability, shelters)
 ├── eval/                  # Metrics + A/B/C scenario evaluation
@@ -115,11 +119,23 @@ Run the API (once `atlas/api/main.py` is implemented):
 uvicorn atlas.api.main:app --reload
 ```
 
+Run the sensor pipeline (see [hardware/README.md](hardware/README.md) for Pi setup and wiring):
+
+```bash
+mosquitto -c hardware/mosquitto/mosquitto.conf
+```
+
 Run tests:
 
 ```bash
 pytest
 ```
+
+---
+
+## Hardware sensor node
+
+A Raspberry Pi with water-level, rainfall and environmental sensors publishes readings over MQTT. They enter ATLAS as **machine feeds** for A1 Sentinel. The Pi only measures; A1 decides whether a reading is an anomaly. For the demo, a tabletop flood model lets judges watch a rising water level trigger the full loop: Sentinel, then the Incident Commander, then rerouting, then the gated action. A mock mode produces the same messages, as a fallback if the hardware fails. Details: [hardware/README.md](hardware/README.md).
 
 ---
 

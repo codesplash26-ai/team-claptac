@@ -1,0 +1,48 @@
+# Copy to config.yaml on the Pi and edit.
+node_id: rtp-node-01
+interval_seconds: 10
+buffer_size: 5000
+log_level: INFO
+
+# Where this node sits. area_id / lat-lon are mapped to COP areas and OSM edges server-side.
+location:
+  lat: 6.6828
+  lon: 80.3992
+  area_id: ratnapura-demo-river
+
+transport:
+  kind: mqtt                 # mqtt | http
+  host: 192.168.1.50         # laptop/server running Mosquitto
+  port: 1883
+  topic_prefix: atlas/sensors
+  # kind: http
+  # url: http://192.168.1.50:8000/ingest/sensor
+
+sensors:
+  - driver: ultrasonic_water_level
+    sensor_id: wl-01
+    trigger_pin: 23
+    echo_pin: 24              # via voltage divider (5V -> 3.3V)
+    mount_height_cm: 40       # distance from sensor to container floor
+
+  - driver: rain_gauge
+    sensor_id: rain-01
+    pin: 17
+
+  - driver: bme280
+    sensor_id: env-01
+    address: 0x76
+
+  # - driver: soil_moisture
+  #   sensor_id: soil-01
+  #   channel: 0
+
+  # Demo fallback / laptop development: comment out the hardware sensors above and use these.
+  # - driver: mock
+  #   sensor_id: wl-mock
+  #   type: water_level
+  #   unit: cm
+  #   baseline: 5
+  #   peak: 30
+  #   ramp_seconds: 120
+  #   scenario: flood_ramp

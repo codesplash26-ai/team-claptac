@@ -1,0 +1,17 @@
+# systemd unit: starts the sensor node on boot and restarts it if it crashes.
+# sudo cp atlas-sensor.service /etc/systemd/system/
+# sudo systemctl enable --now atlas-sensor
+[Unit]
+Description=ATLAS sensor node
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=pi
+WorkingDirectory=/home/pi/team-claptac/hardware/pi
+ExecStart=/home/pi/team-claptac/hardware/pi/.venv/bin/python sensor_node.py --config config.yaml
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
