@@ -1,6 +1,7 @@
 from fastapi.testclient import TestClient
 
-from atlas.api.main import app
+from atlas.api.main import create_app
+from atlas.core.config import Settings
 from atlas.core.events import EventType
 from atlas.ingest.sensors import SensorReading, to_event
 
@@ -23,10 +24,13 @@ def test_reading_becomes_observation_event():
 
 
 def test_http_ingest_accepts_valid_reading():
-    r = TestClient(app).post("/ingest/sensor", json=PAYLOAD)
-    assert r.status_code == 202
+    with TestClient(create_app(Settings(database_path=":memory:"))) as client:
+        r = client.post("/ingest/sensor", json=PAYLOAD)
+        assert r.status_code == 202
+        assert client.app.state.runtime.ledger.records("event")
 
 
 def test_http_ingest_rejects_unknown_sensor_type():
-    r = TestClient(app).post("/ingest/sensor", json={**PAYLOAD, "type": "radiation"})
-    assert r.status_code == 422
+    with TestClient(create_app(Settings(database_path=":memory:"))) as client:
+        r = client.post("/ingest/sensor", json={**PAYLOAD, "type": "radiation"})
+        assert r.status_code == 422
