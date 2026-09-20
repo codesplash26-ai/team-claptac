@@ -11,3 +11,7 @@ data/osm/*.graphml
 !data/**/.gitkeep
 .vscode/
 .idea/
+
+# OSMnx raw HTTP cache (regenerable; the committed road graphs live in data/osm/*.json)
+.cache/
+/cache/

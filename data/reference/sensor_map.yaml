@@ -1,0 +1,36 @@
+# Where each sensor area sits on the road network and what its water-level reading means for roads.
+# area_id must match the Pi node config (hardware/pi/config.example.yaml) and data/scenarios/*.json.
+#
+# DEMO ASSUMPTION, not hydrology: flood surface (m) = datum_elevation_m + metres_per_cm * level_cm.
+# The tabletop container (0-40 cm) stands in for a river rising up to ~8 m. See
+# atlas/tools/sensor_map.py for the rule.
+#
+# Calibration for the Ratnapura graph (SRTM elevation is whole metres, so flooding moves in steps):
+#   10 cm ->   6 roads under water
+#   20 cm ->  24
+#   25 cm ->  51   the Sentinel's alarm level: shelter-02 (a hill shelter whose only approach crosses the valley) is cut off; the three
+#                  hill shelters stay reachable from the depot and nobody's best route changes
+#   30 cm -> 100   the valley floods: residents such as DEMO_ORIGIN (tests/routing_helpers.py) must
+#                  reroute to a different shelter, while the depot is cut off from every shelter
+#                  ("no safe route": escalate to a human)
+#   40 cm -> 134
+# A good demo: pour to ~25 cm (trigger, roads close, shelter-02 dropped), then to ~30 cm (visible
+# reroute for DEMO_ORIGIN, escalation for the depot). Re-check tests/tools/test_sensor_map.py if you
+# change the scale, radius, graph or shelters.
+areas:
+  ratnapura-demo-river:
+    site: ratnapura
+    # Modelled gauge position: the lowest point of the road network, on the Kalu Ganga valley floor
+    # (OSM node 4127211104). This is where the river is *modelled* to be, not where the tabletop
+    # rig physically sits.
+    gauge: {lat: 6.67902, lon: 80.4059}
+    datum_elevation_m: 21.0      # SRTM ground elevation at the gauge node
+    metres_per_cm: 0.20          # 25 cm on the sensor (the Sentinel's alarm level) -> 5 m surface (26 m)
+    radius_m: 800                # only roads within this distance of the gauge can flood
+    wet_weight: 1.0              # a "flooded" report is trusted at the observation's confidence
+    dry_weight: 0.3              # a "still dry" report counts for less, so roads reopen gradually
+    # Guarantee that particular roads close at a given level, regardless of elevation. Use edge ids
+    # ("<u>-<v>") from the road graph. Empty by default.
+    # pinned:
+    #   - {min_level_cm: 20, edges: ["<u>-<v>"]}
+    pinned: []

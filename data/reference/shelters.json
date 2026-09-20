@@ -1,0 +1,137 @@
+{
+  "_note": "SYNTHETIC demonstration data. Nodes are real OSM nodes chosen from high ground; names, capacities and fleets are placeholders, not real facilities or assets.",
+  "shelters": [
+    {
+      "id": "colombo_fort-shelter-01",
+      "site": "colombo_fort",
+      "node": 618726584,
+      "lat": 6.933999,
+      "lon": 79.843322,
+      "elevation_m": 26.0,
+      "capacity": 120,
+      "kind": "community_shelter",
+      "synthetic": true
+    },
+    {
+      "id": "colombo_fort-shelter-02",
+      "site": "colombo_fort",
+      "node": 13405907892,
+      "lat": 6.936735,
+      "lon": 79.845129,
+      "elevation_m": 21.0,
+      "capacity": 80,
+      "kind": "community_shelter",
+      "synthetic": true
+    },
+    {
+      "id": "colombo_fort-shelter-03",
+      "site": "colombo_fort",
+      "node": 91030442,
+      "lat": 6.931412,
+      "lon": 79.842878,
+      "elevation_m": 20.0,
+      "capacity": 60,
+      "kind": "community_shelter",
+      "synthetic": true
+    },
+    {
+      "id": "colombo_fort-shelter-04",
+      "site": "colombo_fort",
+      "node": 651703070,
+      "lat": 6.934127,
+      "lon": 79.845879,
+      "elevation_m": 15.0,
+      "capacity": 40,
+      "kind": "community_shelter",
+      "synthetic": true
+    },
+    {
+      "id": "kandy-shelter-01",
+      "site": "kandy",
+      "node": 3631617490,
+      "lat": 7.283264,
+      "lon": 80.635147,
+      "elevation_m": 633.0,
+      "capacity": 120,
+      "kind": "community_shelter",
+      "synthetic": true
+    },
+    {
+      "id": "kandy-shelter-02",
+      "site": "kandy",
+      "node": 4157023097,
+      "lat": 7.287303,
+      "lon": 80.640591,
+      "elevation_m": 619.0,
+      "capacity": 80,
+      "kind": "community_shelter",
+      "synthetic": true
+    },
+    {
+      "id": "kandy-shelter-03",
+      "site": "kandy",
+      "node": 4029844378,
+      "lat": 7.293284,
+      "lon": 80.628504,
+      "elevation_m": 617.0,
+      "capacity": 60,
+      "kind": "community_shelter",
+      "synthetic": true
+    },
+    {
+      "id": "kandy-shelter-04",
+      "site": "kandy",
+      "node": 5561185847,
+      "lat": 7.295778,
+      "lon": 80.630775,
+      "elevation_m": 603.0,
+      "capacity": 40,
+      "kind": "community_shelter",
+      "synthetic": true
+    },
+    {
+      "id": "ratnapura-shelter-01",
+      "site": "ratnapura",
+      "node": 3887006853,
+      "lat": 6.684004,
+      "lon": 80.406456,
+      "elevation_m": 101.0,
+      "capacity": 120,
+      "kind": "community_shelter",
+      "synthetic": true
+    },
+    {
+      "id": "ratnapura-shelter-02",
+      "site": "ratnapura",
+      "node": 5155422979,
+      "lat": 6.6752,
+      "lon": 80.390373,
+      "elevation_m": 90.0,
+      "capacity": 80,
+      "kind": "community_shelter",
+      "synthetic": true
+    },
+    {
+      "id": "ratnapura-shelter-03",
+      "site": "ratnapura",
+      "node": 5296123852,
+      "lat": 6.689117,
+      "lon": 80.402788,
+      "elevation_m": 79.0,
+      "capacity": 60,
+      "kind": "community_shelter",
+      "synthetic": true
+    },
+    {
+      "id": "ratnapura-shelter-04",
+      "site": "ratnapura",
+      "node": 5296123707,
+      "lat": 6.68754,
+      "lon": 80.404494,
+      "elevation_m": 76.0,
+      "capacity": 40,
+      "kind": "community_shelter",
+      "synthetic": true
+    }
+  ]
+}
