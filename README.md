@@ -1,5 +1,22 @@
 # ATLAS — Autonomous Triage, Logical Agentic System
 
+## A1 and shared planning implementation
+
+The `Aeshan/A1-MCTS` work adds the local event bus, SQLite COP/ledger, structured
+Sentinel, replay, sensor outbox, and optional PlanU-inspired planning. See
+[the integration guide](docs/reasoning-integration.md) for scope, teammate adapters,
+contract changes, configuration, and recovery limitations. Other agent and control
+modules remain workstream scaffolds; the architecture below describes the target.
+
+Quick verification without hardware or model keys:
+
+```bash
+pip install -r requirements-a1.txt
+python -m pytest -q
+python -m atlas.ingest.simulator data/scenarios/flood.json
+python -m eval.run_reasoning --trials 30
+```
+
 > **Team ClapTac** · General Sir John Kotelawala Defence University
 > CodeSplash '26 Agentic AI Phase · Theme 3: AI Disaster Response Coordinator
 

@@ -1,0 +1,12 @@
+{
+  "name": "Synthetic route and shelter choices",
+  "assumptions": ["Illustrative probabilities, capacities and times; not calibrated flood forecasts.", "A failed route costs 40 utility points, successful evacuation earns 100 minus minutes."],
+  "state": {
+    "people": 20,
+    "routes": {
+      "short": {"minutes": 10, "failure_probability": 0.6, "capacity": 30},
+      "long": {"minutes": 25, "failure_probability": 0.05, "capacity": 30},
+      "full_shelter": {"minutes": 5, "failure_probability": 0.0, "capacity": 5}
+    }
+  }
+}

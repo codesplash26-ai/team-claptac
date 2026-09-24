@@ -1,0 +1,17 @@
+# Tabletop demo values. Calibrate locally; not validated disaster thresholds.
+freshness_seconds: 300
+future_tolerance_seconds: 30
+window_seconds: 300
+water_threshold_cm: 25
+rise_threshold_cm_min: 5
+rainfall_threshold_mm: 20
+soil_threshold_pct: 80
+minimum_confidence: 0.65
+corroboration_minimum: 0.4
+rearm_ratio: 0.8
+cooldown_seconds: 60
+escalation_delta: 0.5
+conflict_water_cm: 8
+source_reliability: {}
+# Hypothetical verification model assumption, not evidence confidence.
+verification_success_probability: 0.7

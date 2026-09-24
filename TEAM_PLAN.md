@@ -1,5 +1,27 @@
 # ATLAS Team Plan
 
+## Aeshan/A1-MCTS implementation and proposed integration handoff
+
+Workstream A now also supplies `atlas/reasoning/`, the reusable PlanU-inspired
+search engine. The original owners retain their agents. A1's adapter is included;
+the A3 adapter is an integration example, not a completed Incident Commander.
+
+- Implemented on this branch: local runtime/event delivery, versioned SQLite COP,
+  hash-linked append-only ledger, internal evidence store, rebuildable graph,
+  structured A1 rules, replay, HTTP/MQTT wiring, planner modes/adapters, tests,
+  synthetic evaluation, and persistent Pi outbox.
+- Team review needed: raw versus validated observation events, optional measurement
+  IDs, planning snapshot references, and subscriber registration interfaces.
+- B integrates A3 and the shared LLM wrapper; C replaces illustrative outcome
+  assumptions with domain models and evaluates them; D retains final policy,
+  approval and execution authority.
+- Physical calibration, live-broker/Pi drills, OCR/STT, and the complete nine-agent
+  loop are not claimed complete by this software implementation.
+
+See [reasoning integration](docs/reasoning-integration.md). The original checklist
+below remains the team's roadmap; these additions do not silently mark other
+workstreams complete or replace their ownership.
+
 The work is split into **four workstreams**, one per person. Each owner builds their modules and writes the tests for them. They also demo their part at each weekly sync.
 
 | Workstream | Owner | Owns |

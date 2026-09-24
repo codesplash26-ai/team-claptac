@@ -1,0 +1,10 @@
+{
+  "name": "Synthetic Ratnapura rising-water and conflicting-report replay",
+  "events": [
+    {"at_seconds": 0, "payload": {"kind": "sensor", "node_id": "rtp-node-01", "sensor_id": "wl-01", "type": "water_level", "value": 10, "unit": "cm", "location": {"lat": 6.6828, "lon": 80.3992, "area_id": "ratnapura-demo-river"}}},
+    {"at_seconds": 120, "payload": {"kind": "sensor", "node_id": "rtp-node-01", "sensor_id": "wl-01", "type": "water_level", "value": 26, "unit": "cm", "location": {"lat": 6.6828, "lon": 80.3992, "area_id": "ratnapura-demo-river"}}},
+    {"at_seconds": 130, "payload": {"kind": "sensor", "node_id": "rtp-node-01", "sensor_id": "wl-01", "type": "water_level", "value": 26, "unit": "cm", "location": {"lat": 6.6828, "lon": 80.3992, "area_id": "ratnapura-demo-river"}}},
+    {"at_seconds": 140, "payload": {"kind": "official_warning", "source": "demo:official", "area_id": "ratnapura-demo-river", "attribute": "water_level", "value": 5, "unit": "cm", "text": "Synthetic conflicting report, not an actual official bulletin."}},
+    {"at_seconds": 150, "observed_seconds": -600, "payload": {"kind": "sensor", "node_id": "rtp-node-01", "sensor_id": "wl-01", "type": "water_level", "value": 40, "unit": "cm", "location": {"lat": 6.6828, "lon": 80.3992, "area_id": "ratnapura-demo-river"}}}
+  ]
+}

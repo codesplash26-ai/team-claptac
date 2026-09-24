@@ -2,6 +2,7 @@
 node_id: rtp-node-01
 interval_seconds: 10
 buffer_size: 5000
+buffer_path: sensor-buffer.db
 log_level: INFO
 
 # Where this node sits. area_id / lat-lon are mapped to COP areas and OSM edges server-side.
