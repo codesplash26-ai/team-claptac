@@ -1,0 +1,9 @@
+# Workstream C (routing, geo, optimisation, evaluation) on top of the A1 dev environment.
+# Verified to install from prebuilt wheels on Python 3.14; the project minimum is 3.11.
+-r requirements-a1.txt
+numpy>=1.26
+scipy>=1.13
+matplotlib>=3.8
+osmnx>=1.9
+ortools>=9.10
+requests>=2.31

@@ -17,6 +17,25 @@ python -m atlas.ingest.simulator data/scenarios/flood.json
 python -m eval.run_reasoning --trials 30
 ```
 
+## Routing, shelter, logistics and evaluation (Workstream C)
+
+The `Sumudu/C-Routing-and-Optimization` work adds the belief-weighted cognitive map ported from the
+original engine, real OSM road networks with elevation (Colombo Fort, Ratnapura, Kandy), the
+sensor-to-road mapping, **A4 Evacuation**, **A6 Logistics**, **A7 Shelter** (CP-SAT), and the A/B/C
+evaluation. See [the integration guide](docs/routing-integration.md) for the interfaces other
+workstreams code against, the evaluation findings, the demo script and the open decisions.
+
+```bash
+pip install -r requirements-c.txt
+python -m pytest -q
+python -m eval.run_abc                    # reproduces the proposal's results table (24/24)
+python -m eval.run_abc --site ratnapura   # real network; --pipeline for compute latency
+```
+
+One result to read before the pitch: on the real hilly networks the original engine's uphill penalty
+strands evacuees (Ratnapura flood: 61% reach a shelter against 100% for both baselines), so ATLAS's
+planning agents turn it off. The engine's published grid results are unchanged and reproduce exactly.
+
 > **Team ClapTac** · General Sir John Kotelawala Defence University
 > CodeSplash '26 Agentic AI Phase · Theme 3: AI Disaster Response Coordinator
 

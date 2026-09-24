@@ -80,13 +80,19 @@ The agent's reasoning core and the person who makes the whole thing run end to e
 
 ### C — Routing & Optimization (Sumudu)
 The most mature part of the system. Bring the existing engine in, then extend it.
-- [ ] Port the existing simulation core into `tools/cognitive_map/` (beliefs.py, routing.py)
-- [ ] Load and cache the OSM graphs for Colombo Fort, Ratnapura and Kandy, with elevation, in `data/osm/`
-- [ ] **Sensor-to-map mapping**: resolve each node's lat/lon or `area_id` to the nearest OSM edges; turn water-level readings into belief updates on those edges
-- [ ] **A4 Evacuation**: wrap the engine as an agent and tool; routes, alternatives, per-route risk and uncertainty; proactive replanning
-- [ ] **A6 Logistics**: resource inventory in the COP, CP-SAT model matching resources to tasks, shortage alerts
-- [ ] **A7 Shelter**: capacity and reservation state, CP-SAT shelter assignment, resupply requests to A6
-- [ ] `eval/`: re-run the A/B/C scenarios against the baselines and add the section 8 metrics, including **sensor-to-trigger latency**
+Implemented on `Sumudu/C-Routing-and-Optimization`; see [routing integration](docs/routing-integration.md).
+- [x] Port the existing simulation core into `tools/cognitive_map/` (beliefs.py, routing.py). Reproduces all 60 original episodes exactly.
+- [x] Load and cache the OSM graphs for Colombo Fort, Ratnapura and Kandy, with elevation, in `data/osm/`. Elevation is OpenTopoData SRTM (Open-Elevation's certificate has expired).
+- [x] **Sensor-to-map mapping**: an `area_id` maps to a gauge on the road network; water-level readings become belief updates on the roads it floods (demo scale, `data/reference/sensor_map.yaml`)
+- [x] **A4 Evacuation**: agent and tool; ranked safe routes with per-route risk and uncertainty; `RISK_UPDATE` when roads close or reopen so A3 can replan
+- [x] **A6 Logistics**: CP-SAT matching of teams and vehicles to jobs, shortage alerts. Fleet is reference data; committed units are recorded in the COP.
+- [~] **A7 Shelter**: CP-SAT shelter assignment, occupancy in the COP, resupply requests in the plan for A3 to hand to A6. **Not done:** nothing yet records occupancy or unit availability when missions are created (needs a headcount on A8's `create_mission`; open with Dinuka and Hasindu).
+- [x] `eval/`: A/B/C scenarios against the baselines on the grids and all three real networks, section 8 metrics, and a proposal-table gate (`python -m eval.run_abc`). Latency measured is compute time after the trigger (about 47 ms); A1's detection latency is A's.
+
+**Findings to act on before the pitch** (details in the integration guide):
+- [ ] On real hilly networks the original engine's uphill penalty strands evacuees (Ratnapura flood: 61% success vs 100%). ATLAS's planning agents turn it off. Confirm this, and how the pitch describes "elevation-aware travel time".
+- [ ] On the real networks the belief agent matches the naive baseline rather than beating it; the "robust to misinformation" claim rests on the synthetic grid results. Decide how the pitch frames this.
+- [ ] Hasindu: confirm the A3 to A4/A6/A7 payloads in `atlas/agents/contracts.py`.
 
 ### D — Control Boundary & Action (Dinuka)
 The safety story, and the part the judges will look at.

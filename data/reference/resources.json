@@ -1,0 +1,173 @@
+{
+  "_note": "SYNTHETIC demonstration data. Nodes are real OSM nodes chosen from high ground; names, capacities and fleets are placeholders, not real facilities or assets.",
+  "resources": [
+    {
+      "id": "colombo_fort-rescue-team-01",
+      "site": "colombo_fort",
+      "kind": "rescue_team",
+      "node": 3355420037,
+      "capacity": 6,
+      "synthetic": true
+    },
+    {
+      "id": "colombo_fort-rescue-team-02",
+      "site": "colombo_fort",
+      "kind": "rescue_team",
+      "node": 3355420037,
+      "capacity": 6,
+      "synthetic": true
+    },
+    {
+      "id": "colombo_fort-rescue-team-03",
+      "site": "colombo_fort",
+      "kind": "rescue_team",
+      "node": 3355420037,
+      "capacity": 6,
+      "synthetic": true
+    },
+    {
+      "id": "colombo_fort-vehicle-01",
+      "site": "colombo_fort",
+      "kind": "vehicle",
+      "node": 3355420037,
+      "capacity": 20,
+      "synthetic": true
+    },
+    {
+      "id": "colombo_fort-vehicle-02",
+      "site": "colombo_fort",
+      "kind": "vehicle",
+      "node": 3355420037,
+      "capacity": 20,
+      "synthetic": true
+    },
+    {
+      "id": "colombo_fort-vehicle-03",
+      "site": "colombo_fort",
+      "kind": "vehicle",
+      "node": 3355420037,
+      "capacity": 20,
+      "synthetic": true
+    },
+    {
+      "id": "colombo_fort-vehicle-04",
+      "site": "colombo_fort",
+      "kind": "vehicle",
+      "node": 3355420037,
+      "capacity": 20,
+      "synthetic": true
+    },
+    {
+      "id": "kandy-rescue-team-01",
+      "site": "kandy",
+      "kind": "rescue_team",
+      "node": 1694488877,
+      "capacity": 6,
+      "synthetic": true
+    },
+    {
+      "id": "kandy-rescue-team-02",
+      "site": "kandy",
+      "kind": "rescue_team",
+      "node": 1694488877,
+      "capacity": 6,
+      "synthetic": true
+    },
+    {
+      "id": "kandy-rescue-team-03",
+      "site": "kandy",
+      "kind": "rescue_team",
+      "node": 1694488877,
+      "capacity": 6,
+      "synthetic": true
+    },
+    {
+      "id": "kandy-vehicle-01",
+      "site": "kandy",
+      "kind": "vehicle",
+      "node": 1694488877,
+      "capacity": 20,
+      "synthetic": true
+    },
+    {
+      "id": "kandy-vehicle-02",
+      "site": "kandy",
+      "kind": "vehicle",
+      "node": 1694488877,
+      "capacity": 20,
+      "synthetic": true
+    },
+    {
+      "id": "kandy-vehicle-03",
+      "site": "kandy",
+      "kind": "vehicle",
+      "node": 1694488877,
+      "capacity": 20,
+      "synthetic": true
+    },
+    {
+      "id": "kandy-vehicle-04",
+      "site": "kandy",
+      "kind": "vehicle",
+      "node": 1694488877,
+      "capacity": 20,
+      "synthetic": true
+    },
+    {
+      "id": "ratnapura-rescue-team-01",
+      "site": "ratnapura",
+      "kind": "rescue_team",
+      "node": 2151514485,
+      "capacity": 6,
+      "synthetic": true
+    },
+    {
+      "id": "ratnapura-rescue-team-02",
+      "site": "ratnapura",
+      "kind": "rescue_team",
+      "node": 2151514485,
+      "capacity": 6,
+      "synthetic": true
+    },
+    {
+      "id": "ratnapura-rescue-team-03",
+      "site": "ratnapura",
+      "kind": "rescue_team",
+      "node": 2151514485,
+      "capacity": 6,
+      "synthetic": true
+    },
+    {
+      "id": "ratnapura-vehicle-01",
+      "site": "ratnapura",
+      "kind": "vehicle",
+      "node": 2151514485,
+      "capacity": 20,
+      "synthetic": true
+    },
+    {
+      "id": "ratnapura-vehicle-02",
+      "site": "ratnapura",
+      "kind": "vehicle",
+      "node": 2151514485,
+      "capacity": 20,
+      "synthetic": true
+    },
+    {
+      "id": "ratnapura-vehicle-03",
+      "site": "ratnapura",
+      "kind": "vehicle",
+      "node": 2151514485,
+      "capacity": 20,
+      "synthetic": true
+    },
+    {
+      "id": "ratnapura-vehicle-04",
+      "site": "ratnapura",
+      "kind": "vehicle",
+      "node": 2151514485,
+      "capacity": 20,
+      "synthetic": true
+    }
+  ]
+}
