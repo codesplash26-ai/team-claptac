@@ -1,0 +1,29 @@
+[
+  {
+    "area_id": "ratnapura-demo-river",
+    "name": "Ratnapura riverside settlements",
+    "population": 4200,
+    "vulnerable_fraction": 0.28,
+    "groups": ["elderly", "children", "informal_housing"],
+    "lat": 6.6828,
+    "lon": 80.3992
+  },
+  {
+    "area_id": "ratnapura-gn-12",
+    "name": "Ratnapura GN 12",
+    "population": 1800,
+    "vulnerable_fraction": 0.18,
+    "groups": ["elderly"],
+    "lat": 6.7050,
+    "lon": 80.3850
+  },
+  {
+    "area_id": "colombo-fort-low",
+    "name": "Colombo Fort low-lying blocks",
+    "population": 2500,
+    "vulnerable_fraction": 0.12,
+    "groups": ["commuters"],
+    "lat": 6.9344,
+    "lon": 79.8428
+  }
+]

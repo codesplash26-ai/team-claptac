@@ -258,3 +258,49 @@ class LogisticsPlan(BaseModel):
     solver_status: str = ""
     evidence_ids: list[str] = Field(default_factory=list)
     assumptions: list[str] = Field(default_factory=list)
+
+
+# --------------------------------------------------------------------------- A5 Rescue & Needs Triage
+
+TRIAGE_ASSIGNEE = "a5_triage"
+TriagePlanStatus = Literal["ok", "empty", "invalid_task", "error"]
+
+
+class TriageTask(BaseModel):
+    """A3 -> A5. Rank who needs help first, optionally only among these areas."""
+
+    task: Literal["triage"] = "triage"
+    assignee: Literal["a5_triage"] = TRIAGE_ASSIGNEE
+    task_id: str
+    area_ids: list[str] | None = None  # None = every area A5 knows about
+
+
+class RankedNeed(BaseModel):
+    area_id: str
+    name: str | None = None
+    rank: int  # 1 = help first
+    hazard: str | None = None
+    level: str
+    urgency: float = Field(ge=0, le=1)
+    vulnerability: float = Field(ge=0, le=1)
+    estimated_vulnerable: int = Field(ge=0)
+    confidence: float = Field(ge=0, le=1)
+    score: float = Field(ge=0, le=1)  # transparent: urgency x vulnerability with mild boosts
+    explanation: str
+    information_gaps: list[str] = Field(default_factory=list)
+    lat: float | None = None
+    lon: float | None = None
+    evidence_ids: list[str] = Field(default_factory=list)
+
+
+class TriagePlan(BaseModel):
+    status: TriagePlanStatus
+    reason: str = ""
+    planned_at: datetime
+    snapshot_version: int
+    ranked_needs: list[RankedNeed] = Field(default_factory=list)
+    assumptions: list[str] = Field(default_factory=list)
+
+    @property
+    def top_priority(self) -> str | None:
+        return self.ranked_needs[0].area_id if self.ranked_needs else None
