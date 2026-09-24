@@ -1,15 +1,16 @@
 """ATLAS API: sensor/report ingestion (A) plus the control-boundary routes (D)."""
 
+import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException, Request
 
 from atlas.api.routes import router
-from atlas.control.wiring import attach_control
 from atlas.ingest.feeds import FeedReport
 from atlas.ingest.feeds import to_event as report_event
 from atlas.ingest.sensors import SensorReading, to_event
 from atlas.runtime import Runtime
+from atlas.system import attach_all
 
 
 def create_app(settings=None):
@@ -18,7 +19,8 @@ def create_app(settings=None):
         runtime = Runtime(settings)
         app.state.runtime = runtime
         # Register subscribers before start(): startup recovery redelivers pending events.
-        control = app.state.control = attach_control(runtime)
+        system = app.state.system = attach_all(runtime, site=os.getenv("ATLAS_SITE", "ratnapura"))
+        control = app.state.control = system.control
         try:
             await runtime.start()
             control.start_worker()
