@@ -1,10 +1,16 @@
 # Policy & Authority Engine configuration.
 # Each agent may only emit the action types listed for it.
 # Anything marked consequence: high is routed to the Human Incident Commander.
+#
+# `when` narrows a high consequence: the action is HIGH only if every condition holds.
+# A condition whose parameter is missing or malformed is treated as holding (fail closed).
+
+# The only agent allowed to submit proposals to the Gateway.
+proposers: [a3_incident_commander]
 
 agents:
   a8_dispatch:
-    allowed_actions: [create_mission, update_mission, cancel_mission, reroute_group]
+    allowed_actions: [create_mission, update_mission, cancel_mission, reroute_group, close_major_route]
   a9_comms:
     allowed_actions: [publish_alert, publish_sitrep, cancel_alert]
 
@@ -20,3 +26,6 @@ actions:
 
 gateway:
   max_retries: 3
+  retry_backoff_seconds: 0.2
+  # Reject plans built on a COP snapshot that is no longer current.
+  require_current_snapshot: true
