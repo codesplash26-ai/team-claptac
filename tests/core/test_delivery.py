@@ -70,3 +70,33 @@ def test_snapshots_detached_and_ttl(runtime, clock):
     assert runtime.cop.get("road", "open", now=clock.now).value is True
     clock.now += timedelta(seconds=10)
     assert runtime.snapshot()["beliefs"] == []
+
+
+async def test_publish_reads_only_new_event_history_and_resume_keeps_pending(runtime, monkeypatch):
+    seen = []
+
+    async def handler(event):
+        seen.append(event.id)
+        return []
+
+    runtime.bus.subscribe("incremental", [EventType.INFORMATION_GAP], handler)
+    first = Event(type=EventType.INFORMATION_GAP, source="test")
+    await runtime.bus.publish(first)
+    cursor = runtime.ledger.records("event")[-1]["seq"]
+    batches = []
+    original = runtime.ledger.records_after
+
+    def read_after(seq, kind, limit=1000):
+        batches.append(seq)
+        return original(seq, kind, limit)
+
+    monkeypatch.setattr(runtime.ledger, "records_after", read_after)
+    second = Event(type=EventType.INFORMATION_GAP, source="test")
+    await runtime.bus.publish(second)
+    assert batches and min(batches) >= cursor
+    runtime.bus.suspend("incremental")
+    third = Event(type=EventType.INFORMATION_GAP, source="test")
+    await runtime.bus.publish(third)
+    assert seen == [first.id, second.id]
+    await runtime.bus.resume("incremental")
+    assert seen == [first.id, second.id, third.id]

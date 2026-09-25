@@ -5,13 +5,14 @@ Read-only. Nothing under ``/dev`` can change system state or propose an action.
 
 from __future__ import annotations
 
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Query, Request
 from fastapi.responses import HTMLResponse
 
 from atlas.dashboard.dev.catalog import cards
 from atlas.dashboard.dev.geo_view import situation_map
 from atlas.dashboard.dev.page import PAGE
 from atlas.dashboard.dev.runs import list_runs, metrics, run_spans, span_detail
+from atlas.dashboard.dev.timeline import event_detail, planning_detail, timeline
 from atlas.dashboard.dev.trace import chain, flow, get_event, trace
 from atlas.manager import rbac
 from atlas.manager.rbac import requires
@@ -21,6 +22,34 @@ router = APIRouter(prefix="/dev")
 
 def runtime_of(request: Request):
     return request.app.state.runtime
+
+
+@router.get("/timeline", dependencies=requires(rbac.TRACE_READ))
+async def dev_timeline(
+    request: Request,
+    limit: int = Query(200, ge=1, le=500),
+    before_seq: int | None = Query(None, ge=1),
+    incident_id: str | None = None,
+):
+    return timeline(
+        runtime_of(request), limit=limit, before_seq=before_seq, incident_id=incident_id
+    )
+
+
+@router.get("/timeline/{event_id}", dependencies=requires(rbac.TRACE_READ))
+async def dev_timeline_event(event_id: str, request: Request):
+    item = event_detail(runtime_of(request), event_id)
+    if item is None:
+        raise HTTPException(404, "unknown event")
+    return item
+
+
+@router.get("/timeline/{event_id}/planning", dependencies=requires(rbac.TRACE_READ))
+async def dev_timeline_planning(event_id: str, request: Request):
+    item = planning_detail(runtime_of(request), event_id)
+    if item is None:
+        raise HTTPException(404, "No planner trace recorded for this event")
+    return item
 
 
 @router.get("", response_class=HTMLResponse, dependencies=requires(rbac.RUN_READ))

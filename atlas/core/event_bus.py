@@ -14,6 +14,7 @@ class EventBus:
     def __init__(self, db, ledger):
         self.db, self.ledger = db, ledger
         self.handlers = {}
+        self._positions = {}
         self._lock = asyncio.Lock()
         db.connection.execute(
             "CREATE TABLE IF NOT EXISTS deliveries (event_id TEXT, subscriber TEXT, PRIMARY KEY(event_id,subscriber))"
@@ -40,13 +41,15 @@ class EventBus:
             " reason TEXT, changed_by TEXT, changed_at REAL)"
         )
         self.suspended = {
-            r["name"] for r in db.connection.execute("SELECT name FROM agent_state WHERE suspended=1")
+            r["name"]
+            for r in db.connection.execute("SELECT name FROM agent_state WHERE suspended=1")
         }
 
     def subscribe(self, name, event_types, handler):
         if name in self.handlers:
             raise ValueError(f"Duplicate subscriber: {name}")
         self.handlers[name] = (set(event_types), handler)
+        self._positions[name] = 0
 
     def suspend(self, name, *, by="", reason=""):
         """Stop delivering to ``name`` (a subscriber, or an executor the Gateway calls)."""
@@ -65,7 +68,9 @@ class EventBus:
             (name, int(suspended), reason, by, time.time()),
         )
 
-    def record_span(self, event_id, subscriber, kind, started, duration_ms, ok, error=None, outputs=0):
+    def record_span(
+        self, event_id, subscriber, kind, started, duration_ms, ok, error=None, outputs=0
+    ):
         """Timing for one unit of work on an event (a handler run, an executor call, a model call)."""
         self.db.connection.execute(
             "INSERT OR IGNORE INTO event_spans VALUES (?,?,?,?,?,?,?,?)",
@@ -83,22 +88,32 @@ class EventBus:
 
     async def recover(self):
         async with self._lock:
+            self._positions = dict.fromkeys(self.handlers, 0)
             await self._drain()
 
     async def _drain(self):
         # Failed handlers leave their input pending; COP, output events and receipt
         # commit together. Register subscribers before recovery on process startup.
         while True:
-            progressed = False
-            for row in self.ledger.records("event"):
+            active = [n for n in self.handlers if n not in self.suspended]
+            if not active:
+                return
+            rows = self.ledger.records_after(min(self._positions[n] for n in active), "event")
+            if not rows:
+                return
+            for row in rows:
                 event = Event.model_validate(row["payload"])
                 for name, (types, handler) in self.handlers.items():
-                    if event.type not in types or name in self.suspended:
+                    if name in self.suspended or row["seq"] <= self._positions[name]:
+                        continue
+                    if event.type not in types:
+                        self._positions[name] = row["seq"]
                         continue
                     if self.db.connection.execute(
                         "SELECT 1 FROM deliveries WHERE event_id=? AND subscriber=?",
                         (event.id, name),
                     ).fetchone():
+                        self._positions[name] = row["seq"]
                         continue
                     started, clock = time.time(), time.perf_counter()
                     try:
@@ -111,19 +126,30 @@ class EventBus:
                                     (output.id, event.id, name),
                                 )
                             self.record_span(
-                                event.id, name, "handler", started,
-                                (time.perf_counter() - clock) * 1000, True, None, len(outputs or []),
+                                event.id,
+                                name,
+                                "handler",
+                                started,
+                                (time.perf_counter() - clock) * 1000,
+                                True,
+                                None,
+                                len(outputs or []),
                             )
                             self.db.connection.execute(
                                 "INSERT INTO deliveries VALUES (?,?)", (event.id, name)
                             )
-                    except BaseException as exc:  # the transaction has rolled back; keep the evidence
+                    except (
+                        BaseException
+                    ) as exc:  # the transaction has rolled back; keep the evidence
                         self.record_span(
-                            event.id, name, "handler", started,
-                            (time.perf_counter() - clock) * 1000, False,
-                            f"{type(exc).__name__}: {exc}"[:500], 0,
+                            event.id,
+                            name,
+                            "handler",
+                            started,
+                            (time.perf_counter() - clock) * 1000,
+                            False,
+                            f"{type(exc).__name__}: {exc}"[:500],
+                            0,
                         )
                         raise
-                    progressed = True
-            if not progressed:
-                return
+                    self._positions[name] = row["seq"]

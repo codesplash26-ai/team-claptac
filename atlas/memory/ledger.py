@@ -63,3 +63,11 @@ class Ledger:
                 return False
             previous = digest
         return True
+
+    def records_after(self, seq, kind, limit=1000):
+        """Keyset batches for delivery; do not deserialize already-delivered history."""
+        rows = self.db.connection.execute(
+            "SELECT * FROM ledger WHERE seq>? AND kind=? ORDER BY seq LIMIT ?",
+            (seq, kind, limit),
+        )
+        return [{**dict(row), "payload": json.loads(row["body"])} for row in rows]
