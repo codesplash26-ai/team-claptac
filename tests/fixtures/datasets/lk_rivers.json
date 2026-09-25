@@ -1,0 +1,27 @@
+[
+ {
+  "name": "Kalu Ganga",
+  "basin_name": "Kalu Ganga",
+  "location_names": [
+   "Sri Pada",
+   "Rathnapura",
+   "Ellagawa",
+   "Putupaula",
+   "Kalutara"
+  ]
+ },
+ {
+  "name": "Kelani Ganga",
+  "basin_name": "Kelani Ganga",
+  "location_names": [
+   "Maussakelle",
+   "Canyon",
+   "Laxapana",
+   "Kithulgala",
+   "Ruwanwella",
+   "Glencourse",
+   "Hanwella",
+   "Nagalagam Street"
+  ]
+ }
+]

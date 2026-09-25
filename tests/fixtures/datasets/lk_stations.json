@@ -1,0 +1,26 @@
+[
+ {
+  "name": "Hanwella",
+  "river_name": "Kelani Ganga",
+  "district_id": "LK-11",
+  "lat_lng": [
+   6.910489028063102,
+   80.08133984391833
+  ],
+  "alert_level_m": 7.0,
+  "minor_flood_level_m": 8.0,
+  "major_flood_level_m": 10.0
+ },
+ {
+  "name": "Rathnapura",
+  "river_name": "Kalu Ganga",
+  "district_id": "LK-91",
+  "lat_lng": [
+   6.689859893761882,
+   80.38027645749384
+  ],
+  "alert_level_m": 5.2,
+  "minor_flood_level_m": 7.5,
+  "major_flood_level_m": 9.5
+ }
+]

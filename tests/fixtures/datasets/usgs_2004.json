@@ -1,0 +1,53 @@
+{
+ "type": "FeatureCollection",
+ "metadata": {
+  "generated": 1790352335000,
+  "url": "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&minlatitude=-10&minlongitude=65&maxlatitude=25&maxlongitude=105&minmagnitude=9&starttime=2004-12-01&endtime=2005-01-01",
+  "title": "USGS Earthquakes",
+  "status": 200,
+  "api": "2.7.0",
+  "count": 1
+ },
+ "features": [
+  {
+   "type": "Feature",
+   "properties": {
+    "mag": 9.1,
+    "place": "2004 Sumatra - Andaman Islands Earthquake",
+    "time": 1104022733450,
+    "updated": 1780672574192,
+    "tz": null,
+    "url": "https://earthquake.usgs.gov/earthquakes/eventpage/official20041226005853450_30",
+    "detail": "https://earthquake.usgs.gov/fdsnws/event/1/query?eventid=official20041226005853450_30&format=geojson",
+    "felt": 5,
+    "cdi": 8.6,
+    "mmi": 7.909,
+    "alert": null,
+    "status": "reviewed",
+    "tsunami": 0,
+    "sig": 1278,
+    "net": "official",
+    "code": "20041226005853450_30",
+    "ids": ",official20041226005853450_30,duputel122604a,us2004slav,choy20041226005853,gcmtm122604a,usp000dbed,gcmt20041226005850,atlas20041226005853,iscgem7453151,",
+    "sources": ",official,duputel,us,choy,gcmt,us,gcmt,atlas,iscgem,",
+    "types": ",associate,dyfi,finite-fault,focal-mechanism,general-header,general-text,ground-failure,impact-text,moment-tensor,origin,phase-data,poster,shakemap,trump-origin,trump-shakemap,",
+    "nst": 601,
+    "dmin": null,
+    "rms": 1.17,
+    "gap": 22,
+    "magType": "mw",
+    "type": "earthquake",
+    "title": "M 9.1 - 2004 Sumatra - Andaman Islands Earthquake"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     95.982,
+     3.295,
+     30
+    ]
+   },
+   "id": "official20041226005853450_30"
+  }
+ ]
+}
