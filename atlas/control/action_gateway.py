@@ -94,6 +94,8 @@ class Gateway:
                 consequence TEXT, approval_id TEXT, decided_at TEXT NOT NULL,
                 updated_at TEXT NOT NULL, receipt TEXT);
             CREATE INDEX IF NOT EXISTS gateway_actions_status ON gateway_actions(status);
+            CREATE TABLE IF NOT EXISTS event_causes (event_id TEXT PRIMARY KEY,
+                cause_id TEXT NOT NULL, subscriber TEXT NOT NULL);
         """)
 
     def register_executor(self, name: str, executor: Executor) -> None:
@@ -427,7 +429,12 @@ class Gateway:
             action=action,
             receipt=result.receipt.model_dump(mode="json"),
         )
+        cause = sha256(f"{action.id}:{EventType.ACTION_AUTHORISED.value}:authorised".encode()).hexdigest()
         for event in result.events:
+            # The executor's events happen outside any handler, so the bus cannot see their cause.
+            self.db.connection.execute(
+                "INSERT OR IGNORE INTO event_causes VALUES (?,?,?)", (event.id, cause, NAME)
+            )
             if self.publish is None:
                 break
             try:

@@ -17,6 +17,12 @@ class EventBus:
         db.connection.execute(
             "CREATE TABLE IF NOT EXISTS deliveries (event_id TEXT, subscriber TEXT, PRIMARY KEY(event_id,subscriber))"
         )
+        # Which event's handling produced which. Kept beside the ledger, not in it: the same output
+        # can be re-produced from a different parent, and event content must stay identical.
+        db.connection.execute(
+            "CREATE TABLE IF NOT EXISTS event_causes (event_id TEXT PRIMARY KEY, cause_id TEXT NOT NULL,"
+            " subscriber TEXT NOT NULL)"
+        )
 
     def subscribe(self, name, event_types, handler):
         if name in self.handlers:
@@ -55,6 +61,10 @@ class EventBus:
                         outputs = await handler(event)
                         for output in outputs or []:
                             self._record(output)
+                            self.db.connection.execute(
+                                "INSERT OR IGNORE INTO event_causes VALUES (?,?,?)",
+                                (output.id, event.id, name),
+                            )
                         self.db.connection.execute(
                             "INSERT INTO deliveries VALUES (?,?)", (event.id, name)
                         )
