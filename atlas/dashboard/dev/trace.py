@@ -61,15 +61,16 @@ def _chunks(items: list[str]):
         yield items[i : i + CHUNK]
 
 
-def _rows(runtime, *, after_seq: int, limit: int, incident_id: str | None):
+def _rows(runtime, *, after_seq: int, limit: int, incident_id: str | None, newest: bool = False):
     sql = "SELECT seq, body FROM ledger WHERE kind='event' AND seq>?"
     args: list[Any] = [after_seq]
     if incident_id:
         sql += " AND json_extract(body, '$.incident_id')=?"
         args.append(incident_id)
-    sql += " ORDER BY seq LIMIT ?"
+    sql += " ORDER BY seq DESC LIMIT ?" if newest else " ORDER BY seq LIMIT ?"
     args.append(limit)
-    return runtime.db.connection.execute(sql, args).fetchall()
+    rows = runtime.db.connection.execute(sql, args).fetchall()
+    return rows[::-1] if newest else rows
 
 
 def _lookup(runtime, ids: list[str]) -> tuple[dict[str, list[str]], dict[str, str]]:
@@ -90,11 +91,22 @@ def _lookup(runtime, ids: list[str]) -> tuple[dict[str, list[str]], dict[str, st
 
 
 def trace(
-    runtime, *, after_seq: int = 0, limit: int = 200, incident_id: str | None = None
+    runtime,
+    *,
+    after_seq: int = 0,
+    limit: int = 200,
+    incident_id: str | None = None,
+    tail: int | None = None,
 ) -> list[TraceEvent]:
-    """Events after ``after_seq`` in ledger order, with who handled them and what caused them."""
+    """Events after ``after_seq`` in ledger order, with who handled them and what caused them.
+
+    ``tail=N`` returns the newest N events instead (oldest first), for a live view."""
     limit = max(1, min(limit, 1000))
-    rows = _rows(runtime, after_seq=after_seq, limit=limit, incident_id=incident_id)
+    if tail:
+        limit = max(1, min(tail, 1000))
+    rows = _rows(
+        runtime, after_seq=after_seq, limit=limit, incident_id=incident_id, newest=bool(tail)
+    )
     events = [(row["seq"], json.loads(row["body"])) for row in rows]
     handled, caused = _lookup(runtime, [e["id"] for _, e in events])
     return [

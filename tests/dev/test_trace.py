@@ -117,3 +117,12 @@ def test_source_names_and_summaries():
     )
     assert "A3" in line and "a4_evacuation" in line
     assert "unknown" not in summarise({"type": "made_up", "source": "x", "payload": {}})
+
+
+async def test_tail_returns_the_newest_events_oldest_first(system, runtime, clock):
+    await loop(system, runtime, clock)
+    everything = trace(runtime, limit=1000)
+    last = trace(runtime, tail=5)
+    assert [e.id for e in last] == [e.id for e in everything][-5:]
+    only = trace(runtime, tail=3, incident_id="incident:ratnapura-demo-river")
+    assert len(only) == 3 and only == sorted(only, key=lambda e: e.seq)

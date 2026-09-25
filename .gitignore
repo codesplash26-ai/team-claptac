@@ -18,3 +18,7 @@ data/osm/*.graphml
 
 # Downloaded datasets (regenerable)
 data/cache/
+
+# Agent manager frontend
+frontend/node_modules/
+frontend/.vite/

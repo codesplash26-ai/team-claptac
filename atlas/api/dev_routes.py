@@ -9,7 +9,9 @@ from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import HTMLResponse
 
 from atlas.dashboard.dev.catalog import cards
+from atlas.dashboard.dev.geo_view import situation_map
 from atlas.dashboard.dev.page import PAGE
+from atlas.dashboard.dev.runs import list_runs, metrics, run_spans, span_detail
 from atlas.dashboard.dev.trace import chain, flow, get_event, trace
 
 router = APIRouter(prefix="/dev")
@@ -26,9 +28,15 @@ async def dev_page():
 
 @router.get("/trace")
 async def dev_trace(
-    request: Request, after_seq: int = 0, limit: int = 200, incident_id: str | None = None
+    request: Request,
+    after_seq: int = 0,
+    limit: int = 200,
+    incident_id: str | None = None,
+    tail: int | None = None,
 ):
-    events = trace(runtime_of(request), after_seq=after_seq, limit=limit, incident_id=incident_id)
+    events = trace(
+        runtime_of(request), after_seq=after_seq, limit=limit, incident_id=incident_id, tail=tail
+    )
     return [e.model_dump(mode="json") for e in events]
 
 
@@ -64,3 +72,47 @@ async def dev_chain(event_id: str, request: Request):
         "ancestors": [e.model_dump(mode="json") for e in linked["ancestors"]],
         "descendants": [e.model_dump(mode="json") for e in linked["descendants"]],
     }
+
+
+@router.get("/runs")
+async def dev_runs(request: Request):
+    return [r.model_dump(mode="json") for r in list_runs(runtime_of(request))]
+
+
+@router.get("/runs/{incident_id}/spans")
+async def dev_run_spans(incident_id: str, request: Request):
+    spans = run_spans(runtime_of(request), incident_id)
+    if not spans:
+        raise HTTPException(404, "unknown run")
+    return [s.model_dump(mode="json") for s in spans]
+
+
+@router.get("/span")
+async def dev_span(id: str, request: Request):
+    detail = span_detail(runtime_of(request), id)
+    if detail is None:
+        raise HTTPException(404, "unknown span")
+    return detail
+
+
+@router.get("/metrics")
+async def dev_metrics(request: Request):
+    return metrics(runtime_of(request))
+
+
+@router.get("/map")
+async def dev_map(request: Request):
+    return situation_map(request.app.state.system)
+
+
+@router.get("/history")
+async def dev_history(hazard: str | None = None):
+    """The committed hazard history (real events, with sources) for the timeline."""
+    import json
+
+    from atlas.datasets.catalog import HISTORY_PATH
+
+    data = json.loads(HISTORY_PATH.read_text(encoding="utf-8"))
+    if hazard:
+        data["events"] = [e for e in data["events"] if e["hazard"] == hazard]
+    return data
