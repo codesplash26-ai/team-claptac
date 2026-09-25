@@ -10,22 +10,32 @@ Docker, CI, and merging the other three workstreams.
 
 ## Tasks, in order
 UI
-- [ ] Bus records cause and effect: `event_causes` table in `atlas/core/event_bus.py` (Aeshan reviews).
-- [ ] `atlas/dashboard/dev/trace.py`: events with sender, receivers, cause, one-line summaries.
-- [ ] `atlas/dashboard/dev/catalog.py`: an agent card for every agent (purpose, reads, writes, LLM or not, last activity).
-- [ ] `/dev` page: agent map with live message counts between agents; message stream with filters; click an event to see its payload and its causal chain; incident timeline.
-- [ ] Replay scrubber (play a scenario, pause, step, speed).
-- [ ] Reasoning panel: show Aeshan's `Advice` with accepted and rejected claims (a rejected claim struck out is the proof the guard works).
-- [ ] Ask-the-system box (Aeshan's `nlquery`), red-team panel (blocked actions), latency meter (sensor to trigger to plan to alert).
-- [ ] Responder dashboard polish: hazards and route uncertainty on the map, mission board, approvals.
-- [ ] LoRa panel: node online, last seen, signal strength, frames dropped (Hasindu's data).
+- [x] Bus records cause and effect: `event_causes` table in `atlas/core/event_bus.py` (Aeshan reviews).
+- [x] `atlas/dashboard/dev/trace.py`: events with sender, receivers, cause, one-line summaries.
+- [x] `atlas/dashboard/dev/catalog.py`: an agent card for every agent (purpose, reads, writes, LLM or not, last activity).
+- [x] `/dev` page: agent map with live message counts between agents; message stream with filters; click an event to see its payload and its causal chain; incident timeline.
+- [x] Replay scrubber (play a scenario, pause, step, speed).
+- [ ] Reasoning panel (waiting on Aeshan's `Advice`; no API or UI yet): show Aeshan's `Advice` with accepted and rejected claims (a rejected claim struck out is the proof the guard works).
+- [x] Red-team panel (blocked actions) and latency meter (sensor to trigger to plan to alert).
+- [ ] Ask-the-system box (Aeshan's `nlquery`): waiting on the module; no endpoint or UI yet.
+- [x] Responder dashboard polish: hazards and route uncertainty on the map, mission board, approvals.
+- [ ] LoRa panel (can be built on `MockLoraLink` now; no UI yet): node online, last seen, signal strength, frames dropped (Hasindu's data).
 
 Data
-- [ ] Fetch a real Ratnapura gauge history (`atlas/datasets/lk_irrigation.py`), check the format and units, cache it.
-- [ ] Open-Meteo rainfall and soil moisture; check the flood API date range.
-- [ ] `to_scenario` a real flood, scaled so it plays in minutes; keep a small committed fixture for tests.
-- [ ] Landslide and earthquake scenarios (COOLR, USGS) once the contract decision in `docs/contracts.md` (#3) is made.
-- [ ] `data/sources/README.md`: every source with licence, what it drives, and whether it is verified.
+- [x] Fetch a real Ratnapura gauge history (`atlas/datasets/lk_irrigation.py`), check the format and units, cache it.
+- [x] Open-Meteo rainfall and soil moisture; check the flood API date range.
+- [x] `to_scenario` a real flood, scaled so it plays in minutes; keep a small committed fixture for tests.
+- [ ] Landslide and earthquake scenarios (COOLR, USGS) once the contract decision in `docs/contracts.md` (#3) is made. History only today.
+- [x] `data/sources/README.md`: every source with licence, what it drives, and whether it is verified.
+
+Agent manager (added beyond the original list; merged in PRs #9 and #10)
+- [x] Runs, traces and spans with the causal tree; agent graph replay; playground with what-if.
+- [x] Registry with suspend and resume; OpenTelemetry-model traces with OTLP export.
+- [x] Evaluations, monitors and experiments; guardrails view; role-based access; automatic audit trail.
+- [x] `atlasctl` command line and a committed OpenAPI contract with a drift test.
+- [ ] Console: a token field (every page returns 401 once `ATLAS_TOKENS` is set), an OTLP export button and span attributes on Run detail.
+- [ ] Update `docs/control-boundary.md` and `docs/contracts.md` for suspend and resume, roles, the `audit` ledger kind and `/am/v1`.
+- [ ] Approvals statistics page (approval rate, time to decision).
 
 Platform
 - [ ] Dockerfile, CI, reproducibility guide; cover the bus's full-ledger scan on every publish before large replays.
