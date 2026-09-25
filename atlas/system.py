@@ -21,6 +21,7 @@ class System:
     routing: RoutingPlane
     orchestration: OrchestrationPlane
     control: ControlPlane
+    intelligence: object = None
 
 
 def attach_all(
@@ -35,4 +36,8 @@ def attach_all(
     routing = attach_routing(runtime, site=site)
     orchestration = attach_orchestration(runtime, commander_config=commander_config)
     control = attach_control(runtime, policy=policy, channel=channel, translator=translator)
-    return System(runtime, routing, orchestration, control)
+    from atlas.intelligence.service import IntelligenceService
+
+    system = System(runtime, routing, orchestration, control)
+    system.intelligence = IntelligenceService(system)
+    return system

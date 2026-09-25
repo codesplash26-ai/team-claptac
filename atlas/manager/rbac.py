@@ -26,6 +26,7 @@ from fastapi import Depends, Header, HTTPException, Request
 # ---- permissions ---------------------------------------------------------------------------
 
 AGENT_READ, AGENT_SUSPEND, AGENT_RESUME = "agent:read", "agent:suspend", "agent:resume"
+LLM_CONFIGURE = "llm:configure"
 RUN_READ, TRACE_READ, TRACE_EXPORT = "run:read", "trace:read", "trace:export"
 EVAL_READ, EVAL_RUN, MONITOR_MANAGE, EXPERIMENT_RUN = (
     "eval:read",
@@ -58,6 +59,7 @@ READS = {
     SETTINGS_READ,
 }
 ALL = READS | {
+    LLM_CONFIGURE,
     AGENT_SUSPEND,
     AGENT_RESUME,
     TRACE_EXPORT,
@@ -173,7 +175,13 @@ def authz(permission: str) -> Callable:
         _, strict, configured = _configured()
         is_read = permission in READS
         if is_read and not strict:
-            request.state.principal = Principal("anonymous", "viewer", dev_mode=not configured)
+            if not configured or authorization or x_operator_token:
+                principal = identify(request, authorization, x_operator_token)
+                if principal is None:
+                    raise HTTPException(401, "a valid token is required")
+                request.state.principal = principal
+            else:
+                request.state.principal = Principal("anonymous", "viewer")
             return request.state.principal
         principal = identify(request, authorization, x_operator_token)
         if principal is None:

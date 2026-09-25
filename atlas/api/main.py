@@ -15,6 +15,7 @@ from atlas.dashboard.dev.playground import LiveReplay
 from atlas.ingest.feeds import FeedReport
 from atlas.ingest.feeds import to_event as report_event
 from atlas.ingest.sensors import SensorReading, to_event
+from atlas.intelligence.api import router as intelligence_router
 from atlas.manager import audit
 from atlas.manager.api import router as manager_router
 from atlas.manager.evaluation.runner import EvalStore, MonitorWorker
@@ -40,9 +41,11 @@ def create_app(settings=None):
         try:
             await runtime.start()
             control.start_worker()
+            system.intelligence.start_worker()
             monitors.start()
             yield
         finally:
+            await system.intelligence.stop_worker()
             await monitors.stop()
             app.state.replay.stop()
             await control.stop_worker()
@@ -73,6 +76,7 @@ def create_app(settings=None):
     app.include_router(dev_router)
     app.include_router(play_router)
     app.include_router(manager_router)
+    app.include_router(intelligence_router)
     audit.install(app)
 
     manager = Path(__file__).resolve().parents[1] / "dashboard" / "static" / "manager"
@@ -82,6 +86,7 @@ def create_app(settings=None):
         @app.get("/", include_in_schema=False)
         async def home():
             return RedirectResponse("/manager/")
+
     return app
 
 

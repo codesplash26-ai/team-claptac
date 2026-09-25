@@ -12,9 +12,13 @@ import { MetricsPage } from "./pages/Metrics";
 import { Playground } from "./pages/Playground";
 import { RunDetail } from "./pages/RunDetail";
 import { Runs } from "./pages/Runs";
+import { IntelligencePage } from "./pages/Intelligence";
+import { LLMSettingsPage } from "./pages/LLMSettings";
 
 const ITEMS: { path: string; label: string; icon: string }[] = [
   { path: "runs", label: "Runs", icon: "☰" },
+  { path: "intelligence", label: "Intelligence", icon: "◇" },
+  { path: "llm-settings", label: "LLM settings", icon: "⚙" },
   { path: "graph", label: "Agent graph", icon: "◎" },
   { path: "map", label: "Situation map", icon: "⌖" },
   { path: "approvals", label: "Approvals", icon: "✓" },
@@ -47,6 +51,8 @@ export function App() {
   let body;
   if (page === "runs" && parts[1]) body = <RunDetail id={parts.slice(1).join("/")} back={() => go("#/runs")} />;
   else if (page === "runs") body = <Runs open={(id) => go(`#/runs/${encodeURIComponent(id)}`)} />;
+  else if (page === "intelligence") body = <IntelligencePage />;
+  else if (page === "llm-settings") body = <LLMSettingsPage />;
   else if (page === "graph") body = <GraphPage />;
   else if (page === "map") body = <MapPage />;
   else if (page === "approvals") body = <ApprovalsPage />;
