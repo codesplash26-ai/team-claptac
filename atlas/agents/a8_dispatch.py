@@ -397,6 +397,7 @@ class Dispatch(Agent):
         return Event(
             type=EventType.MISSION_STATUS,
             source=self.name,
+            created_at=self.clock(),  # the runtime's clock, like every other event
             incident_id=m.incident_id,
             payload={
                 "mission_id": m.id,

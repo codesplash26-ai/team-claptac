@@ -437,6 +437,7 @@ class Comms(Agent):
         event = Event(
             type=EventType.ALERT_PUBLISHED,
             source=self.name,
+            created_at=self.clock(),
             incident_id=action.incident_id,
             payload={"kind": "sitrep", "sitrep_id": sitrep_id},
         )
@@ -471,6 +472,7 @@ class Comms(Agent):
         return Event(
             type=EventType.ALERT_PUBLISHED,
             source=self.name,
+            created_at=self.clock(),
             incident_id=action.incident_id,
             payload={
                 "kind": kind,

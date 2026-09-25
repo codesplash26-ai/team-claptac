@@ -10,11 +10,9 @@ routes. Without it the API is open, which is a development default only.
 
 from __future__ import annotations
 
-import hmac
 import json
-import os
 
-from fastapi import APIRouter, BackgroundTasks, Depends, Header, HTTPException, Request
+from fastapi import APIRouter, BackgroundTasks, HTTPException, Request
 from fastapi.responses import HTMLResponse, Response
 from pydantic import BaseModel, Field
 
@@ -22,6 +20,8 @@ from atlas.agents.a8_dispatch import MissionError, MissionStatus
 from atlas.control.approvals import ApprovalError
 from atlas.control.models import ApprovalStatus
 from atlas.dashboard import build_map_html, render_dashboard, sensor_panel
+from atlas.manager import rbac
+from atlas.manager.rbac import requires
 
 router = APIRouter()
 
@@ -30,13 +30,7 @@ def control_of(request: Request):
     return request.app.state.control
 
 
-def require_operator(x_operator_token: str | None = Header(default=None)):
-    expected = os.getenv("ATLAS_OPERATOR_TOKEN")
-    if expected and not hmac.compare_digest(x_operator_token or "", expected):
-        raise HTTPException(401, "operator token required")
 
-
-operator = [Depends(require_operator)]
 
 
 class Review(BaseModel):
@@ -93,7 +87,7 @@ def _incident_ids(control) -> dict[str, dict]:
     return incidents
 
 
-@router.get("/incidents")
+@router.get("/incidents", dependencies=requires(rbac.RUN_READ))
 async def list_incidents(request: Request):
     control = control_of(request)
     out = []
@@ -120,7 +114,7 @@ async def list_incidents(request: Request):
     return sorted(out, key=lambda i: i["last_seen"], reverse=True)
 
 
-@router.get("/incidents/{incident_id}")
+@router.get("/incidents/{incident_id}", dependencies=requires(rbac.RUN_READ))
 async def get_incident(incident_id: str, request: Request):
     control = control_of(request)
     known = _incident_ids(control).get(incident_id)
@@ -146,7 +140,7 @@ async def get_incident(incident_id: str, request: Request):
 # ------------------------------------------------------------------ approvals
 
 
-@router.get("/approvals")
+@router.get("/approvals", dependencies=requires(rbac.APPROVAL_READ))
 async def list_approvals(request: Request, status: ApprovalStatus | None = None):
     control = control_of(request)
     items = control.approvals.list(status) if status else control.approvals.pending()
@@ -165,14 +159,14 @@ async def _resolve(request, background, approval_id, call):
     return decision.model_dump(mode="json")
 
 
-@router.post("/approvals/{approval_id}/approve", dependencies=operator)
+@router.post("/approvals/{approval_id}/approve", dependencies=requires(rbac.APPROVAL_DECIDE))
 async def approve(approval_id: str, body: Review, request: Request, background: BackgroundTasks):
     return await _resolve(
         request, background, approval_id, lambda g: g.approve(approval_id, body.reviewer, body.note)
     )
 
 
-@router.post("/approvals/{approval_id}/edit", dependencies=operator)
+@router.post("/approvals/{approval_id}/edit", dependencies=requires(rbac.APPROVAL_DECIDE))
 async def edit(approval_id: str, body: EditReview, request: Request, background: BackgroundTasks):
     return await _resolve(
         request,
@@ -182,7 +176,7 @@ async def edit(approval_id: str, body: EditReview, request: Request, background:
     )
 
 
-@router.post("/approvals/{approval_id}/reject", dependencies=operator)
+@router.post("/approvals/{approval_id}/reject", dependencies=requires(rbac.APPROVAL_DECIDE))
 async def reject(approval_id: str, body: Review, request: Request, background: BackgroundTasks):
     return await _resolve(
         request, background, approval_id, lambda g: g.reject(approval_id, body.reviewer, body.note)
@@ -192,7 +186,7 @@ async def reject(approval_id: str, body: Review, request: Request, background: B
 # --------------------------------------------------------------------- ledger
 
 
-@router.get("/ledger")
+@router.get("/ledger", dependencies=requires(rbac.LEDGER_READ))
 async def ledger(request: Request, kind: str | None = None, after_seq: int = 0, limit: int = 100):
     limit = max(1, min(limit, 500))
     db = control_of(request).runtime.db
@@ -213,7 +207,7 @@ async def ledger(request: Request, kind: str | None = None, after_seq: int = 0, 
     ]
 
 
-@router.get("/ledger/verify")
+@router.get("/ledger/verify", dependencies=requires(rbac.LEDGER_READ))
 async def verify_ledger(request: Request):
     return {"valid": control_of(request).runtime.ledger.verify()}
 
@@ -221,7 +215,7 @@ async def verify_ledger(request: Request):
 # ------------------------------------------------------------------- missions
 
 
-@router.get("/missions")
+@router.get("/missions", dependencies=requires(rbac.MISSION_READ))
 async def list_missions(
     request: Request, incident_id: str | None = None, status: MissionStatus | None = None
 ):
@@ -230,7 +224,7 @@ async def list_missions(
     ]
 
 
-@router.get("/missions/{mission_id}")
+@router.get("/missions/{mission_id}", dependencies=requires(rbac.MISSION_READ))
 async def get_mission(mission_id: str, request: Request):
     dispatch = control_of(request).dispatch
     mission = dispatch.get(mission_id)
@@ -250,26 +244,26 @@ async def _field_update(request, mission_id, make_event):
     return event.payload
 
 
-@router.post("/missions/{mission_id}/acknowledge", dependencies=operator)
+@router.post("/missions/{mission_id}/acknowledge", dependencies=requires(rbac.MISSION_UPDATE))
 async def acknowledge(mission_id: str, body: Ack, request: Request):
     return await _field_update(request, mission_id, lambda d: d.acknowledge(mission_id, body.by))
 
 
-@router.post("/missions/{mission_id}/progress", dependencies=operator)
+@router.post("/missions/{mission_id}/progress", dependencies=requires(rbac.MISSION_UPDATE))
 async def progress(mission_id: str, body: Progress, request: Request):
     return await _field_update(
         request, mission_id, lambda d: d.report_progress(mission_id, body.percent, body.note)
     )
 
 
-@router.post("/missions/{mission_id}/exception", dependencies=operator)
+@router.post("/missions/{mission_id}/exception", dependencies=requires(rbac.MISSION_UPDATE))
 async def exception(mission_id: str, body: ExceptionReport, request: Request):
     return await _field_update(
         request, mission_id, lambda d: d.report_exception(mission_id, body.description, body.fatal)
     )
 
 
-@router.post("/missions/{mission_id}/complete", dependencies=operator)
+@router.post("/missions/{mission_id}/complete", dependencies=requires(rbac.MISSION_UPDATE))
 async def complete(mission_id: str, request: Request):
     return await _field_update(request, mission_id, lambda d: d.complete(mission_id))
 
@@ -277,7 +271,7 @@ async def complete(mission_id: str, request: Request):
 # --------------------------------------------------------------------- alerts
 
 
-@router.get("/alerts")
+@router.get("/alerts", dependencies=requires(rbac.ALERT_READ))
 async def list_alerts(request: Request, incident_id: str | None = None):
     return [
         {k: v for k, v in a.items() if k != "cap_xml"}
@@ -285,7 +279,7 @@ async def list_alerts(request: Request, incident_id: str | None = None):
     ]
 
 
-@router.get("/alerts/{alert_id}")
+@router.get("/alerts/{alert_id}", dependencies=requires(rbac.ALERT_READ))
 async def get_alert(alert_id: str, request: Request):
     alert = control_of(request).comms.get_alert(alert_id)
     if alert is None:
@@ -293,7 +287,7 @@ async def get_alert(alert_id: str, request: Request):
     return alert
 
 
-@router.get("/alerts/{alert_id}/cap")
+@router.get("/alerts/{alert_id}/cap", dependencies=requires(rbac.ALERT_READ))
 async def get_alert_cap(alert_id: str, request: Request):
     alert = control_of(request).comms.get_alert(alert_id)
     if alert is None:
@@ -301,7 +295,7 @@ async def get_alert_cap(alert_id: str, request: Request):
     return Response(alert["cap_xml"], media_type="application/cap+xml")
 
 
-@router.get("/sitreps")
+@router.get("/sitreps", dependencies=requires(rbac.ALERT_READ))
 async def list_sitreps(request: Request, incident_id: str | None = None):
     return control_of(request).comms.list_sitreps(incident_id)
 
@@ -309,18 +303,18 @@ async def list_sitreps(request: Request, incident_id: str | None = None):
 # ------------------------------------------------------------------ dashboard
 
 
-@router.get("/sensors")
+@router.get("/sensors", dependencies=requires(rbac.RUN_READ))
 async def sensors(request: Request):
     return sensor_panel(control_of(request).runtime)
 
 
-@router.get("/dashboard", response_class=HTMLResponse)
+@router.get("/dashboard", response_class=HTMLResponse, dependencies=requires(rbac.RUN_READ))
 async def dashboard(request: Request):
     control = control_of(request)
     return render_dashboard(control.runtime, control)
 
 
-@router.get("/dashboard/map", response_class=HTMLResponse)
+@router.get("/dashboard/map", response_class=HTMLResponse, dependencies=requires(rbac.RUN_READ))
 async def dashboard_map(request: Request):
     control = control_of(request)
     return build_map_html(control.runtime, control)

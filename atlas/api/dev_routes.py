@@ -13,6 +13,8 @@ from atlas.dashboard.dev.geo_view import situation_map
 from atlas.dashboard.dev.page import PAGE
 from atlas.dashboard.dev.runs import list_runs, metrics, run_spans, span_detail
 from atlas.dashboard.dev.trace import chain, flow, get_event, trace
+from atlas.manager import rbac
+from atlas.manager.rbac import requires
 
 router = APIRouter(prefix="/dev")
 
@@ -21,12 +23,12 @@ def runtime_of(request: Request):
     return request.app.state.runtime
 
 
-@router.get("", response_class=HTMLResponse)
+@router.get("", response_class=HTMLResponse, dependencies=requires(rbac.RUN_READ))
 async def dev_page():
     return PAGE
 
 
-@router.get("/trace")
+@router.get("/trace", dependencies=requires(rbac.TRACE_READ))
 async def dev_trace(
     request: Request,
     after_seq: int = 0,
@@ -40,17 +42,17 @@ async def dev_trace(
     return [e.model_dump(mode="json") for e in events]
 
 
-@router.get("/flow")
+@router.get("/flow", dependencies=requires(rbac.TRACE_READ))
 async def dev_flow(request: Request, incident_id: str | None = None):
     return [e.model_dump(mode="json") for e in flow(runtime_of(request), incident_id=incident_id)]
 
 
-@router.get("/agents")
+@router.get("/agents", dependencies=requires(rbac.AGENT_READ))
 async def dev_agents(request: Request):
     return [c.model_dump(mode="json") for c in cards(runtime_of(request))]
 
 
-@router.get("/incidents")
+@router.get("/incidents", dependencies=requires(rbac.RUN_READ))
 async def dev_incidents(request: Request):
     rows = runtime_of(request).db.connection.execute(
         "SELECT json_extract(body, '$.incident_id') AS incident, COUNT(*) AS events "
@@ -60,7 +62,7 @@ async def dev_incidents(request: Request):
     return [{"incident_id": r["incident"], "events": r["events"]} for r in rows]
 
 
-@router.get("/chain/{event_id}")
+@router.get("/chain/{event_id}", dependencies=requires(rbac.TRACE_READ))
 async def dev_chain(event_id: str, request: Request):
     runtime = runtime_of(request)
     event = get_event(runtime, event_id)
@@ -74,12 +76,12 @@ async def dev_chain(event_id: str, request: Request):
     }
 
 
-@router.get("/runs")
+@router.get("/runs", dependencies=requires(rbac.RUN_READ))
 async def dev_runs(request: Request):
     return [r.model_dump(mode="json") for r in list_runs(runtime_of(request))]
 
 
-@router.get("/runs/{incident_id}/spans")
+@router.get("/runs/{incident_id}/spans", dependencies=requires(rbac.TRACE_READ))
 async def dev_run_spans(incident_id: str, request: Request):
     spans = run_spans(runtime_of(request), incident_id)
     if not spans:
@@ -87,7 +89,7 @@ async def dev_run_spans(incident_id: str, request: Request):
     return [s.model_dump(mode="json") for s in spans]
 
 
-@router.get("/span")
+@router.get("/span", dependencies=requires(rbac.TRACE_READ))
 async def dev_span(id: str, request: Request):
     detail = span_detail(runtime_of(request), id)
     if detail is None:
@@ -95,17 +97,17 @@ async def dev_span(id: str, request: Request):
     return detail
 
 
-@router.get("/metrics")
+@router.get("/metrics", dependencies=requires(rbac.RUN_READ))
 async def dev_metrics(request: Request):
     return metrics(runtime_of(request))
 
 
-@router.get("/map")
+@router.get("/map", dependencies=requires(rbac.RUN_READ))
 async def dev_map(request: Request):
     return situation_map(request.app.state.system)
 
 
-@router.get("/history")
+@router.get("/history", dependencies=requires(rbac.RUN_READ))
 async def dev_history(hazard: str | None = None):
     """The committed hazard history (real events, with sources) for the timeline."""
     import json

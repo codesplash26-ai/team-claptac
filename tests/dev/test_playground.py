@@ -40,9 +40,12 @@ def test_every_attack_gets_exactly_the_outcome_policy_promises():
 
 
 def test_red_team_runs_in_a_sandbox_and_leaves_no_trace_in_the_live_system(client):
-    before = client.get("/ledger").json()
+    def without_audit():
+        return [r for r in client.get("/ledger", params={"limit": 500}).json() if r["kind"] != "audit"]
+
+    before = without_audit()
     assert client.post("/play/redteam").json()["catch_rate"] == 1.0
-    assert client.get("/ledger").json() == before
+    assert without_audit() == before  # only the audit record of the request itself was added
     assert client.get("/incidents/redteam").status_code == 404
 
 

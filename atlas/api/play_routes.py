@@ -9,15 +9,15 @@ from __future__ import annotations
 import asyncio
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, Field
 
-from atlas.api.routes import require_operator
 from atlas.dashboard.dev import playground
 from atlas.ingest.sensors import SensorReading
+from atlas.manager import rbac
+from atlas.manager.rbac import requires
 
 router = APIRouter(prefix="/play")
-operator = [Depends(require_operator)]
 
 
 class StartReplay(BaseModel):
@@ -30,17 +30,17 @@ class WhatIf(BaseModel):
     variant: playground.Variant
 
 
-@router.get("/scenarios")
+@router.get("/scenarios", dependencies=requires(rbac.SCENARIO_READ))
 async def scenarios():
     return [s.model_dump(mode="json") for s in playground.list_scenarios()]
 
 
-@router.get("/scenarios/status")
+@router.get("/scenarios/status", dependencies=requires(rbac.SCENARIO_READ))
 async def replay_status(request: Request):
     return request.app.state.replay.status()
 
 
-@router.post("/scenarios/start", dependencies=operator)
+@router.post("/scenarios/start", dependencies=requires(rbac.SCENARIO_RUN))
 async def replay_start(body: StartReplay, request: Request):
     try:
         return request.app.state.replay.start(body.scenario, body.speed)
@@ -50,18 +50,18 @@ async def replay_start(body: StartReplay, request: Request):
         raise HTTPException(409 if isinstance(exc, RuntimeError) else 422, str(exc)) from exc
 
 
-@router.post("/scenarios/stop", dependencies=operator)
+@router.post("/scenarios/stop", dependencies=requires(rbac.SCENARIO_RUN))
 async def replay_stop(request: Request):
     return request.app.state.replay.stop()
 
 
-@router.post("/inject", dependencies=operator, status_code=202)
+@router.post("/inject", dependencies=requires(rbac.INJECT_CREATE), status_code=202)
 async def inject(reading: SensorReading, request: Request):
     """A single reading through the normal ingest path (its timestamp is used as given)."""
     return {"accepted": await playground.inject_reading(request.app.state.runtime, reading)}
 
 
-@router.post("/inject/now", dependencies=operator, status_code=202)
+@router.post("/inject/now", dependencies=requires(rbac.INJECT_CREATE), status_code=202)
 async def inject_now(
     request: Request,
     node_id: str,
@@ -86,12 +86,12 @@ async def inject_now(
     return {"accepted": await playground.inject_reading(request.app.state.runtime, reading)}
 
 
-@router.post("/redteam", dependencies=operator)
+@router.post("/redteam", dependencies=requires(rbac.REDTEAM_RUN))
 async def redteam():
     return await asyncio.to_thread(playground.run_redteam)
 
 
-@router.post("/whatif", dependencies=operator)
+@router.post("/whatif", dependencies=requires(rbac.WHATIF_RUN))
 async def whatif(body: WhatIf):
     try:
         scenario = playground.load_scenario(body.scenario)

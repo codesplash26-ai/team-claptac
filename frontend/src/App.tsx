@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import { usePoll, type Approval } from "./api";
 import { AgentsPage } from "./pages/Agents";
 import { ApprovalsPage } from "./pages/Approvals";
+import { AuditPage } from "./pages/Audit";
+import { EvaluationsPage } from "./pages/Evaluations";
+import { GuardrailsPage } from "./pages/Guardrails";
 import { DataPage } from "./pages/Data";
 import { GraphPage } from "./pages/Graph";
 import { MapPage } from "./pages/MapView";
@@ -19,6 +22,9 @@ const ITEMS: { path: string; label: string; icon: string }[] = [
   { path: "playground", label: "Playground", icon: "▶" },
   { path: "data", label: "Data & history", icon: "◷" },
   { path: "agents", label: "Agents", icon: "◈" },
+  { path: "evaluations", label: "Evaluations", icon: "✔" },
+  { path: "guardrails", label: "Guardrails", icon: "⛨" },
+  { path: "audit", label: "Audit", icon: "≣" },
 ];
 
 function useHash(): [string[], (h: string) => void] {
@@ -48,6 +54,9 @@ export function App() {
   else if (page === "playground") body = <Playground />;
   else if (page === "data") body = <DataPage />;
   else if (page === "agents") body = <AgentsPage />;
+  else if (page === "evaluations") body = <EvaluationsPage />;
+  else if (page === "guardrails") body = <GuardrailsPage />;
+  else if (page === "audit") body = <AuditPage />;
   else body = <div className="page empty">Unknown page.</div>;
 
   return (

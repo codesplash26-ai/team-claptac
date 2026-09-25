@@ -87,6 +87,8 @@ class Gateway:
         self.cop, self.publish = cop, publish
         self.clock = clock or (lambda: datetime.now(timezone.utc))
         self.executors: dict[str, Executor] = {}
+        # Set by the wiring: an executor (A8/A9) an operator suspended is left with its work waiting.
+        self.is_suspended: Callable[[str], bool] = lambda name: False
         self._run_lock = asyncio.Lock()
         db.connection.executescript("""
             CREATE TABLE IF NOT EXISTS gateway_actions (
@@ -397,6 +399,8 @@ class Gateway:
         row = self._row(key)
         action = ProposedAction.model_validate_json(row["action"])
         executor = self.executors.get(action.executor)
+        if self.is_suspended(action.executor):
+            return 0  # authorised work waits; resuming the executor runs it
         if executor is None:
             log.warning("no executor registered for %s; %s stays authorised", action.executor, key)
             return 0
