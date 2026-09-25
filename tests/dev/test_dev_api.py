@@ -75,3 +75,13 @@ def test_unknown_event_is_a_404_and_the_view_is_read_only(client):
     assert client.get("/dev/chain/nope").status_code == 404
     assert client.post("/dev/trace").status_code == 405
     assert client.post("/dev").status_code == 405
+
+
+def test_map_and_history_endpoints(client):
+    m = client.get("/dev/map").json()
+    assert m["site"] == "ratnapura" and len(m["edges"]) > 300 and m["shelters"]
+    assert m["bounds"][0][0] < m["bounds"][1][0] and m["observed_edges"] == 0
+    hist = client.get("/dev/history").json()
+    assert hist["sources"] and len(hist["events"]) > 100
+    only = client.get("/dev/history", params={"hazard": "tsunami"}).json()["events"]
+    assert only and {e["hazard"] for e in only} == {"tsunami"}

@@ -5,6 +5,7 @@ External side effects require the Gateway's own idempotent execution protocol.
 """
 
 import asyncio
+import time
 
 from atlas.core.events import Event
 
@@ -23,11 +24,27 @@ class EventBus:
             "CREATE TABLE IF NOT EXISTS event_causes (event_id TEXT PRIMARY KEY, cause_id TEXT NOT NULL,"
             " subscriber TEXT NOT NULL)"
         )
+        # One row per handler run, for the developer view: how long it took, whether it failed, and how
+        # many events it produced. Written with the run's own transaction, so a rolled-back run leaves
+        # no success row (a failure row is written after the rollback).
+        db.connection.execute(
+            "CREATE TABLE IF NOT EXISTS event_spans (event_id TEXT NOT NULL, subscriber TEXT NOT NULL,"
+            " kind TEXT NOT NULL, started_at REAL NOT NULL, duration_ms REAL NOT NULL,"
+            " ok INTEGER NOT NULL, error TEXT, outputs INTEGER NOT NULL DEFAULT 0,"
+            " PRIMARY KEY (event_id, subscriber, kind, started_at))"
+        )
 
     def subscribe(self, name, event_types, handler):
         if name in self.handlers:
             raise ValueError(f"Duplicate subscriber: {name}")
         self.handlers[name] = (set(event_types), handler)
+
+    def record_span(self, event_id, subscriber, kind, started, duration_ms, ok, error=None, outputs=0):
+        """Timing for one unit of work on an event (a handler run, an executor call, a model call)."""
+        self.db.connection.execute(
+            "INSERT OR IGNORE INTO event_spans VALUES (?,?,?,?,?,?,?,?)",
+            (event_id, subscriber, kind, started, round(duration_ms, 3), int(ok), error, outputs),
+        )
 
     def _record(self, event):
         return self.ledger.append("event:" + event.id, "event", event.model_dump(mode="json"))
@@ -57,17 +74,30 @@ class EventBus:
                         (event.id, name),
                     ).fetchone():
                         continue
-                    with self.db.transaction():
-                        outputs = await handler(event)
-                        for output in outputs or []:
-                            self._record(output)
-                            self.db.connection.execute(
-                                "INSERT OR IGNORE INTO event_causes VALUES (?,?,?)",
-                                (output.id, event.id, name),
+                    started, clock = time.time(), time.perf_counter()
+                    try:
+                        with self.db.transaction():
+                            outputs = await handler(event)
+                            for output in outputs or []:
+                                self._record(output)
+                                self.db.connection.execute(
+                                    "INSERT OR IGNORE INTO event_causes VALUES (?,?,?)",
+                                    (output.id, event.id, name),
+                                )
+                            self.record_span(
+                                event.id, name, "handler", started,
+                                (time.perf_counter() - clock) * 1000, True, None, len(outputs or []),
                             )
-                        self.db.connection.execute(
-                            "INSERT INTO deliveries VALUES (?,?)", (event.id, name)
+                            self.db.connection.execute(
+                                "INSERT INTO deliveries VALUES (?,?)", (event.id, name)
+                            )
+                    except BaseException as exc:  # the transaction has rolled back; keep the evidence
+                        self.record_span(
+                            event.id, name, "handler", started,
+                            (time.perf_counter() - clock) * 1000, False,
+                            f"{type(exc).__name__}: {exc}"[:500], 0,
                         )
+                        raise
                     progressed = True
             if not progressed:
                 return

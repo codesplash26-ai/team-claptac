@@ -2,11 +2,16 @@
 
 import os
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import RedirectResponse
+from fastapi.staticfiles import StaticFiles
 
 from atlas.api.dev_routes import router as dev_router
+from atlas.api.play_routes import router as play_router
 from atlas.api.routes import router
+from atlas.dashboard.dev.playground import LiveReplay
 from atlas.ingest.feeds import FeedReport
 from atlas.ingest.feeds import to_event as report_event
 from atlas.ingest.sensors import SensorReading, to_event
@@ -22,11 +27,13 @@ def create_app(settings=None):
         # Register subscribers before start(): startup recovery redelivers pending events.
         system = app.state.system = attach_all(runtime, site=os.getenv("ATLAS_SITE", "ratnapura"))
         control = app.state.control = system.control
+        app.state.replay = LiveReplay(runtime)
         try:
             await runtime.start()
             control.start_worker()
             yield
         finally:
+            app.state.replay.stop()
             await control.stop_worker()
             await runtime.close()
 
@@ -53,6 +60,15 @@ def create_app(settings=None):
 
     app.include_router(router)
     app.include_router(dev_router)
+    app.include_router(play_router)
+
+    manager = Path(__file__).resolve().parents[1] / "dashboard" / "static" / "manager"
+    if manager.is_dir():  # the built agent manager (frontend/); see frontend/README.md
+        app.mount("/manager", StaticFiles(directory=manager, html=True), name="manager")
+
+        @app.get("/", include_in_schema=False)
+        async def home():
+            return RedirectResponse("/manager/")
     return app
 
 

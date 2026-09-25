@@ -17,6 +17,7 @@ import asyncio
 import inspect
 import json
 import logging
+import time
 from datetime import datetime, timezone
 from hashlib import sha256
 from typing import Awaitable, Callable, Protocol
@@ -96,6 +97,10 @@ class Gateway:
             CREATE INDEX IF NOT EXISTS gateway_actions_status ON gateway_actions(status);
             CREATE TABLE IF NOT EXISTS event_causes (event_id TEXT PRIMARY KEY,
                 cause_id TEXT NOT NULL, subscriber TEXT NOT NULL);
+            CREATE TABLE IF NOT EXISTS event_spans (event_id TEXT NOT NULL, subscriber TEXT NOT NULL,
+                kind TEXT NOT NULL, started_at REAL NOT NULL, duration_ms REAL NOT NULL,
+                ok INTEGER NOT NULL, error TEXT, outputs INTEGER NOT NULL DEFAULT 0,
+                PRIMARY KEY (event_id, subscriber, kind, started_at));
         """)
 
     def register_executor(self, name: str, executor: Executor) -> None:
@@ -407,18 +412,33 @@ class Gateway:
                 unique=True,
             )
             verified = False
+            started, clock = time.time(), time.perf_counter()
             try:
                 result = await _resolve(executor.execute(action))
                 verified = bool(await _resolve(executor.verify(action, result)))
                 error = "verification_failed"
             except Exception as exc:  # executors are third-party code; contain, then retry
                 error = f"{type(exc).__name__}: {exc}"
+            self._span(action, started, (time.perf_counter() - clock) * 1000, verified,
+                       None if verified else error)
             if verified:
                 return await self._succeed(key, action, result)
             log.warning("execution of %s failed (attempt %d): %s", key, attempt, error)
             if attempt <= cfg.max_retries:
                 await asyncio.sleep(cfg.retry_backoff_seconds * attempt)
         return await self._fail(key, action, executor, result, error)
+
+    @staticmethod
+    def authorised_event_id(action) -> str:
+        return sha256(f"{action.id}:{EventType.ACTION_AUTHORISED.value}:authorised".encode()).hexdigest()
+
+    def _span(self, action, started, duration_ms, ok, error) -> None:
+        """Time an executor call, attached to the authorisation that caused it."""
+        self.db.connection.execute(
+            "INSERT OR IGNORE INTO event_spans VALUES (?,?,?,?,?,?,?,?)",
+            (self.authorised_event_id(action), action.executor, "executor", started,
+             round(duration_ms, 3), int(ok), error, 0),
+        )
 
     async def _succeed(self, key, action, result) -> int:
         self._transition(
@@ -429,7 +449,7 @@ class Gateway:
             action=action,
             receipt=result.receipt.model_dump(mode="json"),
         )
-        cause = sha256(f"{action.id}:{EventType.ACTION_AUTHORISED.value}:authorised".encode()).hexdigest()
+        cause = self.authorised_event_id(action)
         for event in result.events:
             # The executor's events happen outside any handler, so the bus cannot see their cause.
             self.db.connection.execute(
