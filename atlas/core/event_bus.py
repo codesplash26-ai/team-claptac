@@ -33,11 +33,37 @@ class EventBus:
             " ok INTEGER NOT NULL, error TEXT, outputs INTEGER NOT NULL DEFAULT 0,"
             " PRIMARY KEY (event_id, subscriber, kind, started_at))"
         )
+        # Lifecycle: an operator can suspend an agent. Its events are not lost: they stay undelivered
+        # and are handled, in order, when it is resumed.
+        db.connection.execute(
+            "CREATE TABLE IF NOT EXISTS agent_state (name TEXT PRIMARY KEY, suspended INTEGER NOT NULL,"
+            " reason TEXT, changed_by TEXT, changed_at REAL)"
+        )
+        self.suspended = {
+            r["name"] for r in db.connection.execute("SELECT name FROM agent_state WHERE suspended=1")
+        }
 
     def subscribe(self, name, event_types, handler):
         if name in self.handlers:
             raise ValueError(f"Duplicate subscriber: {name}")
         self.handlers[name] = (set(event_types), handler)
+
+    def suspend(self, name, *, by="", reason=""):
+        """Stop delivering to ``name`` (a subscriber, or an executor the Gateway calls)."""
+        self._set_state(name, True, by, reason)
+        self.suspended.add(name)
+
+    async def resume(self, name, *, by=""):
+        """Put an agent back to work and deliver everything it missed."""
+        self._set_state(name, False, by, "")
+        self.suspended.discard(name)
+        await self.recover()
+
+    def _set_state(self, name, suspended, by, reason):
+        self.db.connection.execute(
+            "INSERT OR REPLACE INTO agent_state VALUES (?,?,?,?,?)",
+            (name, int(suspended), reason, by, time.time()),
+        )
 
     def record_span(self, event_id, subscriber, kind, started, duration_ms, ok, error=None, outputs=0):
         """Timing for one unit of work on an event (a handler run, an executor call, a model call)."""
@@ -67,7 +93,7 @@ class EventBus:
             for row in self.ledger.records("event"):
                 event = Event.model_validate(row["payload"])
                 for name, (types, handler) in self.handlers.items():
-                    if event.type not in types:
+                    if event.type not in types or name in self.suspended:
                         continue
                     if self.db.connection.execute(
                         "SELECT 1 FROM deliveries WHERE event_id=? AND subscriber=?",

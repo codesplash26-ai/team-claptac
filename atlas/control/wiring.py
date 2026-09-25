@@ -82,6 +82,7 @@ def attach_control(
         channel=channel,
         translator=translator,
     )
+    gateway.is_suspended = lambda name: name in runtime.bus.suspended
     gateway.register_executor(dispatch.name, dispatch)
     gateway.register_executor(comms.name, comms)
     runtime.bus.subscribe(gateway.name, gateway.subscribes_to, gateway.handle_plan)

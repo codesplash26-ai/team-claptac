@@ -15,6 +15,11 @@ from atlas.dashboard.dev.playground import LiveReplay
 from atlas.ingest.feeds import FeedReport
 from atlas.ingest.feeds import to_event as report_event
 from atlas.ingest.sensors import SensorReading, to_event
+from atlas.manager import audit
+from atlas.manager.api import router as manager_router
+from atlas.manager.evaluation.runner import EvalStore, MonitorWorker
+from atlas.manager.observer import OtlpExporter
+from atlas.manager.registry import Registry
 from atlas.runtime import Runtime
 from atlas.system import attach_all
 
@@ -28,11 +33,17 @@ def create_app(settings=None):
         system = app.state.system = attach_all(runtime, site=os.getenv("ATLAS_SITE", "ratnapura"))
         control = app.state.control = system.control
         app.state.replay = LiveReplay(runtime)
+        app.state.registry = Registry(system, site=os.getenv("ATLAS_SITE", "ratnapura"))
+        app.state.eval_store = EvalStore(runtime.db)
+        app.state.exporter = OtlpExporter()
+        monitors = app.state.monitor_worker = MonitorWorker(system, app.state.eval_store)
         try:
             await runtime.start()
             control.start_worker()
+            monitors.start()
             yield
         finally:
+            await monitors.stop()
             app.state.replay.stop()
             await control.stop_worker()
             await runtime.close()
@@ -61,6 +72,8 @@ def create_app(settings=None):
     app.include_router(router)
     app.include_router(dev_router)
     app.include_router(play_router)
+    app.include_router(manager_router)
+    audit.install(app)
 
     manager = Path(__file__).resolve().parents[1] / "dashboard" / "static" / "manager"
     if manager.is_dir():  # the built agent manager (frontend/); see frontend/README.md

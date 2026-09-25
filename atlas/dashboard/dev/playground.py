@@ -394,7 +394,7 @@ def _perturb(events: list[dict], variant: Variant) -> list[dict]:
     return kept
 
 
-async def _run_story(scenario: dict, variant: Variant) -> dict[str, Any]:
+async def _run_story(scenario: dict, variant: Variant, inspect=None) -> dict[str, Any]:
     from atlas.agents.a3_incident_commander import CommanderConfig
     from atlas.system import attach_all
 
@@ -425,7 +425,10 @@ async def _run_story(scenario: dict, variant: Variant) -> dict[str, Any]:
                     await gateway.emit(gateway.approve(item.id, "what-if"))
                 elif variant.human == "reject":
                     await gateway.emit(gateway.reject(item.id, "what-if", "rejected in what-if"))
-        return _outcome(runtime, system)
+        outcome = _outcome(runtime, system)
+        if inspect is not None:
+            outcome["inspection"] = inspect(runtime, system)
+        return outcome
     finally:
         runtime.db.close()
 

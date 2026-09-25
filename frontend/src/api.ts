@@ -231,3 +231,131 @@ export function shortAgent(name: string): string {
   const m = /^a(\d)_/.exec(name);
   return m ? `A${m[1]}` : name;
 }
+
+// ---- agent manager (/am/v1) ------------------------------------------------------------------
+
+export interface AgentRecord {
+  name: string;
+  title: string;
+  layer: "sense" | "plan" | "act" | "control" | "world";
+  purpose: string;
+  kind: "internal" | "external";
+  version: string;
+  owner: string;
+  status: "active" | "suspended";
+  suspended_by: string | null;
+  suspended_reason: string | null;
+  environments: string[];
+  uses_llm: boolean;
+  subscribed: string[];
+  reads: string[];
+  writes: string[];
+  tools: string[];
+  received: number;
+  produced: number;
+  last_received: string | null;
+  last_produced: string | null;
+  pending: number;
+}
+
+export interface Me {
+  name: string;
+  role: string;
+  dev_mode: boolean;
+  permissions: string[];
+  roles: string[];
+}
+
+export interface OtelSpan {
+  trace_id: string;
+  span_id: string;
+  parent_span_id: string | null;
+  name: string;
+  kind: string;
+  start_ns: number;
+  end_ns: number;
+  status: string;
+  status_message: string | null;
+  attributes: Record<string, string | number | boolean>;
+  agent: string;
+  depth: number;
+}
+
+export interface TraceSummary {
+  trace_id: string;
+  incident_id: string;
+  name: string;
+  duration_ms: number;
+  spans: number;
+  errors: number;
+  status: string;
+}
+
+export interface EvaluatorInfo {
+  name: string;
+  level: "span" | "trace" | "agent";
+  description: string;
+  threshold: number | null;
+  unit: string;
+  critical: boolean;
+  builtin: boolean;
+  tags: string[];
+}
+
+export interface EvalRun {
+  id: string;
+  at: number;
+  mode: string;
+  trigger: string;
+  traces: number;
+  summary: {
+    scored: number;
+    passed: number;
+    failed: number;
+    skipped: number;
+    critical_failures: number;
+    pass_rate: number | null;
+    evaluators: Record<string, { scored: number; passed: number; failed: number; pass_rate: number | null; critical: boolean; level: string }>;
+  };
+}
+
+export interface EvalScore {
+  evaluator: string;
+  level: string;
+  target: string;
+  value: number | null;
+  passed: boolean | null;
+  threshold: number | null;
+  unit: string;
+  detail: string;
+  critical: boolean;
+}
+
+export interface Monitor {
+  id: string;
+  name: string;
+  evaluators: string[];
+  interval_s: number;
+  enabled: boolean;
+  last_run: number | null;
+}
+
+export interface Guardrails {
+  proposers: string[];
+  identities: { agent: string; allowed_actions: string[]; high_consequence: string[] }[];
+  actions: Record<string, { consequence: string; when: Record<string, unknown> }>;
+  gateway: Record<string, unknown>;
+  principles: string[];
+}
+
+export interface AuditEntry {
+  seq: number;
+  at: number;
+  actor: string;
+  role: string;
+  method: string;
+  route: string;
+  permission: string | null;
+  status: number;
+  params: Record<string, string>;
+}

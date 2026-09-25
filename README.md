@@ -45,6 +45,46 @@ The LLM does the orchestration and writes the text. Routes, allocations, priorit
 
 ---
 
+## What is running today
+
+The whole loop runs end to end on a laptop, with no hardware and no API key: sensor readings go in, Sentinel and the specialist agents react, the Gateway gates every action, and a human answers the approvals.
+
+| Area | What you get | Read more |
+|---|---|---|
+| **Agents A1–A9** | Sentinel, hazard, commander, evacuation, triage, logistics, shelter, dispatch and comms, all talking over one event bus. | [orchestration](docs/orchestration.md) |
+| **Control boundary** | Deny-by-default policy, per-agent identity, an approvals queue, stale-plan refusal, idempotent execution, and a hash-chained ledger. | [control boundary](docs/control-boundary.md) |
+| **Real data** | Adapters for flood, rainfall, soil, earthquake, tsunami and drought sources, with an offline cache. Includes a replay of Cyclone Ditwah (Nov 2025) at Ratnapura from the real river gauge. | [data and hazards](docs/data-and-hazards.md) |
+| **Agent manager** | A console at `/manager/`: runs and traces, the agent graph, a live registry with suspend and resume, evaluations and monitors, experiments, guardrails and an audit trail. | below |
+| **Command line** | `atlasctl` drives the same API: agents, traces, evaluations, approvals, scenarios, audit. | below |
+| **Stand-out tools** | A red-team suite that attacks the boundary (16 attacks, all caught), a what-if replay that changes one thing and shows the difference, a latency meter, and an uncertainty map. | Playground |
+| **LoRa link** | Planned: the field-node radio path, owned by the hardware workstream. | [roadmap](docs/roadmap.md) |
+
+### The agent manager
+
+```bash
+pip install -r requirements.txt
+uvicorn atlas.api.main:app --reload      # then open http://127.0.0.1:8000/  (redirects to /manager/)
+```
+
+- **Runs and traces.** Every incident is a trace: a tree of what each agent received, what it decided, and what the Gateway did with it. Traces follow the OpenTelemetry model and export as OTLP/JSON (`GET /am/v1/traces/{id}/otlp`), or push to a collector with `ATLAS_OTLP_ENDPOINT`.
+- **Registry and lifecycle.** Each agent has an owner, version, tools, and the data it reads and writes. Suspend one and its work waits; resume it and the work is done in order. Nothing is lost, and the Gateway refuses any held plan that has gone stale.
+- **Evaluations.** About eighteen checks score traces, at the level of a single span, a whole incident, or one agent. The critical ones are safety rules: nothing executes without authorisation, no plan is used after its data changed, and so on. Monitors run them on live traces on a schedule. Experiments replay a scenario with a change (a stricter policy, a lost sensor, a human who never answers) and report what regressed.
+- **Access and audit.** Routes require a named permission. Roles are admin, commander, developer, ai_lead, platform_engineer and viewer, set with `ATLAS_TOKENS` (see `.env.example`). Every change is written to the ledger automatically, with who, what and the result, and never a secret.
+- **API contract.** The API is described in [docs/manager_openapi.json](docs/manager_openapi.json), and a test fails if it drifts from the code. After changing an endpoint, run `python -m atlas.manager.openapi`.
+
+```bash
+python -m atlas.manager.cli agents list
+python -m atlas.manager.cli scenario start flood --speed 60
+python -m atlas.manager.cli traces list
+python -m atlas.manager.cli eval run          # exits 2 on a critical safety failure, so CI can gate on it
+```
+
+### Working on the project
+
+The code is split so each person has one place to work: see [where to find your work](#where-to-find-your-work) and [docs/workstreams](docs/workstreams). Changes to the shared contracts (`atlas/core/events.py`, the sensor format, `docs/contracts.md`) need everyone's approval.
+
+---
+
 ## How it works
 
 ```
@@ -162,11 +202,13 @@ pip install -r requirements.txt
 cp .env.example .env            # fill in keys
 ```
 
-Run the API (once `atlas/api/main.py` is implemented):
+Run the API and the manager console:
 
 ```bash
 uvicorn atlas.api.main:app --reload
 ```
+
+To rebuild the console after editing `frontend/`: `cd frontend && npm install && npm run build` (the build is committed to `atlas/dashboard/static/manager/`).
 
 Run the sensor pipeline (see [hardware/README.md](hardware/README.md) for Pi setup and wiring):
 
