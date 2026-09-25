@@ -5,6 +5,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException, Request
 
+from atlas.api.dev_routes import router as dev_router
 from atlas.api.routes import router
 from atlas.ingest.feeds import FeedReport
 from atlas.ingest.feeds import to_event as report_event
@@ -51,6 +52,7 @@ def create_app(settings=None):
         return await publish(request, report_event(report))
 
     app.include_router(router)
+    app.include_router(dev_router)
     return app
 
 
