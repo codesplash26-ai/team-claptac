@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "id": "07-conflicting-reports",
+  "title": "Conflicting field reports",
+  "description": "Sensors and a field report disagree about water level; the system should preserve uncertainty and record a planning rationale.",
+  "tags": [
+    "synthetic",
+    "end-to-end"
+  ],
+  "assumptions": [
+    "Synthetic exercise using cached Ratnapura roads and synthetic population, shelter and fleet data.",
+    "Demonstration thresholds and sensor-to-road mapping are not calibrated hazard forecasts.",
+    "Human decisions and responder updates are scripted; public messages are recorded locally; no hardware or external LLM is used."
+  ],
+  "initial": {},
+  "random_events": {
+    "count": 5,
+    "kinds": [
+      "ambient_sensor",
+      "duplicate",
+      "late_reading"
+    ],
+    "start_seconds": 10,
+    "end_seconds": 480
+  },
+  "steps": [
+    {
+      "id": "baseline",
+      "at_seconds": 0,
+      "kind": "sensor",
+      "sensor_type": "water_level",
+      "value": 10
+    },
+    {
+      "id": "river-rising",
+      "at_seconds": 120,
+      "kind": "sensor",
+      "sensor_type": "water_level",
+      "value": 26
+    },
+    {
+      "id": "confirmed-rise",
+      "at_seconds": 180,
+      "kind": "sensor",
+      "sensor_type": "water_level",
+      "value": 28
+    },
+    {
+      "id": "resident-low-water",
+      "kind": "report",
+      "at_seconds": 200,
+      "value": 5,
+      "text": "Simulated resident says the river has dropped."
+    },
+    {
+      "id": "gauge-confirms-danger",
+      "at_seconds": 230,
+      "kind": "sensor",
+      "sensor_type": "water_level",
+      "value": 40
+    },
+    {
+      "id": "end",
+      "at_seconds": 480,
+      "kind": "checkpoint"
+    }
+  ],
+  "expectations": [
+    {
+      "metric": "events.trigger",
+      "operator": "gte",
+      "value": 1,
+      "reason": "Hazard input must raise a trigger."
+    },
+    {
+      "metric": "events.plan_proposed",
+      "operator": "gte",
+      "value": 1,
+      "reason": "The commander must produce a plan."
+    },
+    {
+      "metric": "events.alert_published",
+      "operator": "gte",
+      "value": 1,
+      "reason": "A local alert or situation report must be recorded."
+    },
+    {
+      "metric": "events.conflict_flag",
+      "operator": "gte",
+      "value": 1,
+      "reason": "Disagreement must be surfaced."
+    },
+    {
+      "metric": "reasoning.planner_runs",
+      "operator": "gte",
+      "value": 1,
+      "reason": "A1 must record its conflict-handling reasoning."
+    }
+  ]
+}

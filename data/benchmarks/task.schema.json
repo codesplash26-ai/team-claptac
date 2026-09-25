@@ -1,0 +1,636 @@
+{
+  "$defs": {
+    "CheckpointStep": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^[a-z0-9][a-z0-9_-]{0,79}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "at_seconds": {
+          "maximum": 7200,
+          "minimum": 0,
+          "title": "At Seconds",
+          "type": "number"
+        },
+        "note": {
+          "default": "",
+          "maxLength": 500,
+          "title": "Note",
+          "type": "string"
+        },
+        "kind": {
+          "const": "checkpoint",
+          "default": "checkpoint",
+          "title": "Kind",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "at_seconds"
+      ],
+      "title": "CheckpointStep",
+      "type": "object"
+    },
+    "DuplicateStep": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^[a-z0-9][a-z0-9_-]{0,79}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "at_seconds": {
+          "maximum": 7200,
+          "minimum": 0,
+          "title": "At Seconds",
+          "type": "number"
+        },
+        "note": {
+          "default": "",
+          "maxLength": 500,
+          "title": "Note",
+          "type": "string"
+        },
+        "kind": {
+          "const": "duplicate",
+          "default": "duplicate",
+          "title": "Kind",
+          "type": "string"
+        },
+        "target": {
+          "pattern": "^[a-z0-9][a-z0-9_-]{0,79}$",
+          "title": "Target",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "at_seconds",
+        "target"
+      ],
+      "title": "DuplicateStep",
+      "type": "object"
+    },
+    "Expectation": {
+      "additionalProperties": false,
+      "properties": {
+        "metric": {
+          "enum": [
+            "actions.authorised",
+            "actions.blocked",
+            "actions.compensated",
+            "actions.escalated",
+            "actions.escalated_total",
+            "actions.executed",
+            "actions.executing",
+            "actions.failed_uncompensated",
+            "actions.rejected",
+            "actions.total",
+            "approvals.approved",
+            "approvals.edited",
+            "approvals.pending",
+            "approvals.rejected",
+            "events.action_authorised",
+            "events.action_blocked",
+            "events.action_escalated",
+            "events.alert_published",
+            "events.candidate_plan",
+            "events.conflict_flag",
+            "events.information_gap",
+            "events.mission_status",
+            "events.observation",
+            "events.observation_rejected",
+            "events.observation_validated",
+            "events.plan_proposed",
+            "events.reasoning_completed",
+            "events.risk_update",
+            "events.task_assigned",
+            "events.trigger",
+            "hazards.landslide_updates",
+            "incidents.replans",
+            "incidents.total",
+            "inputs.duplicates",
+            "inputs.random",
+            "inputs.total",
+            "integrity.execution_errors",
+            "integrity.ledger_valid",
+            "integrity.unsafe_executions",
+            "logistics.unserved",
+            "missions.acknowledged",
+            "missions.cancelled",
+            "missions.completed",
+            "missions.created",
+            "missions.failed",
+            "missions.in_progress",
+            "missions.total",
+            "reasoning.accepted_claims",
+            "reasoning.advice",
+            "reasoning.planner_runs",
+            "reasoning.rejected_claims",
+            "roads.closed",
+            "shelters.over_capacity",
+            "shelters.unplaced",
+            "timing.execution_p95_ms"
+          ],
+          "title": "Metric",
+          "type": "string"
+        },
+        "operator": {
+          "enum": [
+            "eq",
+            "gte",
+            "lte"
+          ],
+          "title": "Operator",
+          "type": "string"
+        },
+        "value": {
+          "title": "Value",
+          "type": "number"
+        },
+        "reason": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "metric",
+        "operator",
+        "value",
+        "reason"
+      ],
+      "title": "Expectation",
+      "type": "object"
+    },
+    "InitialState": {
+      "additionalProperties": false,
+      "properties": {
+        "shelter_occupancy_fraction": {
+          "default": 0,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Shelter Occupancy Fraction",
+          "type": "number"
+        },
+        "available_resource_fraction": {
+          "default": 1,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Available Resource Fraction",
+          "type": "number"
+        },
+        "strict_mission_approval": {
+          "default": false,
+          "title": "Strict Mission Approval",
+          "type": "boolean"
+        },
+        "auto_review": {
+          "default": "approve",
+          "enum": [
+            "approve",
+            "reject",
+            "ignore"
+          ],
+          "title": "Auto Review",
+          "type": "string"
+        }
+      },
+      "title": "InitialState",
+      "type": "object"
+    },
+    "MissionStep": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^[a-z0-9][a-z0-9_-]{0,79}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "at_seconds": {
+          "maximum": 7200,
+          "minimum": 0,
+          "title": "At Seconds",
+          "type": "number"
+        },
+        "note": {
+          "default": "",
+          "maxLength": 500,
+          "title": "Note",
+          "type": "string"
+        },
+        "kind": {
+          "const": "mission",
+          "default": "mission",
+          "title": "Kind",
+          "type": "string"
+        },
+        "change": {
+          "enum": [
+            "acknowledge",
+            "progress",
+            "complete",
+            "fail"
+          ],
+          "title": "Change",
+          "type": "string"
+        },
+        "limit": {
+          "default": 100,
+          "maximum": 100,
+          "minimum": 1,
+          "title": "Limit",
+          "type": "integer"
+        },
+        "percent": {
+          "default": 50,
+          "maximum": 100,
+          "minimum": 0,
+          "title": "Percent",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "id",
+        "at_seconds",
+        "change"
+      ],
+      "title": "MissionStep",
+      "type": "object"
+    },
+    "RandomEvents": {
+      "additionalProperties": false,
+      "properties": {
+        "count": {
+          "default": 4,
+          "maximum": 30,
+          "minimum": 0,
+          "title": "Count",
+          "type": "integer"
+        },
+        "kinds": {
+          "items": {
+            "enum": [
+              "ambient_sensor",
+              "late_reading",
+              "duplicate",
+              "field_report"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Kinds",
+          "type": "array"
+        },
+        "start_seconds": {
+          "default": 10,
+          "maximum": 7200,
+          "minimum": 0,
+          "title": "Start Seconds",
+          "type": "integer"
+        },
+        "end_seconds": {
+          "default": 450,
+          "maximum": 7200,
+          "minimum": 0,
+          "title": "End Seconds",
+          "type": "integer"
+        }
+      },
+      "title": "RandomEvents",
+      "type": "object"
+    },
+    "ReportStep": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^[a-z0-9][a-z0-9_-]{0,79}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "at_seconds": {
+          "maximum": 7200,
+          "minimum": 0,
+          "title": "At Seconds",
+          "type": "number"
+        },
+        "note": {
+          "default": "",
+          "maxLength": 500,
+          "title": "Note",
+          "type": "string"
+        },
+        "kind": {
+          "const": "report",
+          "default": "report",
+          "title": "Kind",
+          "type": "string"
+        },
+        "attribute": {
+          "default": "water_level",
+          "enum": [
+            "water_level",
+            "rainfall",
+            "soil_moisture"
+          ],
+          "title": "Attribute",
+          "type": "string"
+        },
+        "value": {
+          "maximum": 10000,
+          "minimum": 0,
+          "title": "Value",
+          "type": "number"
+        },
+        "source": {
+          "default": "feed:simulation",
+          "maxLength": 100,
+          "minLength": 1,
+          "title": "Source",
+          "type": "string"
+        },
+        "report_kind": {
+          "default": "field_report",
+          "enum": [
+            "official_warning",
+            "field_report"
+          ],
+          "title": "Report Kind",
+          "type": "string"
+        },
+        "text": {
+          "default": "Simulated field observation",
+          "maxLength": 280,
+          "title": "Text",
+          "type": "string"
+        },
+        "observed_seconds": {
+          "anyOf": [
+            {
+              "maximum": 7200,
+              "minimum": -7200,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Observed Seconds"
+        }
+      },
+      "required": [
+        "id",
+        "at_seconds",
+        "value"
+      ],
+      "title": "ReportStep",
+      "type": "object"
+    },
+    "ReviewStep": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^[a-z0-9][a-z0-9_-]{0,79}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "at_seconds": {
+          "maximum": 7200,
+          "minimum": 0,
+          "title": "At Seconds",
+          "type": "number"
+        },
+        "note": {
+          "default": "",
+          "maxLength": 500,
+          "title": "Note",
+          "type": "string"
+        },
+        "kind": {
+          "const": "review",
+          "default": "review",
+          "title": "Kind",
+          "type": "string"
+        },
+        "decision": {
+          "enum": [
+            "approve",
+            "reject"
+          ],
+          "title": "Decision",
+          "type": "string"
+        },
+        "limit": {
+          "default": 100,
+          "maximum": 100,
+          "minimum": 1,
+          "title": "Limit",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "id",
+        "at_seconds",
+        "decision"
+      ],
+      "title": "ReviewStep",
+      "type": "object"
+    },
+    "SensorStep": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^[a-z0-9][a-z0-9_-]{0,79}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "at_seconds": {
+          "maximum": 7200,
+          "minimum": 0,
+          "title": "At Seconds",
+          "type": "number"
+        },
+        "note": {
+          "default": "",
+          "maxLength": 500,
+          "title": "Note",
+          "type": "string"
+        },
+        "kind": {
+          "const": "sensor",
+          "default": "sensor",
+          "title": "Kind",
+          "type": "string"
+        },
+        "sensor_type": {
+          "default": "water_level",
+          "enum": [
+            "water_level",
+            "rainfall",
+            "soil_moisture",
+            "temperature"
+          ],
+          "title": "Sensor Type",
+          "type": "string"
+        },
+        "value": {
+          "maximum": 10000,
+          "minimum": 0,
+          "title": "Value",
+          "type": "number"
+        },
+        "node_id": {
+          "default": "rtp-node-01",
+          "maxLength": 100,
+          "minLength": 1,
+          "title": "Node Id",
+          "type": "string"
+        },
+        "observed_seconds": {
+          "anyOf": [
+            {
+              "maximum": 7200,
+              "minimum": -7200,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Observed Seconds"
+        }
+      },
+      "required": [
+        "id",
+        "at_seconds",
+        "value"
+      ],
+      "title": "SensorStep",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "id": {
+      "pattern": "^[a-z0-9][a-z0-9_-]{0,79}$",
+      "title": "Id",
+      "type": "string"
+    },
+    "title": {
+      "maxLength": 140,
+      "minLength": 1,
+      "title": "Title",
+      "type": "string"
+    },
+    "description": {
+      "maxLength": 2000,
+      "minLength": 1,
+      "title": "Description",
+      "type": "string"
+    },
+    "tags": {
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 12,
+      "title": "Tags",
+      "type": "array"
+    },
+    "site": {
+      "const": "ratnapura",
+      "default": "ratnapura",
+      "title": "Site",
+      "type": "string"
+    },
+    "area_id": {
+      "const": "ratnapura-demo-river",
+      "default": "ratnapura-demo-river",
+      "title": "Area Id",
+      "type": "string"
+    },
+    "assumptions": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Assumptions",
+      "type": "array"
+    },
+    "initial": {
+      "$ref": "#/$defs/InitialState"
+    },
+    "random_events": {
+      "$ref": "#/$defs/RandomEvents"
+    },
+    "steps": {
+      "items": {
+        "discriminator": {
+          "mapping": {
+            "checkpoint": "#/$defs/CheckpointStep",
+            "duplicate": "#/$defs/DuplicateStep",
+            "mission": "#/$defs/MissionStep",
+            "report": "#/$defs/ReportStep",
+            "review": "#/$defs/ReviewStep",
+            "sensor": "#/$defs/SensorStep"
+          },
+          "propertyName": "kind"
+        },
+        "oneOf": [
+          {
+            "$ref": "#/$defs/SensorStep"
+          },
+          {
+            "$ref": "#/$defs/ReportStep"
+          },
+          {
+            "$ref": "#/$defs/DuplicateStep"
+          },
+          {
+            "$ref": "#/$defs/MissionStep"
+          },
+          {
+            "$ref": "#/$defs/ReviewStep"
+          },
+          {
+            "$ref": "#/$defs/CheckpointStep"
+          }
+        ]
+      },
+      "maxItems": 200,
+      "minItems": 1,
+      "title": "Steps",
+      "type": "array"
+    },
+    "expectations": {
+      "items": {
+        "$ref": "#/$defs/Expectation"
+      },
+      "maxItems": 30,
+      "minItems": 1,
+      "title": "Expectations",
+      "type": "array"
+    }
+  },
+  "required": [
+    "id",
+    "title",
+    "description",
+    "assumptions",
+    "steps",
+    "expectations"
+  ],
+  "title": "Task",
+  "type": "object"
+}

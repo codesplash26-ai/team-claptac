@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "id": "my-response-task",
+  "title": "My response task",
+  "description": "Replace this with the situation, disruption and response behaviour this task evaluates.",
+  "tags": [
+    "synthetic",
+    "example"
+  ],
+  "assumptions": [
+    "Synthetic exercise using cached Ratnapura roads and synthetic population, shelter and fleet data.",
+    "Demonstration thresholds and sensor-to-road mapping are not calibrated hazard forecasts.",
+    "Human decisions and responder updates are scripted; public messages are recorded locally; no hardware or external LLM is used."
+  ],
+  "initial": {
+    "shelter_occupancy_fraction": 0,
+    "available_resource_fraction": 1,
+    "strict_mission_approval": false,
+    "auto_review": "approve"
+  },
+  "random_events": {
+    "count": 3,
+    "kinds": [
+      "ambient_sensor",
+      "duplicate"
+    ],
+    "start_seconds": 10,
+    "end_seconds": 450
+  },
+  "steps": [
+    {
+      "id": "baseline",
+      "at_seconds": 0,
+      "kind": "sensor",
+      "sensor_type": "water_level",
+      "value": 10
+    },
+    {
+      "id": "river-rising",
+      "at_seconds": 120,
+      "kind": "sensor",
+      "sensor_type": "water_level",
+      "value": 26
+    },
+    {
+      "id": "confirmed-rise",
+      "at_seconds": 180,
+      "kind": "sensor",
+      "sensor_type": "water_level",
+      "value": 28
+    },
+    {
+      "id": "team-ack",
+      "at_seconds": 240,
+      "kind": "mission",
+      "change": "acknowledge"
+    },
+    {
+      "id": "team-progress",
+      "at_seconds": 300,
+      "kind": "mission",
+      "change": "progress"
+    },
+    {
+      "id": "team-complete",
+      "at_seconds": 420,
+      "kind": "mission",
+      "change": "complete"
+    }
+  ],
+  "expectations": [
+    {
+      "metric": "events.trigger",
+      "operator": "gte",
+      "value": 1,
+      "reason": "Hazard input must raise a trigger."
+    },
+    {
+      "metric": "events.plan_proposed",
+      "operator": "gte",
+      "value": 1,
+      "reason": "The commander must produce a plan."
+    },
+    {
+      "metric": "events.alert_published",
+      "operator": "gte",
+      "value": 1,
+      "reason": "A local alert or situation report must be recorded."
+    }
+  ]
+}

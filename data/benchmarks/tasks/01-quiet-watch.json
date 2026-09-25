@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "id": "01-quiet-watch",
+  "title": "Quiet river watch",
+  "description": "Ordinary water fluctuations and background sensor traffic should not create an incident.",
+  "tags": [
+    "synthetic",
+    "end-to-end"
+  ],
+  "assumptions": [
+    "Synthetic exercise using cached Ratnapura roads and synthetic population, shelter and fleet data.",
+    "Demonstration thresholds and sensor-to-road mapping are not calibrated hazard forecasts.",
+    "Human decisions and responder updates are scripted; public messages are recorded locally; no hardware or external LLM is used."
+  ],
+  "initial": {},
+  "random_events": {
+    "count": 5,
+    "kinds": [
+      "ambient_sensor",
+      "duplicate",
+      "late_reading"
+    ],
+    "start_seconds": 10,
+    "end_seconds": 600
+  },
+  "steps": [
+    {
+      "id": "baseline",
+      "at_seconds": 0,
+      "kind": "sensor",
+      "sensor_type": "water_level",
+      "value": 10
+    },
+    {
+      "id": "stable",
+      "at_seconds": 120,
+      "kind": "sensor",
+      "sensor_type": "water_level",
+      "value": 11
+    },
+    {
+      "id": "still-safe",
+      "at_seconds": 240,
+      "kind": "sensor",
+      "sensor_type": "water_level",
+      "value": 10.5
+    },
+    {
+      "id": "end",
+      "at_seconds": 600,
+      "kind": "checkpoint"
+    }
+  ],
+  "expectations": [
+    {
+      "metric": "events.trigger",
+      "operator": "eq",
+      "value": 0,
+      "reason": "Safe steady readings must not trigger response."
+    },
+    {
+      "metric": "missions.total",
+      "operator": "eq",
+      "value": 0,
+      "reason": "No missions should be dispatched for quiet conditions."
+    }
+  ]
+}

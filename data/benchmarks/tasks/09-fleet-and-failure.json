@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "id": "09-fleet-and-failure",
+  "title": "Limited fleet and failed mission",
+  "description": "Most vehicles and rescue teams are already committed. A dispatched team later reports a fatal vehicle failure, requiring replanning.",
+  "tags": [
+    "synthetic",
+    "end-to-end"
+  ],
+  "assumptions": [
+    "Synthetic exercise using cached Ratnapura roads and synthetic population, shelter and fleet data.",
+    "Demonstration thresholds and sensor-to-road mapping are not calibrated hazard forecasts.",
+    "Human decisions and responder updates are scripted; public messages are recorded locally; no hardware or external LLM is used."
+  ],
+  "initial": {
+    "available_resource_fraction": 0.3
+  },
+  "random_events": {
+    "count": 5,
+    "kinds": [
+      "ambient_sensor",
+      "duplicate",
+      "late_reading"
+    ],
+    "start_seconds": 10,
+    "end_seconds": 450
+  },
+  "steps": [
+    {
+      "id": "baseline",
+      "at_seconds": 0,
+      "kind": "sensor",
+      "sensor_type": "water_level",
+      "value": 10
+    },
+    {
+      "id": "river-rising",
+      "at_seconds": 120,
+      "kind": "sensor",
+      "sensor_type": "water_level",
+      "value": 26
+    },
+    {
+      "id": "confirmed-rise",
+      "at_seconds": 180,
+      "kind": "sensor",
+      "sensor_type": "water_level",
+      "value": 28
+    },
+    {
+      "id": "ack",
+      "at_seconds": 220,
+      "kind": "mission",
+      "change": "acknowledge"
+    },
+    {
+      "id": "vehicle-failure",
+      "at_seconds": 260,
+      "kind": "mission",
+      "change": "fail",
+      "limit": 1,
+      "note": "Simulated vehicle breakdown: team cannot continue."
+    },
+    {
+      "id": "replacement-ack",
+      "at_seconds": 330,
+      "kind": "mission",
+      "change": "acknowledge"
+    },
+    {
+      "id": "completion",
+      "at_seconds": 450,
+      "kind": "mission",
+      "change": "complete"
+    }
+  ],
+  "expectations": [
+    {
+      "metric": "events.trigger",
+      "operator": "gte",
+      "value": 1,
+      "reason": "Hazard input must raise a trigger."
+    },
+    {
+      "metric": "events.plan_proposed",
+      "operator": "gte",
+      "value": 1,
+      "reason": "The commander must produce a plan."
+    },
+    {
+      "metric": "events.alert_published",
+      "operator": "gte",
+      "value": 1,
+      "reason": "A local alert or situation report must be recorded."
+    },
+    {
+      "metric": "logistics.unserved",
+      "operator": "gte",
+      "value": 1,
+      "reason": "Resource shortage must be recorded."
+    },
+    {
+      "metric": "missions.failed",
+      "operator": "gte",
+      "value": 1,
+      "reason": "The simulated field failure must be retained."
+    },
+    {
+      "metric": "incidents.replans",
+      "operator": "gte",
+      "value": 1,
+      "reason": "The failure must trigger reassessment."
+    }
+  ]
+}

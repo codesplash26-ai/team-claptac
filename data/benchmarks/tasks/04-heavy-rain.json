@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "id": "04-heavy-rain",
+  "title": "Heavy rain warning",
+  "description": "Accumulating rain crosses the configured demonstration threshold, then response teams receive assignments.",
+  "tags": [
+    "synthetic",
+    "end-to-end"
+  ],
+  "assumptions": [
+    "Synthetic exercise using cached Ratnapura roads and synthetic population, shelter and fleet data.",
+    "Demonstration thresholds and sensor-to-road mapping are not calibrated hazard forecasts.",
+    "Human decisions and responder updates are scripted; public messages are recorded locally; no hardware or external LLM is used."
+  ],
+  "initial": {},
+  "random_events": {
+    "count": 5,
+    "kinds": [
+      "ambient_sensor",
+      "duplicate",
+      "late_reading"
+    ],
+    "start_seconds": 10,
+    "end_seconds": 480
+  },
+  "steps": [
+    {
+      "id": "light-rain",
+      "at_seconds": 0,
+      "kind": "sensor",
+      "sensor_type": "rainfall",
+      "value": 5
+    },
+    {
+      "id": "rain-building",
+      "at_seconds": 120,
+      "kind": "sensor",
+      "sensor_type": "rainfall",
+      "value": 12
+    },
+    {
+      "id": "downpour",
+      "at_seconds": 240,
+      "kind": "sensor",
+      "sensor_type": "rainfall",
+      "value": 28
+    },
+    {
+      "id": "teams-ack",
+      "at_seconds": 300,
+      "kind": "mission",
+      "change": "acknowledge"
+    },
+    {
+      "id": "end",
+      "at_seconds": 480,
+      "kind": "checkpoint"
+    }
+  ],
+  "expectations": [
+    {
+      "metric": "events.trigger",
+      "operator": "gte",
+      "value": 1,
+      "reason": "Hazard input must raise a trigger."
+    },
+    {
+      "metric": "events.plan_proposed",
+      "operator": "gte",
+      "value": 1,
+      "reason": "The commander must produce a plan."
+    },
+    {
+      "metric": "events.alert_published",
+      "operator": "gte",
+      "value": 1,
+      "reason": "A local alert or situation report must be recorded."
+    }
+  ]
+}
