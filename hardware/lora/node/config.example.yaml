@@ -1,0 +1,35 @@
+# Copy to config.yaml on the field Pi. Same HMAC key as the gateway.
+hmac_key_hex: ""
+log_level: INFO
+on_air_node_id: 1          # must match a key in the gateway nodes table
+interval_seconds: 20
+retries: 4
+seq_path: lora-seq.json    # persist the counter across reboots (stops replay after a crash)
+
+radio:
+  reset_pin: 22
+  dio0_pin: 25
+  frequency_hz: 433000000
+  spreading_factor: 9
+  bandwidth_hz: 125000
+  coding_rate: 5
+  sync_word: 18
+  tx_power_dbm: 7
+  preamble: 8
+
+# Same drivers as hardware/pi. Use mock until the ultrasonic is wired.
+sensors:
+  - driver: mock
+    sensor_id: wl-mock
+    type: water_level
+    unit: cm
+    baseline: 5
+    peak: 30
+    ramp_seconds: 120
+    scenario: flood_ramp
+
+  # - driver: ultrasonic_water_level
+  #   sensor_id: wl-01
+  #   trigger_pin: 23
+  #   echo_pin: 24
+  #   mount_height_cm: 40

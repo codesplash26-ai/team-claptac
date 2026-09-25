@@ -1,0 +1,36 @@
+# Copy to config.yaml on the gateway Pi.
+# Generate a key: python -c "import os; print(os.urandom(32).hex())"
+# Put the same hex in LORA_HMAC_KEY on both the node and the gateway. Never commit a real key.
+hmac_key_hex: ""
+log_level: INFO
+
+# 3.3 V only. Antenna on the ANT pad before any transmit (including ACKs).
+radio:
+  reset_pin: 22
+  dio0_pin: 25
+  frequency_hz: 433000000
+  spreading_factor: 9
+  bandwidth_hz: 125000
+  coding_rate: 5
+  sync_word: 18          # 0x12
+  tx_power_dbm: 7        # start low
+  preamble: 8
+
+# On-air node_id -> ATLAS identity. Location is not sent over LoRa.
+nodes:
+  1:
+    name: rtp-node-01
+    lat: 6.6828
+    lon: 80.3992
+    area_id: ratnapura-demo-river
+
+areas:
+  1: ratnapura-demo-river
+
+atlas:
+  kind: http             # http | mqtt
+  url: http://192.168.1.50:8000/ingest/sensor
+  # kind: mqtt
+  # host: 192.168.1.50
+  # port: 1883
+  # topic_prefix: atlas/sensors
