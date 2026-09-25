@@ -1,0 +1,251 @@
+{
+ "type": "FeatureCollection",
+ "features": [
+  {
+   "type": "Feature",
+   "bbox": [
+    80.6401,
+    7.2143,
+    80.6401,
+    7.2143
+   ],
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     80.6401,
+     7.2143
+    ]
+   },
+   "properties": {
+    "eventtype": "FL",
+    "eventid": 1103640,
+    "episodeid": 2,
+    "eventname": "",
+    "glide": "FL-2025-000216-LKA",
+    "name": "Flood in Sri Lanka",
+    "description": "Flood in Sri Lanka",
+    "htmldescription": "Orange Flood in Sri Lanka from: 28 Nov 2025 01 to: 05 Dec 2025 13.",
+    "icon": "https://www.gdacs.org/images/gdacs_icons/maps/Orange/FL.png",
+    "iconoverall": "https://www.gdacs.org/images/gdacs_icons/maps/Orange/FL.png",
+    "url": {
+     "geometry": "https://www.gdacs.org/gdacsapi/api/polygons/getgeometry?eventtype=FL&eventid=1103640&episodeid=2",
+     "report": "https://www.gdacs.org/report.aspx?eventid=1103640&episodeid=2&eventtype=FL",
+     "details": "https://www.gdacs.org/gdacsapi/api/events/geteventdata?eventtype=FL&eventid=1103640"
+    },
+    "alertlevel": "Orange",
+    "alertscore": 2,
+    "episodealertlevel": "Orange",
+    "episodealertscore": 1.5,
+    "istemporary": "false",
+    "iscurrent": "false",
+    "country": "Sri Lanka",
+    "fromdate": "2025-11-28T01:00:00",
+    "todate": "2025-12-05T13:00:00",
+    "datemodified": "2026-02-11T12:10:14.497",
+    "iso3": "LKA",
+    "source": "GLOFAS",
+    "sourceid": "",
+    "polygonlabel": "Centroid",
+    "Class": "Point_Centroid",
+    "affectedcountries": [
+     {
+      "iso2": "LK",
+      "iso3": "LKA",
+      "countryname": "Sri Lanka"
+     }
+    ],
+    "severitydata": {
+     "severity": 0.0,
+     "severitytext": "Magnitude 0 ",
+     "severityunit": ""
+    }
+   }
+  },
+  {
+   "type": "Feature",
+   "bbox": [
+    80.8,
+    10.5,
+    80.8,
+    10.5
+   ],
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     80.8,
+     10.5
+    ]
+   },
+   "properties": {
+    "eventtype": "TC",
+    "eventid": 1001238,
+    "episodeid": 12,
+    "eventname": "DITWAH-25",
+    "glide": "TC-2025-000218-LKA",
+    "name": "Tropical Cyclone DITWAH-25",
+    "description": "Tropical Cyclone DITWAH-25",
+    "htmldescription": "Orange Tropical Cyclone DITWAH-25 in Sri Lanka, India from: 27 Nov 2025  to: 29 Nov 2025 .",
+    "icon": "https://www.gdacs.org/images/gdacs_icons/maps/Green/TC.png",
+    "iconoverall": "https://www.gdacs.org/images/gdacs_icons/maps/Orange/TC.png",
+    "url": {
+     "geometry": "https://www.gdacs.org/gdacsapi/api/polygons/getgeometry?eventtype=TC&eventid=1001238&episodeid=12",
+     "report": "https://www.gdacs.org/report.aspx?eventid=1001238&episodeid=12&eventtype=TC",
+     "details": "https://www.gdacs.org/gdacsapi/api/events/geteventdata?eventtype=TC&eventid=1001238"
+    },
+    "alertlevel": "Orange",
+    "alertscore": 2,
+    "episodealertlevel": "Green",
+    "episodealertscore": 1.0,
+    "istemporary": "false",
+    "iscurrent": "false",
+    "country": "Sri Lanka, India",
+    "fromdate": "2025-11-27T00:00:00",
+    "todate": "2025-11-29T18:00:00",
+    "datemodified": "2026-02-11T15:18:59.037",
+    "iso3": "IND",
+    "source": "JTWC",
+    "sourceid": "",
+    "polygonlabel": "Centroid",
+    "Class": "Point_Centroid",
+    "countryonland": "",
+    "affectedcountries": [
+     {
+      "iso2": "LK",
+      "iso3": "LKA",
+      "countryname": "Sri Lanka"
+     },
+     {
+      "iso2": "IN",
+      "iso3": "IND",
+      "countryname": "India"
+     }
+    ],
+    "severitydata": {
+     "severity": 64.8144,
+     "severitytext": "Tropical Depression (maximum wind speed of 65 km/h)",
+     "severityunit": "km/h"
+    }
+   }
+  },
+  {
+   "type": "Feature",
+   "bbox": [
+    80.3355,
+    6.8124,
+    80.3355,
+    6.8124
+   ],
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     80.3355,
+     6.8124
+    ]
+   },
+   "properties": {
+    "eventtype": "FL",
+    "eventid": 1103632,
+    "episodeid": 1,
+    "eventname": "",
+    "glide": "",
+    "name": "Flood in Sri Lanka",
+    "description": "Flood in Sri Lanka",
+    "htmldescription": "Green Flood in Sri Lanka from: 26 Nov 2025 14 to: 26 Nov 2025 14.",
+    "icon": "https://www.gdacs.org/images/gdacs_icons/maps/Green/FL.png",
+    "iconoverall": "https://www.gdacs.org/images/gdacs_icons/maps/Green/FL.png",
+    "url": {
+     "geometry": "https://www.gdacs.org/gdacsapi/api/polygons/getgeometry?eventtype=FL&eventid=1103632&episodeid=1",
+     "report": "https://www.gdacs.org/report.aspx?eventid=1103632&episodeid=1&eventtype=FL",
+     "details": "https://www.gdacs.org/gdacsapi/api/events/geteventdata?eventtype=FL&eventid=1103632"
+    },
+    "alertlevel": "Green",
+    "alertscore": 1,
+    "episodealertlevel": "Green",
+    "episodealertscore": 0.5,
+    "istemporary": "false",
+    "iscurrent": "false",
+    "country": "Sri Lanka",
+    "fromdate": "2025-11-26T14:00:00",
+    "todate": "2025-11-26T14:00:00",
+    "datemodified": "2025-11-27T10:02:45",
+    "iso3": "LKA",
+    "source": "GLOFAS",
+    "sourceid": "",
+    "polygonlabel": "Centroid",
+    "Class": "Point_Centroid",
+    "affectedcountries": [
+     {
+      "iso2": "LK",
+      "iso3": "LKA",
+      "countryname": "Sri Lanka"
+     }
+    ],
+    "severitydata": {
+     "severity": 0.0,
+     "severitytext": "Magnitude 0 ",
+     "severityunit": ""
+    }
+   }
+  },
+  {
+   "type": "Feature",
+   "bbox": [
+    80.6401,
+    7.2143,
+    80.6401,
+    7.2143
+   ],
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     80.6401,
+     7.2143
+    ]
+   },
+   "properties": {
+    "eventtype": "FL",
+    "eventid": 1104160,
+    "episodeid": 1,
+    "eventname": "",
+    "glide": "",
+    "name": "Flood in Sri Lanka",
+    "description": "Flood in Sri Lanka",
+    "htmldescription": "Green Flood in Sri Lanka from: 14 Sep 2026 01 to: 16 Sep 2026 01.",
+    "icon": "https://www.gdacs.org/images/gdacs_icons/maps/Green/FL.png",
+    "iconoverall": "https://www.gdacs.org/images/gdacs_icons/maps/Green/FL.png",
+    "url": {
+     "geometry": "https://www.gdacs.org/gdacsapi/api/polygons/getgeometry?eventtype=FL&eventid=1104160&episodeid=1",
+     "report": "https://www.gdacs.org/report.aspx?eventid=1104160&episodeid=1&eventtype=FL",
+     "details": "https://www.gdacs.org/gdacsapi/api/events/geteventdata?eventtype=FL&eventid=1104160"
+    },
+    "alertlevel": "Green",
+    "alertscore": 1,
+    "episodealertlevel": "Green",
+    "episodealertscore": 0.5,
+    "istemporary": "false",
+    "iscurrent": "false",
+    "country": "Sri Lanka",
+    "fromdate": "2026-09-14T01:00:00",
+    "todate": "2026-09-16T01:00:00",
+    "datemodified": "2026-09-16T05:56:43",
+    "iso3": "LKA",
+    "source": "GLOFAS",
+    "sourceid": "",
+    "polygonlabel": "Centroid",
+    "Class": "Point_Centroid",
+    "affectedcountries": [
+     {
+      "iso2": "LK",
+      "iso3": "LKA",
+      "countryname": "Sri Lanka"
+     }
+    ],
+    "severitydata": {
+     "severity": 0.0,
+     "severitytext": "Magnitude 0 ",
+     "severityunit": ""
+    }
+   }
+  }
+ ]
+}

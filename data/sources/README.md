@@ -1,17 +1,20 @@
 # Data sources
 
-Owner: Dinuka. Adapters live in `atlas/datasets/`; converted scenarios go in `data/scenarios/`.
-"Verified" means someone fetched real data and checked the format. Unverified rows are leads, not facts.
+Owner: Dinuka. Code in `atlas/datasets/`; the full picture (what drives the live loop, assumptions,
+gaps) is in [docs/data-and-hazards.md](../../docs/data-and-hazards.md). "Verified" means someone fetched
+real data from the live service and checked the format; the tests replay small recorded responses.
 
-| Source | Drives | Licence | Verified | Notes |
-|---|---|---|---|---|
-| [lk_irrigation](https://github.com/nuuuwan/lk_irrigation) | flood (river gauges) | MIT | exists, includes Ratnapura; format not yet checked | ~39 Irrigation Dept stations; units are metres, not the tabletop's cm |
-| [Open-Meteo historical weather](https://open-meteo.com/en/docs/historical-weather-api) | flood, landslide (rain, soil moisture) | free, non-commercial | docs read | 1940 to now, no key |
-| [Open-Meteo flood API](https://open-meteo.com/en/docs/flood-api) | flood (GloFAS discharge) | free, non-commercial | docs read | ~5 km; docs mention history only to 2022, check |
-| [USGS earthquakes](https://earthquake.usgs.gov/fdsnws/event/1/) | earthquake | public domain | docs read | secondary: Sri Lanka is low seismic |
-| [NASA COOLR](https://gpm.nasa.gov/landslides/data.html) | landslide (ground truth) | CC-BY | docs read | dated events, not measurements |
-| DesInventar Sri Lanka (desinventar.lk) | history of floods and landslides | check | viewer found; bulk download not confirmed | 1974-2022 per its summary |
-| GDACS, ReliefWeb, EM-DAT, GPM IMERG, CHIRPS | alerts, history, rainfall | check each | **not checked** | leads only |
+| Source | Drives | Licence | Verified |
+|---|---|---|---|
+| [lk_irrigation](https://github.com/nuuuwan/lk_irrigation) river gauges | flood | MIT | yes |
+| [Open-Meteo](https://open-meteo.com/en/docs/historical-weather-api) rain, soil, wind, GloFAS discharge | flood, landslide, cyclone, drought | CC BY 4.0, non-commercial | yes |
+| [GDACS](https://www.gdacs.org/) alerts | flood, cyclone, quake, drought, volcano, wildfire | free, attribute | yes |
+| [IBTrACS](https://www.ncei.noaa.gov/products/international-best-track-archive) cyclone tracks | cyclone | public domain | yes |
+| [NOAA tsunami run-ups](https://www.ngdc.noaa.gov/hazel/view/hazards/tsunami/runup-search) | tsunami | public domain | yes |
+| [USGS](https://earthquake.usgs.gov/fdsnws/event/1/) earthquakes | earthquake | public domain | yes |
+| Drought index (ours, from Open-Meteo) | drought | CC BY 4.0 | yes |
+| [NASA COOLR](https://gpm.nasa.gov/landslides/data.html) | landslide | CC BY | **no**: endpoints unreachable |
+| DesInventar Sri Lanka, ReliefWeb, EM-DAT | history | check each | **no** |
 
-Cache downloads under `data/cache/` (git-ignored). Tests use small committed fixtures and never touch
-the network.
+Downloads are cached under `data/cache/` (git-ignored). Real scenarios and the hazard-history snapshot are
+committed (`data/scenarios/ratnapura_*.json`, `data/reference/hazard_history.json`) so everything runs offline.

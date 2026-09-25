@@ -1,0 +1,2509 @@
+{
+ "name": "ratnapura-ditwah-rain-only",
+ "events": [
+  {
+   "at_seconds": 0,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764115200",
+    "type": "rainfall",
+    "value": 0.0,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 0,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764115200",
+    "type": "soil_moisture",
+    "value": 84.0,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 15,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764118800",
+    "type": "rainfall",
+    "value": 0.6,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 15,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764118800",
+    "type": "soil_moisture",
+    "value": 85.0,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 30,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764122400",
+    "type": "rainfall",
+    "value": 1.2,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 30,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764122400",
+    "type": "soil_moisture",
+    "value": 85.8,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 45,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764126000",
+    "type": "rainfall",
+    "value": 2.9,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 45,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764126000",
+    "type": "soil_moisture",
+    "value": 86.0,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 60,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764129600",
+    "type": "rainfall",
+    "value": 2.4,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 60,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764129600",
+    "type": "soil_moisture",
+    "value": 86.0,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 75,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764133200",
+    "type": "rainfall",
+    "value": 3.5,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 75,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764133200",
+    "type": "soil_moisture",
+    "value": 85.6,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 90,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764136800",
+    "type": "rainfall",
+    "value": 0.4,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 90,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764136800",
+    "type": "soil_moisture",
+    "value": 86.0,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 105,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764140400",
+    "type": "rainfall",
+    "value": 0.1,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 105,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764140400",
+    "type": "soil_moisture",
+    "value": 84.8,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 120,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764144000",
+    "type": "rainfall",
+    "value": 0.2,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 120,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764144000",
+    "type": "soil_moisture",
+    "value": 84.4,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 135,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764147600",
+    "type": "rainfall",
+    "value": 0.9,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 135,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764147600",
+    "type": "soil_moisture",
+    "value": 85.2,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 150,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764151200",
+    "type": "rainfall",
+    "value": 1.4,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 150,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764151200",
+    "type": "soil_moisture",
+    "value": 85.8,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 165,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764154800",
+    "type": "rainfall",
+    "value": 0.6,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 165,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764154800",
+    "type": "soil_moisture",
+    "value": 85.4,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 180,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764158400",
+    "type": "rainfall",
+    "value": 2.3,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 180,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764158400",
+    "type": "soil_moisture",
+    "value": 85.2,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 195,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764162000",
+    "type": "rainfall",
+    "value": 0.7,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 195,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764162000",
+    "type": "soil_moisture",
+    "value": 85.6,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 210,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764165600",
+    "type": "rainfall",
+    "value": 0.9,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 210,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764165600",
+    "type": "soil_moisture",
+    "value": 85.8,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 225,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764169200",
+    "type": "rainfall",
+    "value": 1.0,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 225,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764169200",
+    "type": "soil_moisture",
+    "value": 85.8,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 240,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764172800",
+    "type": "rainfall",
+    "value": 1.1,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 240,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764172800",
+    "type": "soil_moisture",
+    "value": 85.6,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 255,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764176400",
+    "type": "rainfall",
+    "value": 2.2,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 255,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764176400",
+    "type": "soil_moisture",
+    "value": 86.0,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 270,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764180000",
+    "type": "rainfall",
+    "value": 4.2,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 270,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764180000",
+    "type": "soil_moisture",
+    "value": 86.0,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 285,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764183600",
+    "type": "rainfall",
+    "value": 5.5,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 285,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764183600",
+    "type": "soil_moisture",
+    "value": 86.0,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 300,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764187200",
+    "type": "rainfall",
+    "value": 3.8,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 300,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764187200",
+    "type": "soil_moisture",
+    "value": 86.0,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 315,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764190800",
+    "type": "rainfall",
+    "value": 1.9,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 315,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764190800",
+    "type": "soil_moisture",
+    "value": 86.0,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 330,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764194400",
+    "type": "rainfall",
+    "value": 2.6,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 330,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764194400",
+    "type": "soil_moisture",
+    "value": 86.0,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 345,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764198000",
+    "type": "rainfall",
+    "value": 2.1,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 345,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764198000",
+    "type": "soil_moisture",
+    "value": 86.0,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 360,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764201600",
+    "type": "rainfall",
+    "value": 2.8,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 360,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764201600",
+    "type": "soil_moisture",
+    "value": 85.8,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 375,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764205200",
+    "type": "rainfall",
+    "value": 5.8,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 375,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764205200",
+    "type": "soil_moisture",
+    "value": 86.0,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 390,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764208800",
+    "type": "rainfall",
+    "value": 3.0,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 390,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764208800",
+    "type": "soil_moisture",
+    "value": 86.0,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 405,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764212400",
+    "type": "rainfall",
+    "value": 5.9,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 405,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764212400",
+    "type": "soil_moisture",
+    "value": 86.0,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 420,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764216000",
+    "type": "rainfall",
+    "value": 4.4,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 420,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764216000",
+    "type": "soil_moisture",
+    "value": 86.0,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 435,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764219600",
+    "type": "rainfall",
+    "value": 3.5,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 435,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764219600",
+    "type": "soil_moisture",
+    "value": 86.0,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 450,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764223200",
+    "type": "rainfall",
+    "value": 1.6,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 450,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764223200",
+    "type": "soil_moisture",
+    "value": 86.6,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 465,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764226800",
+    "type": "rainfall",
+    "value": 3.2,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 465,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764226800",
+    "type": "soil_moisture",
+    "value": 86.0,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 480,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764230400",
+    "type": "rainfall",
+    "value": 3.6,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 480,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764230400",
+    "type": "soil_moisture",
+    "value": 86.0,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 495,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764234000",
+    "type": "rainfall",
+    "value": 7.5,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 495,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764234000",
+    "type": "soil_moisture",
+    "value": 86.0,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 510,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764237600",
+    "type": "rainfall",
+    "value": 6.0,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 510,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764237600",
+    "type": "soil_moisture",
+    "value": 86.0,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 525,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764241200",
+    "type": "rainfall",
+    "value": 4.6,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 525,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764241200",
+    "type": "soil_moisture",
+    "value": 86.0,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 540,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764244800",
+    "type": "rainfall",
+    "value": 2.4,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 540,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764244800",
+    "type": "soil_moisture",
+    "value": 86.0,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 555,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764248400",
+    "type": "rainfall",
+    "value": 6.1,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 555,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764248400",
+    "type": "soil_moisture",
+    "value": 86.0,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 570,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764252000",
+    "type": "rainfall",
+    "value": 7.3,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 570,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764252000",
+    "type": "soil_moisture",
+    "value": 86.0,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 585,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764255600",
+    "type": "rainfall",
+    "value": 5.4,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 585,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764255600",
+    "type": "soil_moisture",
+    "value": 86.0,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 600,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764259200",
+    "type": "rainfall",
+    "value": 5.8,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 600,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764259200",
+    "type": "soil_moisture",
+    "value": 86.0,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 615,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764262800",
+    "type": "rainfall",
+    "value": 8.2,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 615,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764262800",
+    "type": "soil_moisture",
+    "value": 86.0,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 630,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764266400",
+    "type": "rainfall",
+    "value": 3.0,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 630,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764266400",
+    "type": "soil_moisture",
+    "value": 86.0,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 645,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764270000",
+    "type": "rainfall",
+    "value": 7.2,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 645,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764270000",
+    "type": "soil_moisture",
+    "value": 86.0,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 660,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764273600",
+    "type": "rainfall",
+    "value": 8.4,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 660,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764273600",
+    "type": "soil_moisture",
+    "value": 86.0,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 675,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764277200",
+    "type": "rainfall",
+    "value": 10.6,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 675,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764277200",
+    "type": "soil_moisture",
+    "value": 86.0,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 690,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764280800",
+    "type": "rainfall",
+    "value": 12.8,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 690,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764280800",
+    "type": "soil_moisture",
+    "value": 86.0,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 705,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764284400",
+    "type": "rainfall",
+    "value": 10.2,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 705,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764284400",
+    "type": "soil_moisture",
+    "value": 86.0,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 720,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764288000",
+    "type": "rainfall",
+    "value": 11.6,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 720,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764288000",
+    "type": "soil_moisture",
+    "value": 86.0,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 735,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764291600",
+    "type": "rainfall",
+    "value": 11.0,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 735,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764291600",
+    "type": "soil_moisture",
+    "value": 86.0,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 750,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764295200",
+    "type": "rainfall",
+    "value": 10.5,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 750,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764295200",
+    "type": "soil_moisture",
+    "value": 86.0,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 765,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764298800",
+    "type": "rainfall",
+    "value": 9.2,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 765,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764298800",
+    "type": "soil_moisture",
+    "value": 86.0,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 780,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764302400",
+    "type": "rainfall",
+    "value": 10.5,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 780,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764302400",
+    "type": "soil_moisture",
+    "value": 86.0,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 795,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764306000",
+    "type": "rainfall",
+    "value": 6.1,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 795,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764306000",
+    "type": "soil_moisture",
+    "value": 86.0,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 810,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764309600",
+    "type": "rainfall",
+    "value": 6.2,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 810,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764309600",
+    "type": "soil_moisture",
+    "value": 86.0,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 825,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764313200",
+    "type": "rainfall",
+    "value": 2.5,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 825,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764313200",
+    "type": "soil_moisture",
+    "value": 85.8,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 840,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764316800",
+    "type": "rainfall",
+    "value": 4.9,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 840,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764316800",
+    "type": "soil_moisture",
+    "value": 85.8,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 855,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764320400",
+    "type": "rainfall",
+    "value": 6.8,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 855,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764320400",
+    "type": "soil_moisture",
+    "value": 85.8,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 870,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764324000",
+    "type": "rainfall",
+    "value": 4.3,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 870,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764324000",
+    "type": "soil_moisture",
+    "value": 85.8,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 885,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764327600",
+    "type": "rainfall",
+    "value": 2.6,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 885,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764327600",
+    "type": "soil_moisture",
+    "value": 85.6,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 900,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764331200",
+    "type": "rainfall",
+    "value": 1.0,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 900,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764331200",
+    "type": "soil_moisture",
+    "value": 85.8,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 915,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764334800",
+    "type": "rainfall",
+    "value": 1.4,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 915,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764334800",
+    "type": "soil_moisture",
+    "value": 85.8,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 930,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764338400",
+    "type": "rainfall",
+    "value": 1.3,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 930,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764338400",
+    "type": "soil_moisture",
+    "value": 86.0,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 945,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764342000",
+    "type": "rainfall",
+    "value": 1.4,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 945,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764342000",
+    "type": "soil_moisture",
+    "value": 86.0,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 960,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764345600",
+    "type": "rainfall",
+    "value": 0.5,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 960,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764345600",
+    "type": "soil_moisture",
+    "value": 85.4,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 975,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764349200",
+    "type": "rainfall",
+    "value": 0.1,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 975,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764349200",
+    "type": "soil_moisture",
+    "value": 85.2,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 990,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764352800",
+    "type": "rainfall",
+    "value": 0.2,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 990,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764352800",
+    "type": "soil_moisture",
+    "value": 85.0,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 1005,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764356400",
+    "type": "rainfall",
+    "value": 0.4,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 1005,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764356400",
+    "type": "soil_moisture",
+    "value": 85.4,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 1020,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764360000",
+    "type": "rainfall",
+    "value": 0.7,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 1020,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764360000",
+    "type": "soil_moisture",
+    "value": 85.8,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 1035,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764363600",
+    "type": "rainfall",
+    "value": 0.8,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 1035,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764363600",
+    "type": "soil_moisture",
+    "value": 85.8,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 1050,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764367200",
+    "type": "rainfall",
+    "value": 0.6,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 1050,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764367200",
+    "type": "soil_moisture",
+    "value": 85.8,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 1065,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764370800",
+    "type": "rainfall",
+    "value": 0.6,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 1065,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764370800",
+    "type": "soil_moisture",
+    "value": 85.6,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 1080,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "rain",
+    "measurement_id": "om-rain-ratnapura-demo-river-1764374400",
+    "type": "rainfall",
+    "value": 0.3,
+    "unit": "mm",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 1080,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "open-meteo/era5",
+    "sensor_id": "soil",
+    "measurement_id": "om-soil-ratnapura-demo-river-1764374400",
+    "type": "soil_moisture",
+    "value": 86.0,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  }
+ ],
+ "title": "Ratnapura, Ditwah rainfall and soil saturation (landslide conditions)",
+ "hazard": "landslide",
+ "area_id": "ratnapura-demo-river",
+ "story": "The same storm seen only through ERA5 rainfall and soil saturation: what a landslide early warning would have had to go on, with no river gauge.",
+ "speedup": 240.0,
+ "real_start": "2025-11-26T00:00:00+00:00",
+ "real_end": "2025-11-29T00:00:00+00:00",
+ "sources": [
+  "rain",
+  "soil"
+ ],
+ "real": true,
+ "replay_minutes": 18.0,
+ "assumptions": [
+  "River level converted from metres to the Sentinel's tabletop centimetres at 0.20 m per cm (the scale in data/reference/sensor_map.yaml).",
+  "Rainfall and soil moisture are ERA5 reanalysis (about 11-25 km cells), not gauge readings; soil moisture is scaled to percent of an assumed 0.5 m3/m3 saturation.",
+  "Time compressed 240x: the Sentinel's five-minute window and rate-of-rise threshold are measured in replay time."
+ ],
+ "licences": [
+  "lk_irrigation: MIT",
+  "Open-Meteo: CC BY 4.0, non-commercial"
+ ]
+}
