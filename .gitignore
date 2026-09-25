@@ -15,3 +15,6 @@ data/osm/*.graphml
 # OSMnx raw HTTP cache (regenerable; the committed road graphs live in data/osm/*.json)
 .cache/
 /cache/
+
+# Downloaded datasets (regenerable)
+data/cache/

@@ -1,0 +1,34 @@
+# Who reviews what. Contract files need everyone: tag the team on those PRs.
+
+/hardware/                       @HasinduNimesh
+/atlas/ingest/lora.py            @HasinduNimesh
+/atlas/ingest/field.py           @HasinduNimesh
+/docs/workstreams/hardware-lora.md @HasinduNimesh
+
+/atlas/dashboard/                @Wicky2002
+/atlas/api/                      @Wicky2002
+/atlas/control/                  @Wicky2002
+/atlas/datasets/                 @Wicky2002
+/data/sources/                   @Wicky2002
+/data/scenarios/                 @Wicky2002
+
+/atlas/intelligence/             @Aeshan-Rosa
+/atlas/reasoning/                @Aeshan-Rosa
+/atlas/core/                     @Aeshan-Rosa
+/atlas/memory/                   @Aeshan-Rosa
+/atlas/agents/a1_sentinel.py     @Aeshan-Rosa
+/atlas/agents/a2_hazard_intel.py @Aeshan-Rosa
+/atlas/agents/a3_incident_commander.py @Aeshan-Rosa
+/atlas/agents/a5_triage.py       @Aeshan-Rosa
+/atlas/orchestration/            @Aeshan-Rosa
+
+/atlas/knowledge/                @Lilvamp237
+/config/ontology.yaml            @Lilvamp237
+/atlas/tools/                    @Lilvamp237
+/atlas/tools/cap.py              @Wicky2002
+/atlas/tools/translation.py      @Wicky2002
+/atlas/tools/llm.py              @Aeshan-Rosa
+/atlas/agents/a4_evacuation.py   @Lilvamp237
+/atlas/agents/a6_logistics.py    @Lilvamp237
+/atlas/agents/a7_shelter.py      @Lilvamp237
+/eval/                           @Lilvamp237

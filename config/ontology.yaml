@@ -1,0 +1,24 @@
+# ATLAS ontology: the vocabulary agents and the LLM may use. (Owner: Sumudu)
+# The validator (atlas/knowledge/ontology.py) rejects any claim whose subject, predicate or object is
+# not defined here. This file is a starting skeleton; extend it.
+
+classes:
+  Area:      { description: "A named area with a population (a GN division or river bank)" }
+  Road:      { description: "A road segment, id 'road:<u>-<v>' with OSM node ids" }
+  Shelter:   { description: "A place people can be evacuated to" }
+  Gauge:     { description: "A physical sensor node measuring water, rain or soil" }
+  Incident:  { description: "One hazard event being coordinated" }
+  Mission:   { description: "A trackable task for a response team" }
+  Resource:  { description: "A team or vehicle" }
+  Hazard:    { description: "flood, landslide, cyclone, earthquake" }
+
+relations:
+  located_in:     { domain: [Road, Shelter, Gauge], range: [Area] }
+  monitors:       { domain: [Gauge], range: [Area] }
+  threatens:      { domain: [Hazard], range: [Area, Road] }
+  reachable_from: { domain: [Shelter], range: [Area], attributes: [minutes, safe] }
+  serves:         { domain: [Shelter], range: [Area] }
+  assigned_to:    { domain: [Resource], range: [Mission] }
+  part_of:        { domain: [Mission, Area], range: [Incident] }
+
+hazards: [flood, landslide, cyclone, earthquake]

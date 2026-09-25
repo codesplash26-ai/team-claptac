@@ -139,6 +139,19 @@ team-claptac/
 
 ---
 
+## Where to find your work
+
+| Workstream | Owner | Start here |
+|---|---|---|
+| Hardware and LoRa | Hasindu | [docs/workstreams/hardware-lora.md](docs/workstreams/hardware-lora.md), `hardware/lora/` |
+| UI, data and integration | Dinuka | [docs/workstreams/ui-and-data.md](docs/workstreams/ui-and-data.md), `atlas/dashboard/`, `atlas/datasets/` |
+| Intelligence layer | Aeshan | [docs/workstreams/intelligence.md](docs/workstreams/intelligence.md), `atlas/intelligence/` |
+| Ontology and graph | Sumudu | [docs/workstreams/ontology-graph.md](docs/workstreams/ontology-graph.md), `atlas/knowledge/` |
+
+The seams between them, with the mock to use until the other side exists, are in
+[docs/contracts.md](docs/contracts.md). The order of work is in [docs/roadmap.md](docs/roadmap.md).
+Anything not built yet raises `NotImplementedError` naming its owner.
+
 ## Getting started
 
 ```bash
