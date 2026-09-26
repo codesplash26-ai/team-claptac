@@ -72,9 +72,19 @@ class Recorder:
         # A complete point-in-time DB for the existing timeline/evidence inspector, including
         # failures. Replace atomically so readers never see a half-written checkpoint.
         tmp = self.folder / "state.tmp.sqlite"
-        with sqlite3.connect(tmp) as out:
+        out = sqlite3.connect(tmp)
+        try:
             conn.backup(out)
-        tmp.replace(self.folder / "state.sqlite")
+        finally:
+            out.close()  # `with connect()` only commits; an open file cannot be renamed on Windows
+        for attempt in range(20):  # on Windows a reader holding the old checkpoint blocks the swap
+            try:
+                tmp.replace(self.folder / "state.sqlite")
+                break
+            except PermissionError:
+                if attempt == 19:
+                    raise
+                time.sleep(0.05)
 
 
 async def review(system, decision, limit=100):

@@ -106,6 +106,7 @@ class IntelligenceService:
                             refs=[ref],
                         )
                     )
+                self.check_prose(advice)
                 current = self.system.orchestration.commander.get_incident(ident)
                 if self.runtime.cop.version != version or current.get("cycle") != cycle:
                     advice.concerns.append(
@@ -127,6 +128,45 @@ class IntelligenceService:
                         (ident, cycle, advice.model_dump_json(), event.model_dump_json()),
                     )
                 await self._publish(event)
+
+    def check_prose(self, advice):
+        """Scan the advice's sentences for places or things that do not exist (the knowledge graph's
+        entity guard). Claims are already checked against the snapshot; this covers free text. It only
+        flags: a sentence naming something unknown is reported, never shown as a verified fact."""
+        from atlas.knowledge.guard import EntityGuard
+        from atlas.knowledge.ontology import YamlOntology
+        from atlas.knowledge.world import WorldProjector
+
+        try:
+            if getattr(self, "_projector", None) is None:
+                self._projector = WorldProjector.from_system(self.system)
+            world = self._projector.world()
+            guard = EntityGuard(YamlOntology.load(graph=world), world, strict_ambiguity=False)
+            texts = [advice.summary, *advice.concerns, *advice.questions]
+            unknown = sorted(
+                {p for t in texts if t for p in guard.check_text(t).mentions.unresolved}
+            )
+        except (
+            Exception
+        ):  # the guard must never stop advice, but it must not pass it silently either
+            log.exception("entity guard failed")
+            advice.concerns.append(
+                "Place names in this advice could not be checked against the map."
+            )
+            return
+        for phrase in unknown:
+            advice.trace.steps.append(
+                ReasoningStep(
+                    kind="check",
+                    text=f"Entity guard: {phrase!r} matches nothing known; not a fact.",
+                )
+            )
+        if unknown:
+            advice.concerns.append(
+                "Not verified (no such place is known): "
+                + ", ".join(repr(p) for p in unknown)
+                + "."
+            )
 
     async def _publish(self, event):
         await self.runtime.bus.publish(event)

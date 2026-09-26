@@ -38,7 +38,8 @@ def test_saved_keys_persist_privately_and_are_never_public(tmp_path):
     response = store.save(update(api_key="secret-first", reasoning_effort="high"))
     assert response["has_api_key"]
     assert "secret-first" not in json.dumps(response)
-    assert os.stat(path).st_mode & 0o777 == 0o600
+    if os.name == "posix":  # Windows has no mode bits; the file lives in the user's own profile
+        assert os.stat(path).st_mode & 0o777 == 0o600
     loaded = SettingsStore(path=path)
     assert loaded.active == "openai" and loaded.key_for("openai") == ("secret-first", "saved")
     assert loaded.profiles["openai"].reasoning_effort == "high"

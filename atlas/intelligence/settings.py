@@ -193,7 +193,8 @@ class SettingsStore:
             self.path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
             fd, tmp = tempfile.mkstemp(prefix=".llm-", dir=self.path.parent)
             try:
-                os.fchmod(fd, 0o600)
+                if hasattr(os, "fchmod"):  # POSIX; on Windows the file inherits the user's profile ACL
+                    os.fchmod(fd, 0o600)
                 with os.fdopen(fd, "w") as stream:
                     json.dump(state, stream)
                     stream.flush()
