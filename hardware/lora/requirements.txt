@@ -1,6 +1,6 @@
-# Raspberry Pi side of the LoRa link (node and gateway). Pin versions once the SPI library is chosen.
-# Radio driver choice is Hasindu's first task; add it here when decided.
+# Raspberry Pi side of the LoRa link (node and gateway).
 spidev
 gpiozero
 paho-mqtt>=2.0
 requests
+pyyaml>=6.0

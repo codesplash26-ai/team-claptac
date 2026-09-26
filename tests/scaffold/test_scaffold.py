@@ -64,13 +64,20 @@ def test_lora_frame_types_are_distinct_bytes():
     assert all(0 <= int(t) <= 255 for t in FrameType)
 
 
-def test_unbuilt_lora_gateway_fails_loudly_not_silently():
-    gateway = LoraGateway(MockLoraLink(), codec=None, key=b"k", on_event=lambda e: None)
-    with pytest.raises(NotImplementedError, match="Hasindu"):
-        gateway.poll_once()
-    frame = LoraFrame(1, 1, FrameType.READING, b"")
-    with pytest.raises(NotImplementedError, match="Hasindu"):
-        gateway.readings_from(frame, NOW)
+def test_lora_gateway_is_wired_not_a_stub():
+    from atlas.ingest.lora import HmacFrameCodec, ReadingItem, pack_reading_payload
+    from atlas.ingest.sensors import SensorType
+
+    link = MockLoraLink()
+    events = []
+    codec = HmacFrameCodec()
+    key = b"scaffold-hmac-key-16"
+    gateway = LoraGateway(link, codec, key, events.append)
+    payload = pack_reading_payload([ReadingItem(SensorType.WATER_LEVEL, 0, 10.0, 0)])
+    frame = LoraFrame(1, 1, FrameType.READING, payload)
+    link.inbox.append(codec.encode(frame, key))
+    assert gateway.poll_once() == 1
+    assert events and gateway.readings_from(frame, NOW)[0].value == 10.0
 
 
 def test_mock_link_round_trips_bytes():

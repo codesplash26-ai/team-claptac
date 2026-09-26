@@ -1,7 +1,12 @@
 # LoRa gateway
 
-Owner: Hasindu. A Pi with a Ra-02 that listens continuously, verifies and de-duplicates frames, ACKs
-them, and hands the result to ATLAS through `atlas/ingest/lora.py` (`LoraGateway`). Its output is the
-same as the MQTT and HTTP paths: `SensorReading`s into the existing ingest, so the Sentinel and
-everything after it are unchanged. Also forwards field reports and mission acknowledgements. Config
-holds the `node_id` and `area_code` tables and reads `LORA_HMAC_KEY` from the environment.
+Receives signed frames on a Pi + Ra-02, ACKs them, and posts the same `SensorReading` JSON that MQTT and HTTP already use. Downstream (A1 and the rest) does not change.
+
+```bash
+cp config.example.yaml config.yaml   # set HMAC key, laptop URL, node table
+# Antenna on the Ra-02 before starting — the gateway transmits ACKs.
+python run.py --config config.yaml
+python run.py --config config.yaml --mock   # no radio; injects a rising water level
+```
+
+`--mock` is the laptop test and the demo-day fallback. Real radios need a 433 MHz antenna.
