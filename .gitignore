@@ -24,3 +24,7 @@ data/cache/
 # Agent manager frontend
 frontend/node_modules/
 frontend/.vite/
+
+# LoRa runtime configs hold the HMAC key; only the .example files are committed
+hardware/lora/gateway/config.yaml
+hardware/lora/node/config.yaml
