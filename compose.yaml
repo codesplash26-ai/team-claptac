@@ -13,12 +13,27 @@ services:
     image: atlas-claptac:latest
     ports:
       - "${ATLAS_PORT:-8000}:8000"
-    env_file:
-      - path: .env
-        required: false
+    # Settings come from .env if you create one (see .env.example); every one has a working default,
+    # so nothing is required. Plain ${VAR:-default} substitution works on every Compose v2.
     environment:
       DATABASE_URL: sqlite:////app/state/atlas.db
       ATLAS_LLM_SETTINGS_PATH: /app/state/llm-settings.json
+      ATLAS_SITE: ${ATLAS_SITE:-ratnapura}
+      LLM_PROVIDER: ${LLM_PROVIDER:-anthropic}
+      LLM_MODEL: ${LLM_MODEL:-}
+      LLM_API_KEY: ${LLM_API_KEY:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      LLM_TIMEOUT_SECONDS: ${LLM_TIMEOUT_SECONDS:-60}
+      LLM_REQUESTS_PER_MINUTE: ${LLM_REQUESTS_PER_MINUTE:-30}
+      LLM_MAX_RETRIES: ${LLM_MAX_RETRIES:-3}
+      INTELLIGENCE_MAX_CALLS_PER_INCIDENT: ${INTELLIGENCE_MAX_CALLS_PER_INCIDENT:-4}
+      ATLAS_TOKENS: ${ATLAS_TOKENS:-}
+      ATLAS_AUTH: ${ATLAS_AUTH:-}
+      ATLAS_OPERATOR_TOKEN: ${ATLAS_OPERATOR_TOKEN:-}
+      ATLAS_OTLP_ENDPOINT: ${ATLAS_OTLP_ENDPOINT:-}
+      ATLAS_OTLP_HEADERS: ${ATLAS_OTLP_HEADERS:-}
+      MQTT_ENABLED: ${MQTT_ENABLED:-false}
       MQTT_HOST: mqtt
     volumes:
       - atlas-state:/app/state        # the database, the ledger and saved AI settings
