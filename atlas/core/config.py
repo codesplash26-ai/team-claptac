@@ -28,6 +28,8 @@ class SentinelConfig(BaseModel):
     rise_threshold_cm_min: float = Field(default=5, gt=0)
     rainfall_threshold_mm: float = Field(default=20, gt=0)
     soil_threshold_pct: float = Field(default=80, gt=0, le=100)
+    tilt_threshold_deg: float = Field(default=2.0, gt=0)  # slope movement from the installed angle
+    quake_threshold_magnitude: float = Field(default=4.5, gt=0)  # a felt, possibly damaging quake
     minimum_confidence: float = Field(default=0.65, ge=0, le=1)
     corroboration_minimum: float = Field(default=0.4, ge=0, le=1)
     rearm_ratio: float = Field(default=0.8, gt=0, lt=1)

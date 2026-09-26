@@ -1,0 +1,39 @@
+{
+ "name": "ratnapura-earthquake-demo",
+ "title": "Earthquake felt in Ratnapura (made-up example)",
+ "hazard": "earthquake",
+ "area_id": "ratnapura-demo-river",
+ "real": false,
+ "story": "A magnitude 6.8 earthquake is reported near Ratnapura and confirmed by a second agency a minute later. ATLAS treats steep roads as blocked (rockfall and slides) and moves people to open ground and shelters.",
+ "replay_minutes": 2.0,
+ "assumptions": [
+  "Synthetic event: no damaging earthquake has been recorded at Ratnapura. The format matches what atlas/datasets/usgs.py produces from a live USGS feed.",
+  "Steep roads (15% grade and over) within 1.2 km are put in doubt at M4.5 and treated as blocked from M6.75 (1.5x the threshold), a demo rule for rockfall and triggered slides."
+ ],
+ "events": [
+  {
+   "at_seconds": 0,
+   "payload": {
+    "kind": "official_warning",
+    "source": "demo:usgs",
+    "area_id": "ratnapura-demo-river",
+    "attribute": "earthquake",
+    "value": 6.8,
+    "unit": "M",
+    "text": "Synthetic: M 6.8, 18 km from Ratnapura, depth 10 km."
+   }
+  },
+  {
+   "at_seconds": 60,
+   "payload": {
+    "kind": "official_warning",
+    "source": "demo:gsmb",
+    "area_id": "ratnapura-demo-river",
+    "attribute": "earthquake",
+    "value": 6.7,
+    "unit": "M",
+    "text": "Synthetic: second agency, M 6.7, same event."
+   }
+  }
+ ]
+}

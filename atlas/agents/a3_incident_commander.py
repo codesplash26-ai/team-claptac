@@ -202,6 +202,11 @@ class IncidentCommander(Agent):
         level = self.cop.get(f"area:{st['area_id']}", "risk_level", include_stale=True)
         if level:
             st["level"] = level.value
+        hazard = self.cop.get(f"area:{st['area_id']}", "hazard", include_stale=True)
+        if hazard:  # each cycle plans for what the area is now at risk from (a quake after a flood)
+            st["hazard"] = hazard.value
+        elif event.type is EventType.TRIGGER and event.payload.get("hazard"):
+            st["hazard"] = event.payload["hazard"]
         st.update(state=CycleState.ASSESSING.value, phase="triage", plans={}, pending={})
         events = self._delegate(
             event,
@@ -456,7 +461,8 @@ class IncidentCommander(Agent):
     def _track_missions(self, st: dict, result: Reconciled, actions: list[ProposedAction]) -> None:
         for action in actions:
             if action.action_type == "publish_alert":
-                st.setdefault("alerts", []).append(action.params["severity"])
+                hazard = action.params.get("event") or st["hazard"]
+                st.setdefault("alerts", []).append(f"{hazard}:{action.params['severity']}")
             if action.action_type != "create_mission":
                 continue
             gid = action.params.get("group_id")
@@ -570,9 +576,14 @@ class IncidentCommander(Agent):
         if action.get("action_type") == "create_mission" and gid:
             st["missions"].pop(gid, None)
         if action.get("action_type") == "publish_alert":
-            severity = (action.get("params") or {}).get("severity")
-            if severity in st.get("alerts", []):
-                st["alerts"].remove(severity)  # it never went out; a later cycle may retry
+            params = action.get("params") or {}
+            for sent in (
+                f"{params.get('event') or st['hazard']}:{params.get('severity')}",
+                params.get("severity"),
+            ):
+                if sent in st.get("alerts", []):
+                    st["alerts"].remove(sent)  # it never went out; a later cycle may retry
+                    break
         if reason == "stale_snapshot" or status in ("compensated", "failed_uncompensated"):
             self._note(st, f"{action.get('action_type')} {status}: {reason}")
             return self._replan(event, st, f"gateway {status}: {reason}")

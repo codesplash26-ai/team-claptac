@@ -19,10 +19,13 @@ class FeedReport(BaseModel):
     kind: Literal["official_warning", "field_report"]
     area_id: str = Field(min_length=1)
     timestamp: datetime
-    attribute: Literal["water_level", "rainfall", "soil_moisture", "warning"]
+    attribute: Literal["water_level", "rainfall", "soil_moisture", "tilt", "earthquake", "warning"]
     value: float = Field(ge=0, allow_inf_nan=False)
     unit: str
     text: str = ""
+    # For a "warning": which hazard it warns of (e.g. an NBRO landslide warning). Optional; a warning
+    # without one is read as a flood warning, as before.
+    hazard: Literal["flood", "landslide", "earthquake"] | None = None
 
     @field_validator("timestamp")
     @classmethod

@@ -43,7 +43,7 @@ def test_the_vocabulary_lists_classes_relations_attributes_and_hazards(client):
     assert body["relations"]["uses"]["dependency"] is True
     assert body["attributes"]["water_level"]["units"]
     assert body["hazards"]["flood"]["status"] == "live"
-    assert body["hazards"]["earthquake"]["status"] == "history_only"
+    assert body["hazards"]["earthquake"]["status"] == "live"
     assert set(body["hazards"]) >= {"flood", "landslide", "earthquake", "tsunami", "drought"}
 
 

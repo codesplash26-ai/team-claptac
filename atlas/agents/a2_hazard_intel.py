@@ -43,7 +43,13 @@ REFERENCE = (
     Path(__file__).resolve().parents[2] / "data" / "reference" / "vulnerable_populations.json"
 )
 LEVELS = ("normal", "watch", "warning", "severe")
-HAZARD_OF = {"water_level": "flood", "rainfall": "flood", "soil_moisture": "landslide"}
+HAZARD_OF = {
+    "water_level": "flood",
+    "rainfall": "flood",
+    "soil_moisture": "landslide",
+    "tilt": "landslide",
+    "earthquake": "earthquake",
+}
 
 
 def load_vulnerabilities(path: Path = REFERENCE) -> list[dict[str, Any]]:
@@ -99,6 +105,15 @@ class HazardIntel(Agent):
 
     def area_level(self, area_id: str) -> str:
         return max(self.levels(area_id).values(), key=LEVELS.index, default="normal")
+
+    def dominant_hazard(self, area_id: str, latest: str) -> str:
+        """The hazard at the highest level in an area; the latest one wins a tie. This is what an
+        incident is about, so a rising landslide risk is not reported as a flood."""
+        levels = self.levels(area_id)
+        top = max(levels.values(), key=LEVELS.index, default="normal")
+        if levels.get(latest) == top:
+            return latest
+        return next((h for h, lvl in levels.items() if lvl == top), latest)
 
     def overlay(self, area_id: str) -> dict[str, Any]:
         profile = self.profiles.get(area_id)
@@ -157,6 +172,8 @@ class HazardIntel(Agent):
             "water_level": self.config.water_threshold_cm,
             "rainfall": self.config.rainfall_threshold_mm,
             "soil_moisture": self.config.soil_threshold_pct,
+            "tilt": self.config.tilt_threshold_deg,
+            "earthquake": self.config.quake_threshold_magnitude,
         }.get(obs.attribute)
         if hazard is None or threshold is None:
             return []
@@ -182,7 +199,7 @@ class HazardIntel(Agent):
         area = event.payload.get("area_id")
         if not area:
             return []
-        hazard = "flood"
+        hazard = event.payload.get("hazard") or "flood"  # older triggers carry no hazard
         current = self.levels(area).get(hazard, "normal")
         if LEVELS.index(current) >= LEVELS.index("warning"):
             return []  # already at least as alarmed as the Sentinel
@@ -240,7 +257,9 @@ class HazardIntel(Agent):
             (area, hazard, level, confidence, now.isoformat()),
         )
         overall = self.area_level(area)
-        self._write_beliefs(area, hazard, overall, confidence, evidence, now)
+        self._write_beliefs(
+            area, self.dominant_hazard(area, hazard), overall, confidence, evidence, now
+        )
         overlay = self.overlay(area)
         payload = {
             "kind": "hazard_risk",

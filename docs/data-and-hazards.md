@@ -36,24 +36,25 @@ Licences are in `SourceInfo` and in the snapshot; the derived scenarios carry th
 
 ## What can drive the live loop today
 
-The Sentinel understands three signals: river level, rainfall and soil moisture. So today:
+The Sentinel scores river level, rainfall, soil moisture, slope tilt and official quake and warning
+reports, and tags each trigger with the hazard it is evidence of.
 
-| Hazard | Live loop | How |
-|---|---|---|
-| Flood | yes | gauge level, plus rainfall |
-| Landslide conditions | partly | rainfall and soil saturation trigger and A2 labels the hazard `landslide`; the planners (A4) still map roads from *water level* only |
-| Cyclone | through its rain | the rainfall and river response; wind and pressure have no rule |
-| Earthquake, tsunami, drought | **no** | history only |
+| Hazard | Live loop | Signals | What the planners do |
+|---|---|---|---|
+| Flood | yes | gauge level and its rate of rise, rainfall, official flood warnings | A4 closes low roads near the gauge (demo flood scale) |
+| Landslide | yes | soil wetness, slope tilt (`tilt`, degrees from the installed angle), official landslide warnings (`warning` with `hazard: landslide`, NBRO-style levels) | A4 treats steep roads near the area as blocked: 15% grade and over, 12% when severe |
+| Earthquake | yes | official magnitude reports for quakes within 100 km (`earthquake`, unit `M`), from `python -m atlas.datasets.usgs --watch` or a replay | A4 puts steep roads in doubt from M4.5 and treats them as blocked from M6.75 |
+| Cyclone | through its rain | rainfall and the river response; wind and pressure have no rule | as flood |
+| Tsunami, drought | no | history only | none |
 
-To make the rest live, someone has to change contracts (each needs the whole team, see
-`docs/contracts.md` decision 3):
+Every rule is a documented demo assumption (`data/reference/sensor_map.yaml`,
+`atlas/tools/sensor_map.py`), not a hydrological or geotechnical model. The alert is worded for the
+hazard: "higher ground" for a flood, "away from slopes" for a landslide, "open ground, away from
+damaged buildings" for an earthquake.
 
-1. a hazard field on the Sentinel's `Trigger` (today A3 defaults to "flood" and A2 forces it on a trigger),
-2. new sensor or report types (seismic magnitude, wind speed, sea level) and a rule for each in A1,
-3. A2 and A4 mappings from those to areas and roads, and ontology entries for the new hazards.
-
-Until then, a quake replayed as a "warning" would trigger a flood-shaped plan. We do not ship scenarios
-that would mislead, so earthquakes, tsunamis and droughts are in the history and not in `data/scenarios/`.
+When one area has several hazards, the incident is about the one at the highest level, and each hazard
+gets its own public warning (the Ditwah replay warns of landslide first, because the soil saturates
+before the river rises, then of flood).
 
 ## Real scenarios
 

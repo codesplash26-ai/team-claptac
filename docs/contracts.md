@@ -46,8 +46,10 @@ Rules
 3. **Earthquake and rainfall in the planners.** A4's sensor map only turns water level into road
    evidence. Rainfall and soil moisture as evidence, and earthquakes at all, are Sumudu's call and a
    contract change if a new `SensorType` is needed. (Sumudu and Dinuka)
-   *Settled for now: the vocabulary knows the other hazards (`hazard_status`), the live loop does not;
-   see `docs/knowledge-graph.md`.*
+   *Settled (team lead's decision): landslide and earthquake are live. `Trigger` gains an optional
+   `hazard`; `FeedReport` accepts `tilt` and `earthquake` attributes and an optional `hazard` on a
+   warning; no new `SensorType` was needed (`tilt` already existed). All additive: a trigger without a
+   hazard is still a flood. Details in `docs/data-and-hazards.md`.*
 4. **Where the advisor runs.** A worker inside the API process (simple) or a separate process. *Proposal:
    inside the API process, started next to `ControlPlane.start_worker`.* (Aeshan)
 5. **Ontology ids.** Entity ids follow `class:key` (`shelter:ratnapura-shelter-01`, `road:<u>-<v>`),

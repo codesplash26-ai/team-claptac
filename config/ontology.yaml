@@ -63,7 +63,8 @@ attributes:
   temperature:   { applies_to: [Gauge], type: number, units: [C], min: -90, max: 60 }
   humidity:      { applies_to: [Gauge], type: number, units: ["%"], min: 0, max: 100 }
   pressure:      { applies_to: [Gauge], type: number, units: [hPa], min: 300, max: 1100 }
-  tilt:          { applies_to: [Gauge], type: number, units: [deg], min: 0, max: 360 }
+  tilt:          { applies_to: [Gauge, Area], type: number, units: [deg], min: 0, max: 360, description: "Slope movement from the installed angle (landslide)" }
+  earthquake:    { applies_to: [Area], type: number, units: [M], min: 0, max: 10, description: "Magnitude of an official report for a quake in range" }
   # --- roads
   belief_open:   { applies_to: [Road], type: number, units: [], min: 0, max: 1, description: "Belief the road is open (A4)" }
   closed:        { applies_to: [Road], type: boolean, units: [], description: "Hard closure recorded by A8" }
@@ -88,9 +89,9 @@ hazards: [flood, landslide, cyclone, earthquake, tsunami, drought]
 # replayed as history, but an incident about one is not something the planners can act on yet.
 hazard_status:
   flood:      { status: live,         signals: [water_level, rainfall] }
-  landslide:  { status: partial,      signals: [rainfall, soil_moisture], note: "A2 labels it; A4 still maps roads from water level only" }
+  landslide:  { status: live,         signals: [soil_moisture, tilt], note: "A1 triggers on soil wetness, slope tilt or an NBRO landslide warning; A4 closes steep roads (atlas/tools/sensor_map.py)" }
   cyclone:    { status: partial,      signals: [rainfall], note: "Only through its rain and the river; wind and pressure have no rule" }
-  earthquake: { status: history_only, signals: [] }
+  earthquake: { status: live,         signals: [earthquake], note: "Official magnitude reports for quakes in range (atlas/datasets/usgs.py); A4 puts steep roads in doubt" }
   tsunami:    { status: history_only, signals: [] }
   drought:    { status: history_only, signals: [] }
 

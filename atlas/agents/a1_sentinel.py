@@ -14,6 +14,16 @@ from atlas.memory.evidence_store import EvidenceStore
 from atlas.reasoning import PlanningRequest
 from atlas.reasoning.tracing import record_result
 
+# What a threshold crossing on each measurement is evidence of. A "warning" carries its own hazard.
+HAZARD_OF = {
+    "water_level": "flood",
+    "water_rate_of_rise": "flood",
+    "rainfall": "flood",
+    "soil_moisture": "landslide",
+    "tilt": "landslide",
+    "earthquake": "earthquake",
+}
+
 
 class Sentinel(Agent):
     name = "a1_sentinel"
@@ -79,6 +89,7 @@ class Sentinel(Agent):
                 )
             ]
 
+        warned_hazard = None
         try:
             if event.payload.get("kind") == "sensor":
                 reading = SensorReading.model_validate(event.payload)
@@ -113,6 +124,7 @@ class Sentinel(Agent):
                     report.timestamp,
                 )
                 source = report.source
+                warned_hazard = report.hazard
                 reliability = cfg.source_reliability.get(
                     source, 0.9 if report.kind == "official_warning" else 0.5
                 )
@@ -125,6 +137,7 @@ class Sentinel(Agent):
                 "humidity": "%",
                 "pressure": "hPa",
                 "tilt": "deg",
+                "earthquake": "M",
             }
             if attribute == "water_level" and unit == "m":
                 value, unit = value * 100, "cm"
@@ -165,12 +178,13 @@ class Sentinel(Agent):
             peers[row["source"]] = row
         # Rainfall is interval accumulation; comparing asynchronous intervals as
         # point observations would incorrectly flag conflicts.
-        tolerance = (
-            cfg.conflict_water_cm
-            if attribute == "water_level"
-            else (10 if attribute == "soil_moisture" else 0.5)
-        )
-        comparable = attribute in {"water_level", "soil_moisture", "warning"}
+        tolerance = {
+            "water_level": cfg.conflict_water_cm,
+            "soil_moisture": 10,
+            "tilt": 1.0,  # degrees
+            "earthquake": 0.5,  # agencies' magnitudes for one quake differ by a few tenths
+        }.get(attribute, 0.5)
+        comparable = attribute in {"water_level", "soil_moisture", "tilt", "earthquake", "warning"}
         trusted = [p for p in peers.values() if p["confidence"] >= cfg.minimum_confidence]
         conflict = comparable and any(abs(p["value"] - value) > tolerance for p in trusted)
         matches = [
@@ -277,6 +291,10 @@ class Sentinel(Agent):
             score = accumulated / cfg.rainfall_threshold_mm
         elif attribute == "soil_moisture":
             score = value / cfg.soil_threshold_pct
+        elif attribute == "tilt":
+            score = value / cfg.tilt_threshold_deg
+        elif attribute == "earthquake":
+            score = value / cfg.quake_threshold_magnitude
         elif attribute == "warning":
             score = value
         status = self.db.connection.execute(
@@ -299,6 +317,7 @@ class Sentinel(Agent):
                 trigger = Trigger(
                     area_id=area,
                     reason=reason,
+                    hazard=warned_hazard or HAZARD_OF.get(reason, "flood"),
                     score=score,
                     confidence=confidence,
                     evidence_ids=evidence_ids,

@@ -70,7 +70,8 @@ export function describeAction(action: { action_type: string; params: Record<str
   const p = action.params as Record<string, string | number | null | undefined>;
   switch (action.action_type) {
     case "publish_alert": {
-      const what = p.instruction === "evacuate" ? "an evacuation alert" : p.instruction === "avoid_area" ? "an alert telling people to avoid the area" : "a public alert";
+      const hazard = typeof p.event === "string" && p.event ? `${p.event} ` : "";
+      const what = p.instruction === "evacuate" ? `a ${hazard}evacuation alert` : p.instruction === "avoid_area" ? `a ${hazard}alert telling people to avoid the area` : `a ${hazard}public alert`;
       return `Publish ${what} for ${p.area ?? "the area"} (${p.severity ?? "severity not set"}, ${p.scope === "district" ? "whole district" : "local"}), in Sinhala, Tamil and English.`;
     }
     case "create_mission": {

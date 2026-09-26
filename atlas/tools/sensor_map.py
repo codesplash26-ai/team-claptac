@@ -16,6 +16,15 @@ Every reading yields one report per in-range road: inundated roads are reported 
 weight; in-range roads that are still dry are reported open (1.0) at a lower weight, so roads reopen
 when the water falls. Reports are applied with `CognitiveMap.update_from_report`.
 
+Landslide and earthquake (also a DEMO assumption, not geotechnics): a slope fails on steep ground.
+Roads within `radius_m` whose grade (height change over length) is at least `min_grade` are affected:
+
+    landslide   soil wetness or slope tilt at or above its threshold -> steep roads reported blocked;
+                at 1.5x the threshold ("severe") the grade limit drops to `severe_min_grade`.
+                Below the threshold, steep roads are reported open at the dry weight, so they reopen.
+    earthquake  a report at or above `magnitude` -> steep roads reported *uncertain* (open 0.35: check
+                before use); at 1.5x ("severe") they are reported blocked.
+
 Pure functions plus a small loader: no COP, no bus, no network.
 """
 
@@ -44,6 +53,24 @@ class Pinned(BaseModel):
     edges: list[str]
 
 
+class SlopeRule(BaseModel):
+    """Which roads a landslide threatens. Thresholds match config/sentinel.yaml by default."""
+
+    soil_pct: float = Field(default=80, gt=0, le=100)
+    tilt_deg: float = Field(default=2.0, gt=0)
+    radius_m: float = Field(default=1200, gt=0)
+    min_grade: float = Field(default=0.15, gt=0)  # 15%: steep enough to fail when saturated
+    severe_min_grade: float = Field(default=0.12, gt=0)
+
+
+class QuakeRule(BaseModel):
+    """Which roads an earthquake puts in doubt (rockfall, cracked embankments, triggered slides)."""
+
+    magnitude: float = Field(default=4.5, gt=0)
+    radius_m: float = Field(default=1200, gt=0)
+    min_grade: float = Field(default=0.15, gt=0)
+
+
 class AreaMapping(BaseModel):
     area_id: str
     site: str
@@ -56,6 +83,8 @@ class AreaMapping(BaseModel):
     )  # multiplies reliability for "closed" reports
     dry_weight: float = Field(default=0.3, ge=0, le=1)  # ... and for "still open" reports
     pinned: list[Pinned] = Field(default_factory=list)
+    landslide: SlopeRule = Field(default_factory=SlopeRule)
+    earthquake: QuakeRule = Field(default_factory=QuakeRule)
 
 
 class RoadReport(BaseModel):
@@ -109,6 +138,57 @@ def road_reports(
             )
         )
     return reports
+
+
+def grade(rg: geo.RoadGraph, u, v) -> float:
+    d = rg.graph[u][v]
+    return abs(d["elev_u"] - d["elev_v"]) / max(1.0, d["length_m"])
+
+
+def steep_edges(mapping: AreaMapping, rg: geo.RoadGraph, radius_m: float, min_grade: float) -> list:
+    near = rg.edges_within(mapping.gauge.lat, mapping.gauge.lon, radius_m)
+    return [(u, v) for (u, v) in near if grade(rg, u, v) >= min_grade]
+
+
+SLOPE_ATTRIBUTES = {"soil_moisture", "tilt", "earthquake"}
+
+
+def slope_reports(
+    mapping: AreaMapping, rg: geo.RoadGraph, attribute: str, value: float, confidence: float
+) -> list[RoadReport]:
+    """Road evidence from a landslide signal (soil wetness, tilt) or an earthquake report."""
+    if attribute == "earthquake":
+        rule = mapping.earthquake
+        ratio = value / rule.magnitude
+        if ratio < 1:
+            return []  # a small or distant quake says nothing about the roads
+        roads = steep_edges(mapping, rg, rule.radius_m, rule.min_grade)
+        open_, weight = (0.0, mapping.wet_weight) if ratio >= 1.5 else (0.35, 0.8)
+        return [
+            RoadReport(
+                u=u,
+                v=v,
+                reported_open=open_,
+                reliability=min(MAX_REPORT_RELIABILITY, confidence * weight),
+            )
+            for (u, v) in roads
+        ]
+    rule = mapping.landslide
+    limit = rule.soil_pct if attribute == "soil_moisture" else rule.tilt_deg
+    ratio = value / limit
+    grade_limit = rule.severe_min_grade if ratio >= 1.5 else rule.min_grade
+    roads = steep_edges(mapping, rg, rule.radius_m, grade_limit)
+    blocked = ratio >= 1
+    weight = mapping.wet_weight if blocked else mapping.dry_weight
+    return [
+        RoadReport(
+            u=u,
+            v=v,
+            reported_open=0.0 if blocked else 1.0,
+            reliability=min(MAX_REPORT_RELIABILITY, confidence * weight),
+        )
+        for (u, v) in roads
+    ]
 
 
 class SensorMap:

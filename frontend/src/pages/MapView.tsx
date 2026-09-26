@@ -43,7 +43,7 @@ type Selected =
 interface Station { key: string; lat: number; lon: number; gauges: Gauge[] }
 
 const LEVEL_COLOUR: Record<string, string> = { normal: "#16a34a", watch: "#eab308", warning: "#f97316", severe: "#dc2626" };
-const SENSOR_NAME: Record<string, string> = { water_level: "River level", rainfall: "Rainfall", soil_moisture: "Soil wetness" };
+const SENSOR_NAME: Record<string, string> = { water_level: "River level", rainfall: "Rainfall", soil_moisture: "Soil wetness", tilt: "Ground movement" };
 
 const OSM = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
 const ESRI = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
@@ -282,7 +282,8 @@ export function MapPage() {
     for (const st of stations) {
       const over = st.gauges.some((g) => g.threshold != null && g.value >= g.threshold);
       const river = st.gauges.find((g) => g.type === "water_level");
-      const label = river ? `River ${river.value.toFixed(0)} ${river.unit}` : `${st.gauges.length} sensors`;
+      const first = st.gauges[0];
+      const label = river ? `River ${river.value.toFixed(0)} ${river.unit}` : st.gauges.length === 1 ? `${SENSOR_NAME[first.type] ?? first.type} ${first.value.toFixed(0)} ${first.unit}` : `${st.gauges.length} sensors`;
       place(`station:${st.key}`, st.lat, st.lon, `<span class="mk-i">〰</span><span class="mk-t">${label}</span>`, `station ${over ? "over" : ""}`, () => setSelected({ kind: "station", item: st }));
     }
     for (const [key, m] of markers.current) if (!want.has(key)) { m.remove(); markers.current.delete(key); }

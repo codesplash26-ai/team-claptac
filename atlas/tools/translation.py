@@ -25,6 +25,7 @@ EVENTS = {
     "flood": {"en": "Flood", "si": "ගංවතුර", "ta": "வெள்ளம்"},
     "landslide": {"en": "Landslide", "si": "නායයෑම්", "ta": "நிலச்சரிவு"},
     "cyclone": {"en": "Cyclone", "si": "සුළි කුණාටුව", "ta": "சூறாவளி"},
+    "earthquake": {"en": "Earthquake", "si": "භූමිකම්පාව", "ta": "நிலநடுக்கம்"},
 }
 SEVERITY = {
     "Extreme": {"en": "Extreme", "si": "අතිශය දරුණු", "ta": "மிகக் கடுமையான"},
@@ -47,6 +48,20 @@ INSTRUCTIONS = {
         "en": "Prepare to evacuate and keep essential items ready.",
         "si": "ඉවත් වීමට සූදානම් වන්න; අත්‍යවශ්‍ය දෑ සූදානමින් තබා ගන්න.",
         "ta": "வெளியேறத் தயாராகுங்கள்; அத்தியாவசியப் பொருட்களை தயாராக வைத்திருங்கள்.",
+    },
+}
+# Where the right action depends on the hazard, the hazard's own wording replaces the general one:
+# "higher ground" is right for a flood and wrong for a landslide.
+HAZARD_INSTRUCTIONS = {
+    ("landslide", "evacuate"): {
+        "en": "Move away from slopes and hillsides to the nearest shelter immediately.",
+        "si": "වහාම බෑවුම් සහ කඳු පැතිවලින් ඉවත්ව ආසන්නතම රැකවරණ ස්ථානයට යන්න.",
+        "ta": "உடனடியாக சரிவுகள் மற்றும் மலைப்பகுதிகளிலிருந்து விலகி அருகிலுள்ள தங்குமிடத்திற்குச் செல்லுங்கள்.",
+    },
+    ("earthquake", "evacuate"): {
+        "en": "Stay away from damaged buildings and steep slopes; go to open ground or the nearest shelter.",
+        "si": "හානි වූ ගොඩනැගිලි සහ බෑවුම්වලින් ඈත්ව සිටින්න; විවෘත බිමකට හෝ ආසන්නතම රැකවරණ ස්ථානයට යන්න.",
+        "ta": "சேதமடைந்த கட்டடங்கள் மற்றும் செங்குத்தான சரிவுகளிலிருந்து விலகி இருங்கள்; திறந்த வெளிக்கு அல்லது அருகிலுள்ள தங்குமிடத்திற்குச் செல்லுங்கள்.",
     },
 }
 HEADLINE = {
@@ -102,8 +117,9 @@ class PhraseBook:
     def severity(self, name: str, lang: str) -> str:
         return SEVERITY.get(name, {}).get(lang, name)
 
-    def instruction(self, code: str, lang: str) -> str | None:
-        return INSTRUCTIONS.get(code, {}).get(lang)
+    def instruction(self, code: str, lang: str, event: str | None = None) -> str | None:
+        specific = HAZARD_INSTRUCTIONS.get(((event or "").lower(), code), {}).get(lang)
+        return specific or INSTRUCTIONS.get(code, {}).get(lang)
 
     def headline(self, event: str, area: str, lang: str) -> str:
         return HEADLINE[lang].format(event=event, area=area)

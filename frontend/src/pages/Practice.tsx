@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { api, ApiError, usePoll, type ScenarioInfo } from "../api";
 
+const HAZARD: Record<string, string> = { flood: "🌊 Flood", landslide: "⛰ Landslide", earthquake: "〽 Earthquake" };
+
 interface Replay { state: string; scenario: string | null; sent: number; total: number; error?: string | null }
 interface Red { attacks: number; passed: number; blocked: number; should_block: number; catch_rate: number; rows: { attack: string; outcome: string; passed: boolean; reason: string }[] }
 
@@ -51,6 +53,7 @@ export function PracticePage() {
               <b>{s.title}</b>
               {s.real ? <span className="chip ok">real recorded data</span> : <span className="chip">made-up example</span>}
             </div>
+            {s.hazard && <div><span className={`chip hz-${s.hazard}`}>{HAZARD[s.hazard] ?? s.hazard}</span></div>}
             <p>{s.story}</p>
             <p className="muted sm">About {Math.max(1, Math.round((s.replay_minutes * 60) / speed / 60))} min at this speed · {s.events} readings</p>
             <button className="btn primary big" disabled={running || busy !== null} onClick={() => run("start", async () => { await api("/play/scenarios/start", { method: "POST", json: { scenario: s.key, speed } }); status.reload(); })}>Start this drill</button>

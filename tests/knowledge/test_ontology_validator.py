@@ -286,4 +286,4 @@ def test_the_vocabulary_can_be_shown_to_a_model_or_a_person(ontology):
     assert vocab["classes"]["Shelter"]["prefix"] == "shelter"
     assert vocab["relations"]["uses"]["dependency"] is True
     assert vocab["relations"]["part_of"]["rollup"] is True
-    assert vocab["hazards"]["earthquake"]["status"] == "history_only"
+    assert vocab["hazards"]["earthquake"]["status"] == "live"

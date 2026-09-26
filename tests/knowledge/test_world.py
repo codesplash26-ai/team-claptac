@@ -178,7 +178,7 @@ def test_gauge_stations_come_from_the_dataset_registry(static):
 
 def test_hazards_know_how_far_the_live_loop_supports_them(static):
     assert static.meta("hazard:flood")["status"] == "live"
-    assert static.meta("hazard:earthquake")["status"] == "history_only"
+    assert static.meta("hazard:tsunami")["status"] == "history_only"
     assert len(static.entities("Hazard")) == 6
 
 

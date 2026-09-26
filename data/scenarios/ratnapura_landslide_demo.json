@@ -1,0 +1,413 @@
+{
+ "name": "ratnapura-landslide-demo",
+ "title": "Ratnapura slope failure after heavy rain (made-up example)",
+ "hazard": "landslide",
+ "area_id": "ratnapura-demo-river",
+ "real": false,
+ "story": "A slope sensor above the riverside settlements reports the soil saturating and the ground starting to move, then an official landslide warning arrives. ATLAS treats steep roads as likely blocked and plans evacuation away from the slopes.",
+ "replay_minutes": 8.0,
+ "assumptions": [
+  "Synthetic readings from a hypothetical slope node (rtp-slope-01); not a recorded event.",
+  "Steep roads (15% grade and over, 12% when severe) within 1.2 km are treated as likely blocked (data/reference/sensor_map.yaml); a demo rule, not a geotechnical model.",
+  "The warning imitates the NBRO landslide early-warning levels; it is not an NBRO bulletin."
+ ],
+ "events": [
+  {
+   "at_seconds": 0,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "rtp-slope-01",
+    "sensor_id": "soil-01",
+    "type": "soil_moisture",
+    "value": 62,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 5,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "rtp-slope-01",
+    "sensor_id": "tilt-01",
+    "type": "tilt",
+    "value": 0.2,
+    "unit": "deg",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 45,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "rtp-slope-01",
+    "sensor_id": "soil-01",
+    "type": "soil_moisture",
+    "value": 66,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 50,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "rtp-slope-01",
+    "sensor_id": "tilt-01",
+    "type": "tilt",
+    "value": 0.2,
+    "unit": "deg",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 90,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "rtp-slope-01",
+    "sensor_id": "soil-01",
+    "type": "soil_moisture",
+    "value": 70,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 95,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "rtp-slope-01",
+    "sensor_id": "tilt-01",
+    "type": "tilt",
+    "value": 0.3,
+    "unit": "deg",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 135,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "rtp-slope-01",
+    "sensor_id": "soil-01",
+    "type": "soil_moisture",
+    "value": 73,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 140,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "rtp-slope-01",
+    "sensor_id": "tilt-01",
+    "type": "tilt",
+    "value": 0.3,
+    "unit": "deg",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 180,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "rtp-slope-01",
+    "sensor_id": "soil-01",
+    "type": "soil_moisture",
+    "value": 76,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 185,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "rtp-slope-01",
+    "sensor_id": "tilt-01",
+    "type": "tilt",
+    "value": 0.4,
+    "unit": "deg",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 225,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "rtp-slope-01",
+    "sensor_id": "soil-01",
+    "type": "soil_moisture",
+    "value": 79,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 230,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "rtp-slope-01",
+    "sensor_id": "tilt-01",
+    "type": "tilt",
+    "value": 0.6,
+    "unit": "deg",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 270,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "rtp-slope-01",
+    "sensor_id": "soil-01",
+    "type": "soil_moisture",
+    "value": 81,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 275,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "rtp-slope-01",
+    "sensor_id": "tilt-01",
+    "type": "tilt",
+    "value": 0.9,
+    "unit": "deg",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 315,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "rtp-slope-01",
+    "sensor_id": "soil-01",
+    "type": "soil_moisture",
+    "value": 84,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 320,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "rtp-slope-01",
+    "sensor_id": "tilt-01",
+    "type": "tilt",
+    "value": 1.4,
+    "unit": "deg",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 360,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "rtp-slope-01",
+    "sensor_id": "soil-01",
+    "type": "soil_moisture",
+    "value": 87,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 365,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "rtp-slope-01",
+    "sensor_id": "tilt-01",
+    "type": "tilt",
+    "value": 2.1,
+    "unit": "deg",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 405,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "rtp-slope-01",
+    "sensor_id": "soil-01",
+    "type": "soil_moisture",
+    "value": 90,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 410,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "rtp-slope-01",
+    "sensor_id": "tilt-01",
+    "type": "tilt",
+    "value": 2.8,
+    "unit": "deg",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 430,
+   "payload": {
+    "kind": "official_warning",
+    "source": "demo:nbro",
+    "area_id": "ratnapura-demo-river",
+    "attribute": "warning",
+    "hazard": "landslide",
+    "value": 2,
+    "unit": "level",
+    "text": "Synthetic landslide early warning (level 2: evacuate), not an actual NBRO bulletin."
+   }
+  },
+  {
+   "at_seconds": 450,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "rtp-slope-01",
+    "sensor_id": "soil-01",
+    "type": "soil_moisture",
+    "value": 92,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 455,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "rtp-slope-01",
+    "sensor_id": "tilt-01",
+    "type": "tilt",
+    "value": 3.4,
+    "unit": "deg",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 495,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "rtp-slope-01",
+    "sensor_id": "soil-01",
+    "type": "soil_moisture",
+    "value": 93,
+    "unit": "%",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  },
+  {
+   "at_seconds": 500,
+   "payload": {
+    "kind": "sensor",
+    "node_id": "rtp-slope-01",
+    "sensor_id": "tilt-01",
+    "type": "tilt",
+    "value": 3.6,
+    "unit": "deg",
+    "location": {
+     "lat": 6.6828,
+     "lon": 80.3992,
+     "area_id": "ratnapura-demo-river"
+    }
+   }
+  }
+ ]
+}

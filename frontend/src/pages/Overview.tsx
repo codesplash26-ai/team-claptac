@@ -4,7 +4,7 @@ import { ago, describeAction, friendly, missionStatus, place, readable, type Ale
 interface Sensor { node_id: string; sensor_type: string; value: number; unit: string; threshold: number | null; history?: number[]; observed_at?: number }
 interface Replay { state: string; scenario: string | null; sent: number; total: number }
 
-const SENSOR: Record<string, string> = { water_level: "River level", rainfall: "Rainfall", soil_moisture: "Soil wetness" };
+const SENSOR: Record<string, string> = { water_level: "River level", rainfall: "Rainfall", soil_moisture: "Soil wetness", tilt: "Ground movement (slope)" };
 
 function Spark({ values, threshold }: { values: number[]; threshold: number | null }) {
   if (values.length < 2) return null;

@@ -255,13 +255,22 @@ def reconcile(
 
     # --- public alert: only when the risk is real, and only as loud as the level.
     severity = SEVERITY_OF_LEVEL.get(level)
-    already = max((SEVERITY_RANK.get(a, 0) for a in alerted or []), default=0)
+    # `alerted` holds "hazard:severity" (older records: just the severity, which counts for every
+    # hazard, the safe reading). A landslide warning does not stop a later flood warning.
+    already = max(
+        (
+            SEVERITY_RANK.get(a.rsplit(":", 1)[-1], 0)
+            for a in alerted or []
+            if ":" not in a or a.rsplit(":", 1)[0] == hazard
+        ),
+        default=0,
+    )
     # Never repeat an alert, and never send a milder one after a stronger one: the public would
     # read a softer instruction as the situation improving.
     if severity and SEVERITY_RANK[severity] > already:
         out.actions.append(
             ActionSpec(
-                slot=f"alert:{severity}:{'evacuate' if placements else 'avoid_area'}",
+                slot=f"alert:{hazard}:{severity}:{'evacuate' if placements else 'avoid_area'}",
                 executor="a9_comms",
                 action_type="publish_alert",
                 params={

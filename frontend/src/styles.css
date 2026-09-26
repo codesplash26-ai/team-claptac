@@ -198,3 +198,6 @@ svg text { font-family: inherit; }
 .chip.click { cursor: pointer; font-size: 13px; padding: 4px 10px; } .chip.click:hover { border-color: var(--accent); color: var(--accent); }
 .drill { display: grid; gap: 6px; align-content: start; } .drill p { margin: 2px 0; }
 .err { color: var(--bad); }
+.chip.hz-flood { background: #dbeafe; color: #1e3a8a; border-color: transparent; }
+.chip.hz-landslide { background: #fef3c7; color: #78350f; border-color: transparent; }
+.chip.hz-earthquake { background: #ede9fe; color: #4c1d95; border-color: transparent; }

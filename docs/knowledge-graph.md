@@ -193,6 +193,10 @@ in the live loop. Decided while planning this work: vocabulary only.
   (landslide is `partial`); A4 still maps roads from water level only.
 - **Decision 5 (ids)** is settled by the table above.
 
+**Update: landslide and earthquake are now live** (`hazard_status: live`). The Sentinel tags triggers
+with a hazard, A2 tracks the dominant hazard per area, and A4 maps slope hazards onto steep roads. See
+`docs/data-and-hazards.md`. Tsunami and drought remain `history_only`.
+
 ## Contract changes to tell everyone about
 
 1. `Claim` gains an optional `unit: str | None = None`. Existing callers are unaffected.

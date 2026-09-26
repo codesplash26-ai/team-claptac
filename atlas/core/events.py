@@ -96,6 +96,9 @@ class Observation(BaseModel):
 class Trigger(BaseModel):
     area_id: str
     reason: str
+    # What the threshold crossing is evidence of: flood, landslide or earthquake. Optional so older
+    # producers stay valid; a missing hazard is read as "flood" (the original behaviour).
+    hazard: str | None = None
     score: float = Field(ge=0, allow_inf_nan=False)
     confidence: float = Field(ge=0, le=1)
     evidence_ids: list[str]

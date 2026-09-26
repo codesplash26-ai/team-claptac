@@ -163,9 +163,9 @@ def test_hazard_status_matches_what_the_live_loop_can_do():
     status = {h: s["status"] for h, s in YamlOntology.read().hazard_status.items()}
     assert status == {
         "flood": "live",
-        "landslide": "partial",
+        "landslide": "live",
         "cyclone": "partial",
-        "earthquake": "history_only",
+        "earthquake": "live",
         "tsunami": "history_only",
         "drought": "history_only",
     }

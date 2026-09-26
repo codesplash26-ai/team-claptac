@@ -6,7 +6,9 @@ down.
 
 Inputs
     OBSERVATION_VALIDATED (from A1)  water-level readings for a mapped area become evidence about
-                                     nearby roads (`atlas.tools.sensor_map`).
+                                     nearby roads (`atlas.tools.sensor_map`); so do landslide signals
+                                     (soil wetness, slope tilt) and earthquake reports, which affect
+                                     steep roads.
     TASK_ASSIGNED (from A3)          "plan routes from X to these destinations".
     COP                              `edge:<u>-<v>` / `belief_open` (this agent) and `edge:<u>-<v>` /
                                      `open` = False (A8's hard closures via close_major_route).
@@ -49,7 +51,7 @@ from atlas.tools.cognitive_map.beliefs import CognitiveMap
 from atlas.tools.cognitive_map.cop_bridge import RoutingConfig, load_map, minutes
 from atlas.tools.cognitive_map.routing import alternatives
 from atlas.tools.reference import Shelter
-from atlas.tools.sensor_map import SensorMap, road_reports
+from atlas.tools.sensor_map import SLOPE_ATTRIBUTES, SensorMap, road_reports, slope_reports
 
 log = logging.getLogger(__name__)
 
@@ -57,6 +59,7 @@ ASSUMPTIONS = (
     "Route success probability multiplies edge beliefs, treating road failures as independent.",
     "Travel times are OpenStreetMap speed estimates with a 10% per metre uphill penalty.",
     "Sensor readings become road evidence through a demo flood scale (data/reference/sensor_map.yaml).",
+    "Landslide and earthquake signals affect steep roads near the area, a demo rule, not geotechnics.",
     "Shelter capacity shown is static; live occupancy and assignment belong to A7.",
 )
 
@@ -122,7 +125,7 @@ class Evacuation(Agent):
             log.warning("A4 ignoring malformed validated observation %s", event.id)
             return []
         area = self.areas.get(obs.area_id)
-        if obs.attribute != "water_level" or area is None:
+        if area is None or obs.attribute not in {"water_level", *SLOPE_ATTRIBUTES}:
             return []  # not an area or measurement this agent maps onto roads
 
         now = self.clock()
@@ -134,7 +137,12 @@ class Evacuation(Agent):
         before = {(u, v): d["belief_open"] for u, v, d in cmap.map.edges(data=True)}
 
         step = minutes(obs.observed_at)
-        for r in road_reports(area, self.rg, obs.value, obs.confidence):
+        reports = (
+            road_reports(area, self.rg, obs.value, obs.confidence)
+            if obs.attribute == "water_level"
+            else slope_reports(area, self.rg, obs.attribute, obs.value, obs.confidence)
+        )
+        for r in reports:
             cmap.update_from_report(r.u, r.v, r.reported_open, step, r.reliability)
 
         changed = cmap.changed_edges(self.config.write_epsilon)
@@ -175,7 +183,9 @@ class Evacuation(Agent):
                     "kind": "road_access_changed",
                     "site": self.rg.name,
                     "area_id": obs.area_id,
-                    "level_cm": obs.value,
+                    "level_cm": obs.value if obs.attribute == "water_level" else None,
+                    "attribute": obs.attribute,
+                    "value": obs.value,
                     "newly_closed": sorted(closed),
                     "newly_reopened": sorted(reopened),
                     "observation_id": obs.observation_id,

@@ -6,6 +6,10 @@ water_threshold_cm: 25
 rise_threshold_cm_min: 5
 rainfall_threshold_mm: 20
 soil_threshold_pct: 80
+# Landslide: a slope inclinometer (tilt) reading this many degrees away from its installed angle.
+tilt_threshold_deg: 2.0
+# Earthquake: magnitude of an official report for an area within range (see atlas/datasets/usgs.py).
+quake_threshold_magnitude: 4.5
 minimum_confidence: 0.65
 corroboration_minimum: 0.4
 rearm_ratio: 0.8

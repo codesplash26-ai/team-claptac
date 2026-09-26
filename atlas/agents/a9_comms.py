@@ -43,6 +43,9 @@ from atlas.tools.cap import (
 from atlas.tools.translation import BCP47, LANGUAGES, PhraseBook, Translator
 
 SEVERITIES = {s.value for s in Severity} - {"Unknown"}
+# CAP category by hazard: weather-driven hazards are Met, ground hazards are Geo.
+CATEGORY = {"landslide": Category.GEO, "earthquake": Category.GEO, "tsunami": Category.GEO}
+
 RESPONSE = {
     "evacuate": ResponseType.EVACUATE,
     "avoid_area": ResponseType.AVOID,
@@ -342,7 +345,11 @@ class Comms(Agent):
                 event = event_code
             elif event is None:
                 event = await self._translate(event_code, lang)
-            instruction = self.phrases.instruction(instruction_code, lang) if free is None else None
+            instruction = (
+                self.phrases.instruction(instruction_code, lang, event_code)
+                if free is None
+                else None
+            )
             if free is not None:
                 instruction = free if lang == "en" else await self._translate(free, lang)
             if event is None or instruction is None:
@@ -365,7 +372,7 @@ class Comms(Agent):
     def _info(self, lang, t, event_code, severity, p, instruction_code, area, now):
         return CapInfo(
             language=BCP47[lang],
-            categories=[Category.MET],
+            categories=[CATEGORY.get(event_code.lower(), Category.MET)],
             event=t["event"],
             response_types=[RESPONSE.get(instruction_code, ResponseType.AVOID)],
             urgency=Urgency(p.get("urgency", "Immediate")),
