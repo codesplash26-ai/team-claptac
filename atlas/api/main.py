@@ -9,6 +9,7 @@ from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 from atlas.api.dev_routes import router as dev_router
+from atlas.api.knowledge_routes import router as knowledge_router
 from atlas.api.play_routes import router as play_router
 from atlas.api.routes import router
 from atlas.dashboard.dev.playground import LiveReplay
@@ -73,6 +74,7 @@ def create_app(settings=None):
     app.include_router(dev_router)
     app.include_router(play_router)
     app.include_router(manager_router)
+    app.include_router(knowledge_router)
     audit.install(app)
 
     manager = Path(__file__).resolve().parents[1] / "dashboard" / "static" / "manager"

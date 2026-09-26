@@ -88,6 +88,7 @@ Implemented on `Sumudu/C-Routing-and-Optimization`; see [routing integration](do
 - [x] **A6 Logistics**: CP-SAT matching of teams and vehicles to jobs, shortage alerts. Fleet is reference data; committed units are recorded in the COP.
 - [~] **A7 Shelter**: CP-SAT shelter assignment, occupancy in the COP, resupply requests in the plan for A3 to hand to A6. **Not done:** nothing yet records occupancy or unit availability when missions are created (needs a headcount on A8's `create_mission`; open with Dinuka and Hasindu).
 - [x] `eval/`: A/B/C scenarios against the baselines on the grids and all three real networks, section 8 metrics, and a proposal-table gate (`python -m eval.run_abc`). Latency measured is compute time after the trigger (about 47 ms); A1's detection latency is A's.
+- [x] **Ontology and world knowledge graph**: vocabulary and validator that rejects unknown entities, units and values; a world graph of roads, shelters, gauges, missions and incidents; impact and neighbourhood queries; a guard against invented entities in claims and prose; an evidence-existence check for grounding; read-only `/knowledge` routes. See [knowledge graph](docs/knowledge-graph.md).
 
 **Findings to act on before the pitch** (details in the integration guide):
 - [ ] On real hilly networks the original engine's uphill penalty strands evacuees (Ratnapura flood: 61% success vs 100%). ATLAS's planning agents turn it off. Confirm this, and how the pitch describes "elevation-aware travel time".

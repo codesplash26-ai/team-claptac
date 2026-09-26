@@ -46,10 +46,14 @@ Rules
 3. **Earthquake and rainfall in the planners.** A4's sensor map only turns water level into road
    evidence. Rainfall and soil moisture as evidence, and earthquakes at all, are Sumudu's call and a
    contract change if a new `SensorType` is needed. (Sumudu and Dinuka)
+   *Settled for now: the vocabulary knows the other hazards (`hazard_status`), the live loop does not;
+   see `docs/knowledge-graph.md`.*
 4. **Where the advisor runs.** A worker inside the API process (simple) or a separate process. *Proposal:
    inside the API process, started next to `ControlPlane.start_worker`.* (Aeshan)
 5. **Ontology ids.** Entity ids follow `class:key` (`shelter:ratnapura-shelter-01`, `road:<u>-<v>`),
    matching COP subjects where they exist. (Sumudu)
+   *Settled: `road:` is canonical, `edge:` is accepted and rewritten; full table in
+   `docs/knowledge-graph.md`.*
 6. **Bus cause-and-effect.** A small `event_causes` table written by the bus beside the ledger (not in
    event content, because identical events can be produced from different parents). Dinuka implements,
    Aeshan reviews.
