@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "id": "06-link-recovery",
+  "title": "Radio delay and duplicate recovery",
+  "description": "A disconnected gauge delivers a stale packet, reconnects with a fresh alarm reading, then retransmits the same packet.",
+  "tags": [
+    "synthetic",
+    "end-to-end"
+  ],
+  "assumptions": [
+    "Synthetic exercise using cached Ratnapura roads and synthetic population, shelter and fleet data.",
+    "Demonstration thresholds and sensor-to-road mapping are not calibrated hazard forecasts.",
+    "Human decisions and responder updates are scripted; public messages are recorded locally; no hardware or external LLM is used."
+  ],
+  "initial": {},
+  "random_events": {
+    "count": 5,
+    "kinds": [
+      "ambient_sensor",
+      "duplicate",
+      "late_reading"
+    ],
+    "start_seconds": 10,
+    "end_seconds": 1100
+  },
+  "steps": [
+    {
+      "id": "baseline",
+      "at_seconds": 0,
+      "kind": "sensor",
+      "sensor_type": "water_level",
+      "value": 10
+    },
+    {
+      "id": "stale-backlog",
+      "at_seconds": 700,
+      "kind": "sensor",
+      "sensor_type": "water_level",
+      "value": 40,
+      "observed_seconds": 10
+    },
+    {
+      "id": "reconnected",
+      "at_seconds": 720,
+      "kind": "sensor",
+      "sensor_type": "water_level",
+      "value": 28
+    },
+    {
+      "id": "resent",
+      "kind": "duplicate",
+      "at_seconds": 725,
+      "target": "reconnected"
+    },
+    {
+      "id": "ack",
+      "at_seconds": 780,
+      "kind": "mission",
+      "change": "acknowledge"
+    },
+    {
+      "id": "end",
+      "at_seconds": 1100,
+      "kind": "checkpoint"
+    }
+  ],
+  "expectations": [
+    {
+      "metric": "events.trigger",
+      "operator": "gte",
+      "value": 1,
+      "reason": "Hazard input must raise a trigger."
+    },
+    {
+      "metric": "events.plan_proposed",
+      "operator": "gte",
+      "value": 1,
+      "reason": "The commander must produce a plan."
+    },
+    {
+      "metric": "events.alert_published",
+      "operator": "gte",
+      "value": 1,
+      "reason": "A local alert or situation report must be recorded."
+    },
+    {
+      "metric": "events.observation_rejected",
+      "operator": "gte",
+      "value": 1,
+      "reason": "Stale data must be rejected."
+    },
+    {
+      "metric": "inputs.duplicates",
+      "operator": "gte",
+      "value": 1,
+      "reason": "A retransmission must be deduplicated."
+    }
+  ]
+}

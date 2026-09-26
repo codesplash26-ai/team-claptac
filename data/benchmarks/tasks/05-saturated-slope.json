@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "id": "05-saturated-slope",
+  "title": "Saturated slope with rain",
+  "description": "Soil saturation and rain exercise multi-hazard evidence and expose the limits of the demo landslide model.",
+  "tags": [
+    "synthetic",
+    "end-to-end"
+  ],
+  "assumptions": [
+    "Synthetic exercise using cached Ratnapura roads and synthetic population, shelter and fleet data.",
+    "Demonstration thresholds and sensor-to-road mapping are not calibrated hazard forecasts.",
+    "Human decisions and responder updates are scripted; public messages are recorded locally; no hardware or external LLM is used."
+  ],
+  "initial": {},
+  "random_events": {
+    "count": 5,
+    "kinds": [
+      "ambient_sensor",
+      "duplicate",
+      "late_reading"
+    ],
+    "start_seconds": 10,
+    "end_seconds": 480
+  },
+  "steps": [
+    {
+      "id": "soil-baseline",
+      "at_seconds": 0,
+      "kind": "sensor",
+      "sensor_type": "soil_moisture",
+      "value": 60
+    },
+    {
+      "id": "saturation",
+      "at_seconds": 120,
+      "kind": "sensor",
+      "sensor_type": "soil_moisture",
+      "value": 85
+    },
+    {
+      "id": "rain",
+      "at_seconds": 200,
+      "kind": "sensor",
+      "sensor_type": "rainfall",
+      "value": 25
+    },
+    {
+      "id": "soil-peak",
+      "at_seconds": 240,
+      "kind": "sensor",
+      "sensor_type": "soil_moisture",
+      "value": 96
+    },
+    {
+      "id": "end",
+      "at_seconds": 480,
+      "kind": "checkpoint"
+    }
+  ],
+  "expectations": [
+    {
+      "metric": "events.trigger",
+      "operator": "gte",
+      "value": 1,
+      "reason": "Hazard input must raise a trigger."
+    },
+    {
+      "metric": "events.plan_proposed",
+      "operator": "gte",
+      "value": 1,
+      "reason": "The commander must produce a plan."
+    },
+    {
+      "metric": "events.alert_published",
+      "operator": "gte",
+      "value": 1,
+      "reason": "A local alert or situation report must be recorded."
+    },
+    {
+      "metric": "hazards.landslide_updates",
+      "operator": "gte",
+      "value": 1,
+      "reason": "Soil saturation must produce landslide risk evidence."
+    }
+  ]
+}

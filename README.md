@@ -275,3 +275,13 @@ A Raspberry Pi with water-level, rainfall and environmental sensors publishes re
 ## Team
 
 Dinuka Wickramasinghe (lead) · Sumudu Ratnayake · Hasindu Viduranga · Aeshan Rosa
+
+### Simulation benchmark
+
+Open **Benchmarks** in the manager for ten isolated end-to-end simulations with seeded random inputs, live case timelines, explicit checks and downloadable trace bundles. Run three seeds from the command line with:
+
+```sh
+.venv/bin/python -m atlas.benchmark run --seeds 42,43,44
+```
+
+See [the benchmark guide](docs/simulation-benchmark.md) for scenarios, metrics, persistence and limitations. Copy [the task template](data/benchmarks/task-template.json) to add a scenario; [the JSON schema](data/benchmarks/task.schema.json) validates its contract. Outputs live under `outputs/benchmarks/` and are git-ignored. These runs use actual local agents with synthetic data, scripted field/human responses and offline advice.

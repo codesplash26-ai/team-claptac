@@ -14,10 +14,12 @@ import { RunDetail } from "./pages/RunDetail";
 import { Runs } from "./pages/Runs";
 import { IntelligencePage } from "./pages/Intelligence";
 import { LLMSettingsPage } from "./pages/LLMSettings";
+import { BenchmarksPage } from "./pages/Benchmarks";
 import { TimelinePage } from "./pages/Timeline";
 
 const ITEMS: { path: string; label: string; icon: string }[] = [
   { path: "runs", label: "Runs", icon: "☰" },
+  { path: "benchmarks", label: "Benchmarks", icon: "◈" },
   { path: "timeline", label: "Event timeline", icon: "◷" },
   { path: "intelligence", label: "Intelligence", icon: "◇" },
   { path: "llm-settings", label: "LLM settings", icon: "⚙" },
@@ -53,6 +55,11 @@ export function App() {
   let body;
   if (page === "runs" && parts[1]) body = <RunDetail id={parts.slice(1).join("/")} back={() => go("#/runs")} />;
   else if (page === "runs") body = <Runs open={(id) => go(`#/runs/${encodeURIComponent(id)}`)} />;
+  else if (page === "benchmarks" && parts[1] && parts[2]) {
+    const base = `/benchmark/runs/${encodeURIComponent(parts[1])}/cases/${encodeURIComponent(parts[2])}`;
+    body = <TimelinePage key={base} basePath={base} evidencePath={`${base}/evidence`} benchmarkRun={parts[1]} />;
+  }
+  else if (page === "benchmarks") body = <BenchmarksPage key={parts[1] ?? "catalog"} selectedRun={parts[1]} />;
   else if (page === "timeline") body = <TimelinePage />;
   else if (page === "intelligence") body = <IntelligencePage />;
   else if (page === "llm-settings") body = <LLMSettingsPage />;

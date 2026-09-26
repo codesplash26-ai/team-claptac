@@ -12,6 +12,8 @@ from atlas.api.dev_routes import router as dev_router
 from atlas.api.knowledge_routes import router as knowledge_router
 from atlas.api.play_routes import router as play_router
 from atlas.api.routes import router
+from atlas.benchmark.api import BenchmarkService
+from atlas.benchmark.api import router as benchmark_router
 from atlas.dashboard.dev.playground import LiveReplay
 from atlas.ingest.feeds import FeedReport
 from atlas.ingest.feeds import to_event as report_event
@@ -35,6 +37,7 @@ def create_app(settings=None):
         system = app.state.system = attach_all(runtime, site=os.getenv("ATLAS_SITE", "ratnapura"))
         control = app.state.control = system.control
         app.state.replay = LiveReplay(runtime)
+        app.state.benchmark = BenchmarkService()
         app.state.registry = Registry(system, site=os.getenv("ATLAS_SITE", "ratnapura"))
         app.state.eval_store = EvalStore(runtime.db)
         app.state.exporter = OtlpExporter()
@@ -46,6 +49,7 @@ def create_app(settings=None):
             monitors.start()
             yield
         finally:
+            await app.state.benchmark.close()
             await system.intelligence.stop_worker()
             await monitors.stop()
             app.state.replay.stop()
@@ -79,6 +83,7 @@ def create_app(settings=None):
     app.include_router(manager_router)
     app.include_router(knowledge_router)
     app.include_router(intelligence_router)
+    app.include_router(benchmark_router)
     audit.install(app)
 
     manager = Path(__file__).resolve().parents[1] / "dashboard" / "static" / "manager"

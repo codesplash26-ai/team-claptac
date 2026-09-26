@@ -111,7 +111,7 @@ function EventDetails({entry, onSelect, basePath, evidencePath}: {entry: Entry; 
   </aside>;
 }
 
-export function TimelinePage({basePath = "/dev", evidencePath = "/intelligence/evidence"}: {basePath?: string; evidencePath?: string}) {
+export function TimelinePage({basePath = "/dev", evidencePath = "/intelligence/evidence", benchmarkRun}: {basePath?: string; evidencePath?: string; benchmarkRun?: string}) {
   const [page, setPage] = useState<Page>({events: [], has_older: false, oldest_seq: null});
   const [incident, setIncident] = useState("");
   const [agent, setAgent] = useState("");
@@ -184,6 +184,7 @@ export function TimelinePage({basePath = "/dev", evidencePath = "/intelligence/e
   const currentBase = useRef(base); currentBase.current = base;
   const resetReplay = () => {setPlaying(false); setStep(null);};
   return <div className="page tl-page">
+    {benchmarkRun && <div className="card" style={{padding: 16, marginBottom: 20}}><a href={`#/benchmarks/${encodeURIComponent(benchmarkRun)}`}>← Benchmark results</a><p className="muted sm">Isolated simulation trace · {basePath.split("/").slice(-1)[0]} · snapshots refresh while this case runs.</p></div>}
     <header className="tl-heading"><div><p className="tl-eyebrow">SYSTEM ACTIVITY</p><h1>Event timeline</h1><p className="muted">Follow an input through agent work, reasoning, decisions and outcomes.</p></div>
       <div className="row"><span className={`chip ${live && !error ? "ok" : "warn"}`}>{error ? "Connection issue" : live ? "● Live · every 2s" : playing ? "▶ Replaying history" : "Ⅱ Paused"}</span>
         <button className="btn" onClick={() => {setLive(!live); resetReplay();}}>{live ? "Pause updates" : "Resume live"}</button></div></header>

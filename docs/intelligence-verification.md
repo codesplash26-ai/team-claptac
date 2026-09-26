@@ -68,3 +68,9 @@ No shared event enum or sensor message schema changed. Published changes are spl
 Timeline coverage checks pagination without gaps/duplicates, incident input ancestry, unrelated event exclusion, measured work across A1–A9, offline advice provenance, read permissions and planner-record ownership. Browser checks exercised recorded events, filters, evidence, replay, scrubbing, input/output inspection and planner alternatives.
 
 Timeline PR isolated checkout: **629 backend tests passed**; production frontend build and scoped Ruff checks passed.
+
+## Simulation benchmark
+
+See [the benchmark guide](simulation-benchmark.md) for the ten tasks, replayable random schedules, recorded results and scope limitations. API-backed batch benchmark execution is not enabled; benchmark advice remains offline.
+
+Final benchmark PR isolated checkout: **641 backend tests passed**, the production frontend build and scoped Ruff checks passed, and all ten tasks passed on seeds 42, 43 and 44 (30/30 cases).

@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "id": "02-river-evacuation",
+  "title": "Rising river and evacuation",
+  "description": "A corroborated rise starts evacuation planning; simulated responders acknowledge, report progress and complete missions.",
+  "tags": [
+    "synthetic",
+    "end-to-end"
+  ],
+  "assumptions": [
+    "Synthetic exercise using cached Ratnapura roads and synthetic population, shelter and fleet data.",
+    "Demonstration thresholds and sensor-to-road mapping are not calibrated hazard forecasts.",
+    "Human decisions and responder updates are scripted; public messages are recorded locally; no hardware or external LLM is used."
+  ],
+  "initial": {},
+  "random_events": {
+    "count": 5,
+    "kinds": [
+      "ambient_sensor",
+      "duplicate",
+      "late_reading"
+    ],
+    "start_seconds": 10,
+    "end_seconds": 420
+  },
+  "steps": [
+    {
+      "id": "baseline",
+      "at_seconds": 0,
+      "kind": "sensor",
+      "sensor_type": "water_level",
+      "value": 10
+    },
+    {
+      "id": "river-rising",
+      "at_seconds": 120,
+      "kind": "sensor",
+      "sensor_type": "water_level",
+      "value": 26
+    },
+    {
+      "id": "confirmed-rise",
+      "at_seconds": 180,
+      "kind": "sensor",
+      "sensor_type": "water_level",
+      "value": 28
+    },
+    {
+      "id": "team-ack",
+      "at_seconds": 240,
+      "kind": "mission",
+      "change": "acknowledge"
+    },
+    {
+      "id": "team-progress",
+      "at_seconds": 300,
+      "kind": "mission",
+      "change": "progress"
+    },
+    {
+      "id": "team-complete",
+      "at_seconds": 420,
+      "kind": "mission",
+      "change": "complete"
+    }
+  ],
+  "expectations": [
+    {
+      "metric": "events.trigger",
+      "operator": "gte",
+      "value": 1,
+      "reason": "Hazard input must raise a trigger."
+    },
+    {
+      "metric": "events.plan_proposed",
+      "operator": "gte",
+      "value": 1,
+      "reason": "The commander must produce a plan."
+    },
+    {
+      "metric": "events.alert_published",
+      "operator": "gte",
+      "value": 1,
+      "reason": "A local alert or situation report must be recorded."
+    },
+    {
+      "metric": "missions.completed",
+      "operator": "gte",
+      "value": 1,
+      "reason": "At least one authorised mission should complete."
+    }
+  ]
+}

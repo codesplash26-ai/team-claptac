@@ -13,6 +13,7 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
+      "/benchmark": "http://127.0.0.1:8000",
       "/intelligence": "http://127.0.0.1:8000",
       "/health": "http://127.0.0.1:8000",
       "/am": "http://127.0.0.1:8000",

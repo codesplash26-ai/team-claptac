@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "id": "10-human-command",
+  "title": "Human review and withheld approval",
+  "description": "Every mission requires human approval. One request is rejected, other requests are approved later, and responders then execute the approved missions.",
+  "tags": [
+    "synthetic",
+    "end-to-end"
+  ],
+  "assumptions": [
+    "Synthetic exercise using cached Ratnapura roads and synthetic population, shelter and fleet data.",
+    "Demonstration thresholds and sensor-to-road mapping are not calibrated hazard forecasts.",
+    "Human decisions and responder updates are scripted; public messages are recorded locally; no hardware or external LLM is used."
+  ],
+  "initial": {
+    "strict_mission_approval": true,
+    "auto_review": "ignore"
+  },
+  "random_events": {
+    "count": 5,
+    "kinds": [
+      "ambient_sensor",
+      "duplicate",
+      "late_reading"
+    ],
+    "start_seconds": 10,
+    "end_seconds": 450
+  },
+  "steps": [
+    {
+      "id": "baseline",
+      "at_seconds": 0,
+      "kind": "sensor",
+      "sensor_type": "water_level",
+      "value": 10
+    },
+    {
+      "id": "river-rising",
+      "at_seconds": 120,
+      "kind": "sensor",
+      "sensor_type": "water_level",
+      "value": 26
+    },
+    {
+      "id": "confirmed-rise",
+      "at_seconds": 180,
+      "kind": "sensor",
+      "sensor_type": "water_level",
+      "value": 28
+    },
+    {
+      "id": "reject-one",
+      "kind": "review",
+      "at_seconds": 220,
+      "decision": "reject",
+      "limit": 1
+    },
+    {
+      "id": "approve-rest",
+      "kind": "review",
+      "at_seconds": 300,
+      "decision": "approve"
+    },
+    {
+      "id": "ack",
+      "at_seconds": 330,
+      "kind": "mission",
+      "change": "acknowledge"
+    },
+    {
+      "id": "finish",
+      "at_seconds": 450,
+      "kind": "mission",
+      "change": "complete"
+    }
+  ],
+  "expectations": [
+    {
+      "metric": "events.trigger",
+      "operator": "gte",
+      "value": 1,
+      "reason": "Hazard input must raise a trigger."
+    },
+    {
+      "metric": "events.plan_proposed",
+      "operator": "gte",
+      "value": 1,
+      "reason": "The commander must produce a plan."
+    },
+    {
+      "metric": "events.alert_published",
+      "operator": "gte",
+      "value": 1,
+      "reason": "A local alert or situation report must be recorded."
+    },
+    {
+      "metric": "actions.escalated_total",
+      "operator": "gte",
+      "value": 1,
+      "reason": "High-consequence mission requests must be escalated."
+    },
+    {
+      "metric": "actions.rejected",
+      "operator": "gte",
+      "value": 1,
+      "reason": "A human rejection must be honoured."
+    },
+    {
+      "metric": "approvals.approved",
+      "operator": "gte",
+      "value": 1,
+      "reason": "Approved requests must have human audit records."
+    }
+  ]
+}

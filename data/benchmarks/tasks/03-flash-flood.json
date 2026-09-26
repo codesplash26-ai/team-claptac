@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "id": "03-flash-flood",
+  "title": "Flash flood and route disruption",
+  "description": "A rapid rise closes modelled roads and requires replanning while teams face delayed acknowledgements.",
+  "tags": [
+    "synthetic",
+    "end-to-end"
+  ],
+  "assumptions": [
+    "Synthetic exercise using cached Ratnapura roads and synthetic population, shelter and fleet data.",
+    "Demonstration thresholds and sensor-to-road mapping are not calibrated hazard forecasts.",
+    "Human decisions and responder updates are scripted; public messages are recorded locally; no hardware or external LLM is used."
+  ],
+  "initial": {},
+  "random_events": {
+    "count": 5,
+    "kinds": [
+      "ambient_sensor",
+      "duplicate",
+      "late_reading"
+    ],
+    "start_seconds": 10,
+    "end_seconds": 500
+  },
+  "steps": [
+    {
+      "id": "baseline",
+      "at_seconds": 0,
+      "kind": "sensor",
+      "sensor_type": "water_level",
+      "value": 10
+    },
+    {
+      "id": "surge",
+      "at_seconds": 30,
+      "kind": "sensor",
+      "sensor_type": "water_level",
+      "value": 35
+    },
+    {
+      "id": "peak",
+      "at_seconds": 100,
+      "kind": "sensor",
+      "sensor_type": "water_level",
+      "value": 45
+    },
+    {
+      "id": "ack-timeout",
+      "at_seconds": 500,
+      "kind": "checkpoint"
+    }
+  ],
+  "expectations": [
+    {
+      "metric": "events.trigger",
+      "operator": "gte",
+      "value": 1,
+      "reason": "Hazard input must raise a trigger."
+    },
+    {
+      "metric": "events.plan_proposed",
+      "operator": "gte",
+      "value": 1,
+      "reason": "The commander must produce a plan."
+    },
+    {
+      "metric": "events.alert_published",
+      "operator": "gte",
+      "value": 1,
+      "reason": "A local alert or situation report must be recorded."
+    },
+    {
+      "metric": "roads.closed",
+      "operator": "gte",
+      "value": 1,
+      "reason": "Flood evidence should mark roads closed."
+    },
+    {
+      "metric": "incidents.replans",
+      "operator": "gte",
+      "value": 1,
+      "reason": "Changed risk or access should prompt reassessment."
+    }
+  ]
+}

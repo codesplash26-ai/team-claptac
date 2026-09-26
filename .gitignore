@@ -4,6 +4,7 @@ __pycache__/
 venv/
 .env
 .local/
+outputs/benchmarks/
 *.db
 .pytest_cache/
 .ruff_cache/
