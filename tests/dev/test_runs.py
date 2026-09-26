@@ -115,3 +115,22 @@ async def test_metrics_summarise_agents_latency_and_control(system, runtime, clo
     )  # the evacuation alert needed a human
     assert control["resolved"]["approved"] == 1 and control["autonomy_rate"] == 0.857
     assert data["llm"] == {"calls": 0, "tokens": 0, "cost_usd": 0.0}
+
+
+async def test_the_situation_map_names_things_plainly_and_shows_who_is_going_where(
+    system, runtime, clock
+):
+    from atlas.dashboard.dev.geo_view import friendly, situation_map
+
+    await loop(system, runtime, clock)
+    m = situation_map(system)
+    (area,) = [a for a in m["areas"] if a["id"] == "ratnapura-demo-river"]
+    assert area["level"] and area["incident_id"] and area["population"] == 4200
+    (s1,) = [s for s in m["shelters"] if s["id"] == "ratnapura-shelter-01"]
+    assert s1["name"] == "Shelter 01" and s1["expected"] == 120  # three groups of 40 on their way
+    assert {t["kind"] for t in m["teams"]} == {"vehicle", "rescue_team"} and any(
+        t["busy"] for t in m["teams"]
+    )
+    route = next(r for r in m["routes"] if r["people"])
+    assert route["destination"] == "Shelter 01" and route["team"].startswith("Vehicle")
+    assert friendly("ratnapura-rescue-team-01") == "Rescue team 01"

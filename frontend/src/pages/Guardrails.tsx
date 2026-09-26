@@ -1,5 +1,17 @@
 import { usePoll, type Guardrails } from "../api";
 
+// The policy's conditions, in words.
+function when(action: string, rule: { consequence: string; when: Record<string, unknown> }): string {
+  const w = rule.when as Record<string, unknown>;
+  if (rule.consequence !== "high") return "Never: routine, done automatically";
+  if (!Object.keys(w).length) return "Always";
+  const parts: string[] = [];
+  if ("resources_committed_gt" in w) parts.push(`When it commits more than ${w.resources_committed_gt} teams or vehicles`);
+  if ("scope" in w) parts.push(`When the scope is ${w.scope}`);
+  if ("unless_local_advisory" in w) parts.push(`Always, unless it is a local "${(w.unless_local_advisory as string[]).map((x) => x.replace(/_/g, " ")).join('" or "')}" advisory. Every evacuation order goes to a person`);
+  return parts.join("; ") || JSON.stringify(w) + ` (${action})`;
+}
+
 export function GuardrailsPage() {
   const { data, error } = usePoll<Guardrails>("/am/v1/guardrails", 0);
   if (error) return <div className="page"><div className="err">{error}</div></div>;
@@ -27,10 +39,10 @@ export function GuardrailsPage() {
         <div className="card">
           <h2>Action rules · consequence and the conditions that raise it</h2>
           <table className="t">
-            <thead><tr><th>Action</th><th>Consequence</th><th>When high</th></tr></thead>
+            <thead><tr><th>Action</th><th>Consequence</th><th>When a person must approve</th></tr></thead>
             <tbody>{Object.entries(data.actions).map(([name, r]) => (
               <tr key={name}><td>{name}</td><td><span className={`chip ${r.consequence === "high" ? "warn" : "ok"}`}>{r.consequence}</span></td>
-                <td className="sm mono">{Object.keys(r.when).length ? JSON.stringify(r.when) : r.consequence === "high" ? "always" : "—"}</td></tr>
+                <td className="sm">{when(name, r)}</td></tr>
             ))}</tbody>
           </table>
           <div className="sm muted" style={{ marginTop: 6 }}>A condition whose parameter is missing or malformed counts as met: unknown means high.</div>

@@ -9,7 +9,17 @@ this works with no internet.
 
 from __future__ import annotations
 
+import re
 from typing import Any
+
+
+def friendly(entity_id: str) -> str:
+    """'ratnapura-shelter-01' -> 'Shelter 01'; 'ratnapura-rescue-team-01' -> 'Rescue team 01'.
+
+    Only for display: the id stays the reference everywhere else."""
+    key = re.sub(r"^[a-z]+(?:-fort)?-", "", entity_id or "")
+    words = key.replace("-", " ").split()
+    return (" ".join(words).capitalize() if words else entity_id) or entity_id
 
 
 def situation_map(system) -> dict[str, Any]:
@@ -58,12 +68,98 @@ def situation_map(system) -> dict[str, Any]:
                     "title": mission.title,
                     "status": mission.status.value,
                     "points": pts,
+                    "team": friendly(mission.team or ""),
+                    "people": _people(mission),
+                    "destination": friendly(mission.destination) if mission.destination else None,
+                    "progress": mission.progress,
                 }
             )
-    shelters = [
-        {"id": s.id, "lat": s.lat, "lon": s.lon, "capacity": s.capacity}
-        for s in system.routing.shelter.shelters.values()
-    ]
+    missions = system.control.dispatch.list()
+    snapshot = runtime.cop.snapshot(now=now)
+    occupancy = {
+        b["subject"][8:]: b["value"]
+        for b in snapshot["beliefs"]
+        if b["subject"].startswith("shelter:") and b["attribute"] == "occupancy"
+    }
+    finished = {"completed", "cancelled", "failed"}
+    shelters = []
+    for sh in system.routing.shelter.shelters.values():
+        expected = sum(
+            _people(m)
+            for m in missions
+            if getattr(m, "destination", None) == sh.id and m.status.value not in finished
+        )
+        shelters.append(
+            {
+                "id": sh.id,
+                "name": friendly(sh.id),
+                "lat": sh.lat,
+                "lon": sh.lon,
+                "capacity": sh.capacity,
+                "occupancy": occupancy.get(sh.id),  # recorded; None if nobody has reported it
+                "expected": expected,  # people on missions heading there now
+                "elevation_m": getattr(sh, "elevation_m", None),
+                "kind": getattr(sh, "kind", None),
+            }
+        )
+    teams = []
+    try:
+        from atlas.tools.reference import load_resources
+
+        busy = {
+            t.strip()
+            for m in missions
+            if m.status.value not in finished
+            for t in (m.team or "").split(",")
+        }
+        for r in load_resources(rg.name):
+            if r.node in rg.graph.nodes:
+                n = rg.graph.nodes[r.node]
+                teams.append(
+                    {
+                        "id": r.id,
+                        "name": friendly(r.id),
+                        "kind": r.kind,
+                        "lat": n["lat"],
+                        "lon": n["lon"],
+                        "busy": r.id in busy,
+                    }
+                )
+    except Exception:  # a map without teams is still a map
+        pass
+    areas = []
+    try:
+        import json
+        from pathlib import Path
+
+        ref = (
+            Path(__file__).resolve().parents[3]
+            / "data"
+            / "reference"
+            / "vulnerable_populations.json"
+        )
+        incidents = {i.get("area_id"): i for i in system.orchestration.commander.incidents()}
+        for a in json.loads(ref.read_text(encoding="utf-8")):
+            if not (
+                min(lats) - 0.05 <= a["lat"] <= max(lats) + 0.05
+                and min(lons) - 0.05 <= a["lon"] <= max(lons) + 0.05
+            ):
+                continue
+            inc = incidents.get(a["area_id"])
+            areas.append(
+                {
+                    "id": a["area_id"],
+                    "name": a["name"],
+                    "lat": a["lat"],
+                    "lon": a["lon"],
+                    "population": a.get("population"),
+                    "vulnerable": round(a.get("population", 0) * a.get("vulnerable_fraction", 0)),
+                    "level": inc.get("level") if inc else None,  # watch / warning / emergency
+                    "incident_id": inc.get("incident_id") if inc else None,
+                }
+            )
+    except Exception:
+        pass
     gauges = []
     try:
         from atlas.dashboard.panel import sensor_panel
@@ -85,6 +181,8 @@ def situation_map(system) -> dict[str, Any]:
         pass
     return {
         "site": rg.name,
+        "areas": areas,
+        "teams": teams,
         "bounds": [[min(lats), min(lons)], [max(lats), max(lons)]],
         "edges": edges,
         "routes": routes,
@@ -93,3 +191,8 @@ def situation_map(system) -> dict[str, Any]:
         "observed_edges": len(beliefs),
         "likely_closed": sum(1 for b in beliefs.values() if b["value"] < 0.3),
     }
+
+
+def _people(mission) -> int:
+    m = re.search(r"Evacuate (\d+) people", mission.title or "")
+    return int(m.group(1)) if m else 0
