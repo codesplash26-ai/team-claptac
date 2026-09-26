@@ -1,12 +1,29 @@
 # ATLAS — Autonomous Triage, Logical Agentic System
 
+## Aeshan's intelligence layer
+
+The advisor, grounded questions, report previews and evidence viewer now run at
+`/manager/#/intelligence`. Start with `LLM_PROVIDER=none` for an offline demo; replay a flood from
+Playground to generate advice. Models run in a separate worker and cannot change actions.
+
+Configure the provider, API key, model and reasoning/thinking options at
+`/manager/#/llm-settings`. Test the connection, then save to apply it to new intelligence
+requests. Settings persist locally; saved profiles override environment defaults.
+
+```bash
+python -m atlas.intelligence.demo --bad-model
+```
+
+See the [intelligence run guide](docs/workstreams/intelligence.md) and
+[verified results and remaining team work](docs/intelligence-verification.md).
+
 ## A1 and shared planning implementation
 
 The `Aeshan/A1-MCTS` work adds the local event bus, SQLite COP/ledger, structured
 Sentinel, replay, sensor outbox, and optional PlanU-inspired planning. See
 [the integration guide](docs/reasoning-integration.md) for scope, teammate adapters,
-contract changes, configuration, and recovery limitations. Other agent and control
-modules remain workstream scaffolds; the architecture below describes the target.
+contract changes, configuration, and recovery limitations. The offline nine-agent and control loop is assembled in `atlas/system.py`; LoRa and the
+domain ontology still have unfinished workstream modules.
 
 Quick verification without hardware or model keys:
 

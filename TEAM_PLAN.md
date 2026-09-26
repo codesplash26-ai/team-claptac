@@ -1,5 +1,10 @@
 # ATLAS Team Plan
 
+> Current ownership follows [the workstream guides](docs/workstreams): Aeshan owns intelligence
+> (including A2/A3/A5), Hasindu hardware/LoRa, Dinuka UI/data/integration, and Sumudu ontology/graph.
+> The original A/B/C/D allocation below is retained as historical planning context.
+> See [intelligence verification](docs/intelligence-verification.md) for the latest tested status.
+
 ## Aeshan/A1-MCTS implementation and proposed integration handoff
 
 Workstream A now also supplies `atlas/reasoning/`, the reusable PlanU-inspired

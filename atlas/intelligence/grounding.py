@@ -28,6 +28,9 @@ def ground(advice: Advice, ontology: Ontology, evidence_exists: EvidenceExists) 
         for ref in item.claim.evidence_ids:
             if not evidence_exists(ref):
                 item.violations.append(_no_evidence(item, f"evidence {ref!r} does not exist"))
+        supports = getattr(evidence_exists, "supports", None)
+        if supports is not None and not supports(item.claim):
+            item.violations.append(_no_evidence(item, "evidence does not support this claim"))
         item.accepted = not item.violations
     return advice
 

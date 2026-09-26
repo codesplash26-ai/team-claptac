@@ -13,6 +13,9 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
+      "/intelligence": "http://127.0.0.1:8000",
+      "/health": "http://127.0.0.1:8000",
+      "/am": "http://127.0.0.1:8000",
       "/dev": "http://127.0.0.1:8000",
       "/play": "http://127.0.0.1:8000",
       "/approvals": "http://127.0.0.1:8000",

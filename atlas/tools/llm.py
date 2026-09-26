@@ -24,11 +24,15 @@ log = logging.getLogger(__name__)
 class LLMSettings:
     """LLM provider settings, read from the environment (see .env.example)."""
 
-    llm_api_key: str | None = None
+    llm_api_key: str | None = field(default=None, repr=False)
     llm_model: str = "claude-sonnet-5"
     llm_max_retries: int = 3
     llm_requests_per_minute: int = 30
     llm_timeout_seconds: float = 60.0
+    llm_max_tokens: int = 2048
+    thinking_mode: str = "default"
+    thinking_budget: int = 1024
+    reasoning_effort: str = "default"
 
     @classmethod
     def from_env(cls) -> "LLMSettings":
@@ -86,6 +90,8 @@ class LLMResult:
     tool_calls: list[dict[str, Any]] = field(default_factory=list)
     raw: Any = None
     used_fallback: bool = False
+    tokens_in: int | None = None
+    tokens_out: int | None = None
 
 
 class RateLimiter:
@@ -97,16 +103,16 @@ class RateLimiter:
         self._lock = asyncio.Lock()
 
     async def acquire(self) -> None:
-        async with self._lock:
-            now = time.monotonic()
-            cutoff = now - 60.0
-            while self._timestamps and self._timestamps[0] < cutoff:
-                self._timestamps.popleft()
-            if len(self._timestamps) >= self.requests_per_minute:
+        while True:
+            async with self._lock:
+                now = time.monotonic()
+                while self._timestamps and self._timestamps[0] <= now - 60.0:
+                    self._timestamps.popleft()
+                if len(self._timestamps) < self.requests_per_minute:
+                    self._timestamps.append(now)
+                    return
                 wait = 60.0 - (now - self._timestamps[0]) + 0.01
-                await asyncio.sleep(max(wait, 0.01))
-                return await self.acquire()
-            self._timestamps.append(time.monotonic())
+            await asyncio.sleep(max(wait, 0.01))
 
 
 class LLMClient:
@@ -166,6 +172,7 @@ class LLMClient:
         tool_map = {t.name: t for t in tools}
         working_messages = list(messages)
         all_tool_calls: list[dict[str, Any]] = []
+        tokens_in = tokens_out = 0
 
         for _round in range(max_tool_rounds + 1):
             result = await self._call_with_retries(
@@ -173,11 +180,16 @@ class LLMClient:
                 messages=working_messages,
                 tools=tools,
             )
+            usage = getattr(result.raw, "usage", None)
+            tokens_in += getattr(usage, "input_tokens", 0)
+            tokens_out += getattr(usage, "output_tokens", 0)
             if not result.tool_calls:
                 return LLMResult(
                     text=result.text,
                     tool_calls=all_tool_calls,
                     raw=result.raw,
+                    tokens_in=tokens_in,
+                    tokens_out=tokens_out,
                 )
 
             # Append assistant turn + tool results for the next round.
@@ -250,10 +262,16 @@ class LLMClient:
         client = self._get_client()
         kwargs: dict[str, Any] = {
             "model": self.settings.llm_model,
-            "max_tokens": 2048,
+            "max_tokens": self.settings.llm_max_tokens,
             "system": system,
             "messages": messages,
         }
+        if self.settings.thinking_mode != "default":
+            kwargs["thinking"] = {"type": self.settings.thinking_mode}
+            if self.settings.thinking_mode == "enabled":
+                kwargs["thinking"]["budget_tokens"] = self.settings.thinking_budget
+        if self.settings.reasoning_effort != "default":
+            kwargs["output_config"] = {"effort": self.settings.reasoning_effort}
         if tools:
             kwargs["tools"] = self._tools_for_api(tools)
 
@@ -318,6 +336,7 @@ class LLMClient:
             error=error,
         )
         self.prompt_log.append(entry)
+        del self.prompt_log[:-100]
         log.info(
             "llm call model=%s tools=%s latency_ms=%.0f error=%s",
             entry.model,
