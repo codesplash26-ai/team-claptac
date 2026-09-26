@@ -15,6 +15,8 @@ export function RunDetail({ id, back }: { id: string; back: () => void }) {
   const runs = usePoll<Run[]>("/dev/runs", 5000);
   const flow = usePoll<FlowEdge[]>(`/dev/flow?incident_id=${encodeURIComponent(id)}`, 2500);
   const agents = usePoll<AgentCard[]>("/dev/agents", 5000);
+  const traces = usePoll<{ trace_id: string; incident_id: string }[]>("/am/v1/traces", 10000);
+  const traceId = traces.data?.find((t) => t.incident_id === id)?.trace_id;
   const run = runs.data?.find((r) => r.incident_id === id);
 
   const ordered = useMemo(() => [...(spans.data ?? [])].sort((a, b) => a.start - b.start), [spans.data]);
@@ -69,6 +71,11 @@ export function RunDetail({ id, back }: { id: string; back: () => void }) {
             <span className="chip">{run.cycles} cycle{run.cycles === 1 ? "" : "s"}</span>
             {run.errors > 0 && <span className="chip bad">{run.errors} errors</span>}
             {run.needs_human && <span className="chip warn">needs human</span>}
+            {traceId && (
+              <a className="btn" href={`/am/v1/traces/${traceId}/otlp`} download={`${traceId}.otlp.json`} title="The whole run as OpenTelemetry (OTLP/JSON), for Jaeger, Grafana Tempo, Honeycomb and others">
+                Download trace (OTLP)
+              </a>
+            )}
           </>
         )}
         <span className="sp" />

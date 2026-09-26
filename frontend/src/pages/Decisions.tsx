@@ -2,6 +2,18 @@ import { useState } from "react";
 import { api, ApiError, usePoll, type Approval } from "../api";
 import { ago, describeAction, place, readable, whyHuman } from "../plain";
 
+interface Stats {
+  actions: number;
+  escalated: number;
+  pending_approvals: number;
+  resolved: { approved: number; edited: number; rejected: number };
+  autonomy_rate: number | null;
+  median_decision_seconds: number | null;
+}
+
+const duration = (s: number | null | undefined) =>
+  s == null ? "—" : s < 90 ? `${Math.round(s)} s` : s < 5400 ? `${Math.round(s / 60)} min` : `${(s / 3600).toFixed(1)} h`;
+
 /* The human in the loop. Each item is something ATLAS wants to do that the safety rules say a person
  * must approve first. Nothing here happens until someone says yes. */
 export function DecisionsPage() {
@@ -12,6 +24,8 @@ export function DecisionsPage() {
   const [note, setNote] = useState<Record<string, string>>({});
   const [msg, setMsg] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
+  const metrics = usePoll<{ control: Stats }>("/dev/metrics", 10000);
+  const stats = metrics.data?.control;
 
   const decide = async (a: Approval, verb: "approve" | "reject") => {
     if (!who.trim()) return setMsg("Please type your name first. It is written into the permanent record with your decision.");
@@ -50,6 +64,15 @@ export function DecisionsPage() {
           </div>
         </div>
       ))}
+
+      {stats && stats.actions > 0 && (
+        <div className="grid g4" style={{ margin: "14px 0" }}>
+          <div className="card"><div className="kpi">{Math.round((stats.autonomy_rate ?? 0) * 100)}%<small>of {stats.actions} actions ATLAS took on its own</small></div></div>
+          <div className="card"><div className="kpi">{stats.escalated}<small>sent to a person to decide</small></div></div>
+          <div className="card"><div className="kpi">{stats.resolved.approved}<small>approved · {stats.resolved.rejected} rejected</small></div></div>
+          <div className="card"><div className="kpi">{duration(stats.median_decision_seconds)}<small>typical time to decide (median)</small></div></div>
+        </div>
+      )}
 
       {history.length > 0 && (
         <div className="card" style={{ marginTop: 14 }}>

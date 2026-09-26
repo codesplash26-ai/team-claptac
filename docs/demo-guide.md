@@ -7,12 +7,13 @@ background imagery and the rain radar.
 ## Before you start
 
 ```bash
-pip install -r requirements.txt
-uvicorn atlas.api.main:app
+docker compose down -v          # a clean start (deletes the last demo's state)
+docker compose up --build
 ```
 
-Open <http://127.0.0.1:8000/> (it lands on **Overview**). For a clean start, stop the server,
-delete `data/atlas.db` and start it again.
+Open <http://localhost:8000/> (it lands on **Overview**). No login is needed: the console runs in open
+demo mode. (Without Docker: `pip install -r requirements.txt`, `uvicorn atlas.api.main:app`, and delete
+`data/atlas.db` for a clean start.)
 
 Know one detail before you present: the river level is shown at the scale of our tabletop flood
 model, where **1 cm on screen is 20 cm of real river**. The replay uses the real Ratnapura gauge
@@ -37,13 +38,14 @@ and what needs me. Everything here updates by itself."
 **Start this drill**. Then click **Watch the overview**.
 
 **What you see:** a blue "Practice drill running" banner. Within a minute the river graph climbs past
-the red dashed danger line, the banner turns orange ("An incident is open, and 1 decision is waiting
-for you"), and missions appear.
+the red dashed danger line, the banner turns orange ("An incident is open, and 2 decisions are
+waiting for you"), and missions appear.
 
 **Say:** "This is the real river record from Cyclone Ditwah last November, replayed thirty times
 faster. Nobody pressed anything: the sensor watch noticed three independent warnings (rain, soil and
 river), opened an incident, and the planning agents worked out who to move, where, and with which
-vehicles. Routine work, like sending vehicles within limits, it does on its own."
+vehicles. Routine work, like sending vehicles within limits, it does on its own. The soil saturated
+before the river rose, so it warns of a landslide first and a flood after; Ditwah caused both."
 
 ## 3. The map
 
@@ -63,7 +65,7 @@ vehicles. Routine work, like sending vehicles within limits, it does on its own.
 **Click, in this order:**
 
 1. **▶ Tour.** A narrated fly-through: the area and its population, the river gauge, the routes,
-   the shelter. Captions appear at the bottom. Say nothing, let it run (about 30 seconds).
+   the shelter. Captions appear at the top. Say nothing, let it run (about 30 seconds).
 2. **Satellite.** The same picture over satellite imagery; **3D hills** shows why routes bend (Ratnapura is
    in a valley).
 3. **Rain radar.** Live rain over Sri Lanka right now (needs internet).
@@ -81,11 +83,13 @@ and the fainter line shows it."
 
 **Click:** Decisions (the menu shows an orange badge).
 
-**What you see:** one card, "Publish an evacuation alert for Ratnapura riverside settlements
-(Moderate, local), in Sinhala, Tamil and English", with **Why ATLAS suggests it** and **Why it
-needs you**.
+**What you see:** two cards, "Publish a landslide evacuation alert…" and "Publish a flood
+evacuation alert for Ratnapura riverside settlements (Moderate, local), in Sinhala, Tamil and
+English", each with **Why ATLAS suggests it** and **Why it needs you**. Once decisions have been
+made, four figures at the top show how much ATLAS did on its own, how many went to a person, how
+many were approved or rejected, and how long a decision typically takes.
 
-**Click:** type a name in **Your name**, then **✓ Approve**.
+**Click:** type a name in **Your name**, then **✓ Approve** on each.
 
 **Say:** "ATLAS will not warn the public by itself. Anything that reaches the public, or commits
 more than two teams at once, waits here. The person's name and decision go into a record that
@@ -125,6 +129,26 @@ situation with a green count of statements checked against the records.
 every statement is still checked, and anything it cannot back up is struck out. If it mentions a
 place that does not exist, like 'Shelter 99', it is flagged instead of shown as fact."
 
+## 7b. Landslide and earthquake
+
+**Click:** Practice drills → *Ratnapura slope failure after heavy rain (made-up example)* → **Start
+this drill**, then Map and Decisions. Or the earthquake drill.
+
+**What you see:** a slope sensor's soil wetness and ground movement rise, an official landslide
+warning arrives, ATLAS opens a **landslide** incident, treats steep roads as blocked, and asks
+before sending a landslide alert that says "move away from slopes and hillsides". The earthquake
+drill does the same for a magnitude 6.8 quake: "stay away from damaged buildings and steep slopes".
+
+**Say:** "Different hazards, different advice to the public. A flood alert says go to higher
+ground; that would be the wrong thing to say in a landslide."
+
+## 7c. Field radio (optional, with the LoRa gateway)
+
+On a machine with the repository, run the gateway in mock-radio mode against the running system
+(see `hardware/lora/README.md`). **Overview → Field radio (LoRa)** then shows each node: when it
+was last heard, its signal (good, fair or weak), how many messages arrived, any gaps, and how many
+frames were rejected for a bad signature.
+
 ## 8. Prove the safety rules
 
 **Click:** Practice drills → **Run the safety test**.
@@ -155,5 +179,5 @@ Open **For technical staff** in the menu:
 | The map background is blank | No internet. The roads, routes and markers still draw; say it works offline. |
 | Rain radar says it needs internet | Skip that step. |
 | Nothing happens after starting a drill | Check **Practice drills** shows "Drill running"; if another drill finished, start again. |
-| An old incident is on screen | Stop the server, delete `data/atlas.db`, start again. |
+| An old incident is on screen | `docker compose down -v`, then `docker compose up` (without Docker: stop, delete `data/atlas.db`, start). |
 | "You are not signed in" on Decisions | Access codes are set (`ATLAS_TOKENS`). Use **sign in** at the bottom of the menu. |

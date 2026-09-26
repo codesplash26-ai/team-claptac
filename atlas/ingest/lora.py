@@ -21,6 +21,8 @@ from datetime import datetime, timedelta, timezone
 from enum import IntEnum
 from typing import Callable, Protocol
 
+from pydantic import BaseModel, Field
+
 from atlas.core.events import Event
 from atlas.ingest.field import FieldReport, MissionAck
 from atlas.ingest.sensors import SensorLocation, SensorReading, SensorType, to_event
@@ -297,6 +299,28 @@ def measurement_id_for(node_id: int, sequence: int, position: int) -> str:
     return f"{node_id}:{sequence}:{position}"
 
 
+class LinkNode(BaseModel):
+    node: int
+    name: str
+    area_id: str | None = None
+    last_heard: str | None = None
+    rssi_dbm: float | None = None
+    snr_db: float | None = None
+    frames: int = 0
+    sequence: int | None = None
+    gaps: int = 0
+
+
+class LinkStatus(BaseModel):
+    """What a gateway reports about its radio link (``LoraGateway.status``)."""
+
+    gateway: str = Field(min_length=1, max_length=64)
+    reported_at: str
+    nodes: list[LinkNode] = Field(default_factory=list, max_length=256)
+    bad_signatures: int = Field(default=0, ge=0)
+    duplicates: int = Field(default=0, ge=0)
+
+
 class LoraGateway:
     """Reads frames, drops bad or duplicate ones, sends ACKs, and emits ATLAS events.
 
@@ -328,6 +352,7 @@ class LoraGateway:
         self.gaps: list[tuple[int, int, int]] = []
         self.bad_signatures = 0
         self.duplicates = 0
+        self.heard: dict[int, dict] = {}  # per node: last heard, signal, frames accepted
 
     def poll_once(self, timeout_s: float = 1.0) -> int:
         """Handle at most one frame; return how many events were emitted."""
@@ -349,11 +374,41 @@ class LoraGateway:
             return 0
         self._accept_seq(frame.node_id, frame.sequence)
         received_at = self.clock()
+        heard = self.heard.setdefault(frame.node_id, {"frames": 0})
+        heard.update(
+            last_heard=received_at.isoformat(),
+            rssi_dbm=frame.rssi_dbm,
+            snr_db=frame.snr_db,
+            frames=heard["frames"] + 1,
+            sequence=frame.sequence,
+        )
         try:
             return self._dispatch(frame, received_at)
         except ValueError:
             log.warning("authenticated frame %s from node %s had a bad payload", frame.frame_type, frame.node_id)
             return 0
+
+    def status(self, gateway_id: str = "gateway") -> dict:
+        """Link health for the console: each node's last frame and signal, and what was dropped."""
+        nodes = []
+        for node_id, heard in sorted(self.heard.items()):
+            cfg = self.nodes.get(node_id)
+            nodes.append(
+                {
+                    "node": node_id,
+                    "name": cfg.name if cfg else f"node-{node_id}",
+                    "area_id": cfg.area_id if cfg else None,
+                    "gaps": sum(1 for n, _, _ in self.gaps if n == node_id),
+                    **heard,
+                }
+            )
+        return {
+            "gateway": gateway_id,
+            "reported_at": self.clock().isoformat(),
+            "nodes": nodes,
+            "bad_signatures": self.bad_signatures,
+            "duplicates": self.duplicates,
+        }
 
     def readings_from(self, frame: LoraFrame, received_at) -> list[SensorReading]:
         """Turn a READING frame into SensorReadings (timestamp = received_at - age)."""

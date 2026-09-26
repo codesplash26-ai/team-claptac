@@ -154,8 +154,8 @@ svg text { font-family: inherit; }
 .legend-card { left: 14px; bottom: 36px; padding: 10px 12px; font-size: 13px; display: grid; gap: 3px; width: 270px; }
 .legend-card .sw { display: inline-block; width: 22px; height: 5px; border-radius: 3px; vertical-align: middle; margin-right: 6px; }
 .legend-open { position: absolute; left: 14px; bottom: 36px; }
-.caption { left: 50%; transform: translateX(-50%); bottom: 36px; max-width: min(640px, 70%); padding: 10px 14px; display: flex; gap: 12px; align-items: center; font-size: 15px; }
-.map-note { top: 58px; left: 50%; transform: translateX(-50%); padding: 4px 10px; font-size: 12px; }
+.caption { left: 50%; transform: translateX(-50%); top: 60px; max-width: min(560px, calc(100% - 600px)); min-width: 280px; padding: 10px 14px; display: flex; gap: 12px; align-items: center; font-size: 15px; z-index: 3; }
+.map-note { bottom: 36px; left: 50%; transform: translateX(-50%); padding: 4px 10px; font-size: 12px; }
 .mk { display: inline-flex; align-items: center; gap: 4px; background: var(--panel); color: var(--ink); border: 2px solid #334155; border-radius: 16px; padding: 2px 8px 2px 4px; font: 600 12px system-ui, sans-serif; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,.25); white-space: nowrap; }
 .mk:hover { transform: scale(1.06); } .mk-i { font-size: 15px; line-height: 1; }
 .mk.team { padding: 2px 4px; border-color: #16a34a; } .mk.team.busy { border-color: #2563eb; }

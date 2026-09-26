@@ -65,7 +65,7 @@ def store(request: Request):
 
 
 @router.get("/me")
-async def me(principal: Principal = Depends(authz(rbac.SETTINGS_READ))):
+async def me(principal: Principal = Depends(authz(rbac.RUN_READ))):  # any signed-in role
     return {
         "name": principal.name,
         "role": principal.role,

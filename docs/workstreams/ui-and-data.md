@@ -19,13 +19,13 @@ UI
 - [x] Red-team panel (blocked actions) and latency meter (sensor to trigger to plan to alert).
 - [x] Ask-the-system box (Ask ATLAS page, on Aeshan's `nlquery`).
 - [x] Responder dashboard polish: hazards and route uncertainty on the map, mission board, approvals.
-- [ ] LoRa panel (can be built on `MockLoraLink` now; no UI yet): node online, last seen, signal strength, frames dropped (Hasindu's data).
+- [x] LoRa panel (Overview → Field radio): node online, last seen, signal strength, frames dropped (Hasindu's data).
 
 Data
 - [x] Fetch a real Ratnapura gauge history (`atlas/datasets/lk_irrigation.py`), check the format and units, cache it.
 - [x] Open-Meteo rainfall and soil moisture; check the flood API date range.
 - [x] `to_scenario` a real flood, scaled so it plays in minutes; keep a small committed fixture for tests.
-- [ ] Landslide and earthquake scenarios (COOLR, USGS) once the contract decision in `docs/contracts.md` (#3) is made. History only today.
+- [x] Landslide and earthquake are live hazards (contract decision 3), with a landslide and an earthquake drill and a live USGS watcher (`python -m atlas.datasets.usgs --watch`). No real landslide or quake at Ratnapura to replay, so both drills are labelled made-up examples.
 - [x] `data/sources/README.md`: every source with licence, what it drives, and whether it is verified.
 
 Agent manager (added beyond the original list; merged in PRs #9 and #10)
@@ -34,9 +34,9 @@ Agent manager (added beyond the original list; merged in PRs #9 and #10)
 - [x] Evaluations, monitors and experiments; guardrails view; role-based access; automatic audit trail.
 - [x] `atlasctl` command line and a committed OpenAPI contract with a drift test.
 - [x] Console sign-in (bottom of the menu).
-- [ ] OTLP export button and span attributes on Run detail.
-- [ ] Update `docs/contracts.md` for suspend and resume, roles, the `audit` ledger kind and `/am/v1`.
-- [ ] Approvals statistics page (approval rate, time to decision).
+- [x] OTLP export button on Run detail.
+- [x] `docs/contracts.md` covers suspend and resume, roles, the `audit` ledger kind, `/am/v1` and `/ingest/link-status`.
+- [x] Decision statistics on the Decisions page (autonomy rate, approvals and rejections, median time to decide).
 
 Console for disaster managers
 - [x] Plain-language operations pages: Overview, Map, Decisions, Alerts & reports, Teams & missions, Ask ATLAS, Practice drills; engineering pages under "For technical staff".
@@ -44,7 +44,8 @@ Console for disaster managers
 - [x] Demo guide: `docs/demo-guide.md`.
 
 Platform
-- [ ] Dockerfile, CI, reproducibility guide; cover the bus's full-ledger scan on every publish before large replays.
+- [x] Dockerfile, `compose.yaml` (`docker compose up --build`), CI (`.github/workflows/ci.yml`), README setup guide.
+- [x] The bus no longer scans the whole ledger on every publish: delivery reads only records after each subscriber's position (Aeshan, PR #13).
 
 ## Use meanwhile
 `PermissiveOntology`, `advise_without_llm`, `MockLoraLink`, `data/scenarios/flood.json`.

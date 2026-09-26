@@ -3,8 +3,9 @@
 > **Team ClapTac** · General Sir John Kotelawala Defence University
 > CodeSplash '26 Agentic AI Phase · Theme 3: AI Disaster Response Coordinator
 
-ATLAS helps a disaster-management office run the first hours of a flood or landslide in Sri Lanka.
-It watches river gauges, rainfall, soil moisture and field reports. When something significant
+ATLAS helps a disaster-management office run the first hours of a flood, landslide or earthquake in
+Sri Lanka. It watches river gauges, rainfall, soil moisture, slope sensors, earthquake reports and
+field reports. When something significant
 happens it opens an incident, works out who is at risk, plans evacuation routes and shelter places,
 assigns rescue teams and vehicles, and drafts public alerts in Sinhala, Tamil and English.
 
@@ -17,19 +18,91 @@ Ditwah at Ratnapura, November 2025) can be replayed as practice drills.
 
 ---
 
-## Try it in two minutes
+![ATLAS demo: a real flood drill, the 3D map tour, a person approving the alert, the alert in Sinhala](docs/media/atlas-demo.gif)
+
+## Run it with Docker (recommended)
+
+**Prerequisites:** Docker with Compose v2: [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+on Windows or macOS, or Docker Engine with the compose plugin on Linux. Nothing else: no Python,
+Node, database, AI key or hardware is needed. About 3 GB of disk for the image.
+
+```bash
+git clone https://github.com/codesplash26-ai/team-claptac.git
+cd team-claptac
+docker compose up --build
+```
+
+The first build takes a few minutes (it builds the console and installs the map and optimisation
+libraries). When the log says `Uvicorn running on http://0.0.0.0:8000`, open:
+
+| What | Address |
+|---|---|
+| The console (start here) | <http://localhost:8000/> |
+| The earlier responder dashboard | <http://localhost:8000/dashboard> |
+| API documentation | <http://localhost:8000/docs> |
+| Health check | <http://localhost:8000/health> |
+
+Then, in the console:
+
+1. Open **Practice drills** and start *Ratnapura, Cyclone Ditwah floods, November 2025* (real data).
+2. Watch **Overview** and **Map**: the soil saturates and the river rises past the danger line;
+   ATLAS opens an incident and plans evacuation on its own.
+3. Go to **Decisions**: ATLAS asks before warning the public. Type a name and approve.
+4. See the alert in Sinhala, Tamil and English under **Alerts & reports**.
+
+Also try the landslide and earthquake drills. A click-by-click script with what each screen shows is
+in [docs/demo-guide.md](docs/demo-guide.md).
+
+**Useful commands**
+
+```bash
+docker compose up -d --build          # run in the background
+docker compose logs -f atlas          # follow the log
+docker compose down                   # stop (saved state is kept)
+docker compose down -v                # stop and delete saved state: a clean start for the next demo
+docker compose run --rm atlas python -m pytest -q     # the test suite, inside the container
+ATLAS_PORT=8080 docker compose up     # if port 8000 is taken (then open http://localhost:8080)
+docker compose --profile sensors up   # also start an MQTT broker for Raspberry Pi sensor nodes
+```
+
+**Configuration.** None is required. To change anything, copy `.env.example` to `.env` before
+starting; Compose reads it automatically. The main settings are in [Configuration](#configuration)
+below (an optional AI model key, access codes and roles, the site). State (the database, the audit
+ledger, saved AI settings) lives in the `atlas-state` Docker volume, so it survives restarts until
+`docker compose down -v`.
+
+**Do testers need to log in? No.** With no access codes set (the default), the console opens in
+**open demo mode**: everyone has full access, and the menu says "Open demo mode". Nothing to type.
+
+To see the role-based access at work instead, put these demo codes in `.env` (the same line is in
+`.env.example`), restart with `docker compose up`, and use **sign in** at the bottom of the menu:
+
+```bash
+ATLAS_TOKENS=[{"token":"admin-demo","name":"Demo Admin","role":"admin"},{"token":"commander-demo","name":"Demo Commander","role":"commander"},{"token":"developer-demo","name":"Demo Developer","role":"developer"},{"token":"viewer-demo","name":"Demo Viewer","role":"viewer"}]
+```
+
+| Access code | Role | Can |
+|---|---|---|
+| `admin-demo` | Admin | everything, including AI model settings |
+| `commander-demo` | Incident Commander | approve or reject decisions, update missions, pause agents, run drills, read the audit log |
+| `developer-demo` | Developer | drills, red team, what-if, evaluations, experiments |
+| `viewer-demo` | Viewer | look at everything, change nothing |
+
+These are demo values for evaluation, not secrets; use your own codes for anything real.
+
+**Notes.** The map's background imagery and the rain radar come from public map services and need
+internet; everything else, including the map's own layers, works offline. On Windows, if Docker
+Desktop fails to start with an error about `userAnalyticsOtlpHttp.sock`, quit it, rename
+`%LOCALAPPDATA%\Docker\run` to anything else, and start it again.
+
+### Without Docker
+
+Python 3.11+ (and Node 20 only if you change the console):
 
 ```bash
 pip install -r requirements.txt
 uvicorn atlas.api.main:app            # then open http://127.0.0.1:8000/
 ```
-
-1. Open **Practice drills** and start *Ratnapura, Cyclone Ditwah floods, November 2025*.
-2. Watch the **Overview** and the **Map**: the river rises past the danger line and an incident opens.
-3. Go to **Decisions**: ATLAS asks before sending the evacuation alert. Type your name and approve.
-4. See the alert, in three languages, under **Alerts & reports**.
-
-A step-by-step demo script, with what each screen shows, is in [docs/demo-guide.md](docs/demo-guide.md).
 
 ---
 
@@ -68,31 +141,60 @@ python -m atlas.manager.cli eval run          # exits 2 on a critical safety fai
 
 ## How it works
 
+```mermaid
+flowchart TB
+  subgraph FIELD["Field hardware"]
+    NODE["Sensor nodes (Raspberry Pi)<br/>river level · rain · soil · slope tilt"]
+    GW["LoRa gateway (Pi + SX1278)<br/>signed frames, repeats dropped"]
+    NODE -- "LoRa radio, 433 MHz<br/>(no mobile signal needed)" --> GW
+  end
+  subgraph FEEDS["Data feeds and reports"]
+    REAL["Irrigation Dept gauges · Open-Meteo<br/>USGS earthquakes (live watcher)"]
+    REP["Official warnings · field reports"]
+  end
+  GW -- "HTTP or MQTT" --> INGEST
+  NODE -. "MQTT (within Wi-Fi)" .-> INGEST
+  REAL --> INGEST
+  REP --> INGEST
+  INGEST["Ingest API"] --> A1
+
+  subgraph AGENTS["Agents on one event bus (every hand-off recorded)"]
+    A1["A1 Sentinel<br/>checks, de-duplicates, scores:<br/>flood · landslide · earthquake"]
+    A2["A2 Hazard & vulnerability"]
+    A3["A3 Incident Commander<br/>(the only agent that delegates)"]
+    A5["A5 Triage"]
+    A4["A4 Evacuation<br/>(routes on real roads)"]
+    A7["A7 Shelter"]
+    A6["A6 Logistics"]
+    A1 -- trigger --> A2 --> A3
+    A3 --> A5 & A4 & A7 & A6
+  end
+
+  subgraph CB["Control boundary"]
+    PE["Policy engine"] --> GWY["Action Gateway"]
+    GWY -- "high-consequence:<br/>evacuation alerts, many teams" --> HUMAN(["A person decides"])
+  end
+  A5 & A4 & A7 & A6 -- "one reconciled plan" --> PE
+  HUMAN -- approve --> GWY
+  GWY --> A8["A8 Dispatch<br/>missions to teams"]
+  GWY --> A9["A9 Public alerts & reports<br/>Sinhala · Tamil · English · CAP"]
+
+  subgraph MEMORY["Shared state"]
+    LEDGER[("Ledger<br/>append-only, hash-chained")]
+    COP[("Common operating picture")]
+    KG[("Knowledge graph<br/>and ontology")]
+  end
+  AGENTS -.-> COP
+  CB -.-> LEDGER
+  COP -.-> KG
+  KG -.-> ADV["Intelligence advisor<br/>reads only; every claim checked"]
+  A8 -. "mission status" .-> A3
+
+  CONSOLE["Console: overview · 3D map · decisions · alerts<br/>missions · field radio · practice drills"]
+  COP -.-> CONSOLE
+  HUMAN --- CONSOLE
 ```
- Sensors (Pi / LoRa), weather and river feeds, field reports
-        │
-        ▼
- A1 Sentinel ── checks, de-duplicates, scores ──► trigger
-        │
-        ▼
- A2 Hazard & vulnerability ──► A3 Incident Commander (the only agent that delegates)
-                                   │ asks, in order
-                     ┌─────────────┼──────────────┬──────────────┐
-                     ▼             ▼              ▼              ▼
-              A5 Triage     A4 Evacuation   A7 Shelter    A6 Logistics
-                     └─────────────┴──────┬───────┴──────────────┘
-                                          ▼ one reconciled plan
-                    ┌──────────── CONTROL BOUNDARY ─────────────┐
-                    │ Policy engine → Action Gateway → a person │
-                    │  (anything high-consequence waits here)   │
-                    └──────────────────────┬────────────────────┘
-                                           ▼
-                        A8 Dispatch (missions)   A9 Public alerts and reports
-                                           │
-      Ledger (append-only, hash-chained) · Common operating picture · Knowledge graph
-                                           │
-                  Intelligence advisor (reads only; every claim checked against the records)
-```
+
 
 - **Agents never message each other directly.** They publish typed events on one bus; every event,
   its cause and its timing are recorded, so any decision can be traced back to the reading that
@@ -116,12 +218,12 @@ mission, and closing a major road. A missing or malformed detail counts as high-
 
 | Area | What it does | Read more |
 |---|---|---|
-| **Agents A1–A9** | The full loop above, persistent across restarts, with per-incident state and bounded replanning. | [orchestration](docs/orchestration.md) |
+| **Agents A1–A9** | The full loop above for floods, landslides and earthquakes, persistent across restarts, with per-incident state and bounded replanning. | [orchestration](docs/orchestration.md) |
 | **Control boundary** | Deny-by-default policy, per-agent identity, approvals, refusal of plans built on out-of-date information, idempotent execution, hash-chained ledger. | [control boundary](docs/control-boundary.md) |
 | **Knowledge graph and ontology** | A typed world graph of roads, junctions, shelters, gauges, missions, groups and incidents. It rejects claims about things that do not exist, and answers "what depends on this road?". | [knowledge graph](docs/knowledge-graph.md) |
 | **Intelligence** | Advice after each planning round, questions in plain words and field-report extraction. Every claim is checked against recorded evidence, and sentences naming unknown places are flagged. Works offline; OpenAI or Anthropic can be configured. | [intelligence](docs/workstreams/intelligence.md) |
 | **Real data** | River, rainfall and soil sources with an offline cache, plus history for earthquakes, tsunami and drought. Two replays of Cyclone Ditwah at Ratnapura from real records. | [data and hazards](docs/data-and-hazards.md) |
-| **Field sensors and LoRa** | A Raspberry Pi node over MQTT, and a LoRa radio link (SX1278) whose signed frames become the same sensor readings. Bad signatures and replays are dropped. A mock radio for demos. | [hardware](hardware/README.md), [LoRa](hardware/lora/README.md) |
+| **Field sensors and LoRa** | Raspberry Pi sensor nodes (river level, rain, soil, slope tilt) send over MQTT, or over a LoRa radio link (SX1278, 433 MHz) where there is no mobile signal. The gateway checks each frame's signature, drops repeats and forwards the same sensor readings; its link health (signal, messages, gaps) shows on the console. A mock radio for demos. | [hardware](hardware/README.md), [LoRa](hardware/lora/README.md) |
 | **Public alerts** | CAP 1.2 alerts from fixed, checked phrasing in Sinhala, Tamil and English. | `atlas/agents/a9_comms.py` |
 | **Observability** | Every incident is a trace (OpenTelemetry model, OTLP export); an event timeline; about eighteen automatic evaluators, with the safety-critical ones gating CI. | [manager API](docs/manager_openapi.json) |
 | **Testing tools** | A red-team suite (16 attempts to break the rules), what-if replays, ten seeded benchmark exercises, and the A/B/C routing evaluation. | [benchmarks](docs/simulation-benchmark.md) |

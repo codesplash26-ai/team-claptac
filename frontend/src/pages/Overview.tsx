@@ -3,6 +3,12 @@ import { ago, describeAction, friendly, missionStatus, place, readable, type Ale
 
 interface Sensor { node_id: string; sensor_type: string; value: number; unit: string; threshold: number | null; history?: number[]; observed_at?: number }
 interface Replay { state: string; scenario: string | null; sent: number; total: number }
+interface LinkNode { node: number; name: string; area_id: string | null; last_heard: string | null; rssi_dbm: number | null; snr_db: number | null; frames: number; gaps: number }
+interface Link { gateway: string; age_seconds: number; nodes: LinkNode[]; bad_signatures: number; duplicates: number }
+
+// LoRa signal strength in words. Around -120 dBm is the edge of reception for SF9.
+const signal = (rssi: number | null) =>
+  rssi == null ? { text: "not measured", tone: "" } : rssi >= -90 ? { text: "good", tone: "ok" } : rssi >= -105 ? { text: "fair", tone: "warn" } : { text: "weak", tone: "bad" };
 
 const SENSOR: Record<string, string> = { water_level: "River level", rainfall: "Rainfall", soil_moisture: "Soil wetness", tilt: "Ground movement (slope)" };
 
@@ -27,6 +33,7 @@ export function OverviewPage() {
   const sitreps = usePoll<Sitrep[]>("/sitreps", 5000);
   const sensors = usePoll<Sensor[]>("/sensors", 3000);
   const replay = usePoll<Replay>("/play/scenarios/status", 2000);
+  const links = usePoll<Link[]>("/links", 5000);
   const scenarios = usePoll<ScenarioInfo[]>("/play/scenarios", 0);
   const drillName = scenarios.data?.find((s) => s.key === replay.data?.scenario)?.title ?? friendly(replay.data?.scenario);
 
@@ -84,6 +91,37 @@ export function OverviewPage() {
                 </b>
               </div>
               {s.history && <Spark values={s.history.slice(-40)} threshold={s.threshold} />}
+            </div>
+          ))}
+        </div>
+
+        <div className="card" style={{ gridColumn: "1 / -1" }}>
+          <h2>Field radio (LoRa)</h2>
+          {(links.data ?? []).length === 0 && (
+            <p className="muted">No radio gateway is connected. Field sensor nodes send readings over LoRa where there is no mobile signal; start a gateway (see hardware/lora) and its nodes appear here.</p>
+          )}
+          {(links.data ?? []).map((g) => (
+            <div key={g.gateway}>
+              <p className="sm">
+                <b>{g.gateway}</b>{" "}
+                <span className={`chip ${g.age_seconds > 60 ? "bad" : "ok"}`}>{g.age_seconds > 60 ? `silent for ${Math.round(g.age_seconds / 60)} min` : "reporting"}</span>{" "}
+                <span className="muted">{g.bad_signatures} frames rejected (bad signature) · {g.duplicates} repeats ignored</span>
+              </p>
+              <table className="t">
+                <thead><tr><th>Node</th><th>Area</th><th>Last heard</th><th>Signal</th><th>Messages</th><th>Missed</th></tr></thead>
+                <tbody>
+                  {g.nodes.map((n) => {
+                    const s = signal(n.rssi_dbm);
+                    return (
+                      <tr key={n.node}>
+                        <td>{n.name}</td><td>{place(n.area_id ?? "")}</td><td>{ago(n.last_heard)}</td>
+                        <td><span className={`chip ${s.tone}`}>{s.text}</span>{n.rssi_dbm != null && <span className="muted sm"> {n.rssi_dbm} dBm</span>}</td>
+                        <td>{n.frames}</td><td>{n.gaps ? <span className="chip warn">{n.gaps}</span> : 0}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
           ))}
         </div>

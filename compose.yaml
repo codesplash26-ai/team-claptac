@@ -1,0 +1,39 @@
+# ATLAS with Docker Compose.
+#
+#   docker compose up --build            then open http://localhost:8000
+#   docker compose --profile sensors up  also starts an MQTT broker for Raspberry Pi sensor nodes
+#   docker compose down -v               stop and delete all saved state (a clean start)
+#
+# No settings are required: without an AI key ATLAS uses its offline mode, and without access codes
+# the console runs in open demo mode. To set any, copy .env.example to .env; compose reads it if present.
+
+services:
+  atlas:
+    build: .
+    image: atlas-claptac:latest
+    ports:
+      - "${ATLAS_PORT:-8000}:8000"
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      DATABASE_URL: sqlite:////app/state/atlas.db
+      ATLAS_LLM_SETTINGS_PATH: /app/state/llm-settings.json
+      MQTT_HOST: mqtt
+    volumes:
+      - atlas-state:/app/state        # the database, the ledger and saved AI settings
+      - atlas-outputs:/app/outputs    # benchmark reports
+    restart: unless-stopped
+
+  mqtt:
+    image: eclipse-mosquitto:2
+    profiles: ["sensors"]
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./hardware/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+    restart: unless-stopped
+
+volumes:
+  atlas-state:
+  atlas-outputs:

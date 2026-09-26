@@ -402,7 +402,7 @@ export function MapPage() {
     setSelected(null);
     const steps: { text: string; go: () => Promise<void> }[] = [];
     const [[la0, lo0], [la1, lo1]] = data.bounds;
-    steps.push({ text: `This is ${data.site}. Coloured lines are roads: green probably open, orange uncertain, red probably closed.`, go: () => flyTo((la0 + la1) / 2, (lo0 + lo1) / 2, 14.2, 45, -20) });
+    steps.push({ text: `This is ${data.site[0].toUpperCase()}${data.site.slice(1)}. Coloured lines are roads: green probably open, orange uncertain, red probably closed.`, go: () => flyTo((la0 + la1) / 2, (lo0 + lo1) / 2, 14.2, 45, -20) });
     for (const a of (data.areas ?? []).filter((x) => x.level)) {
       steps.push({ text: `${a.name}: alert level ${a.level}. ${a.population?.toLocaleString() ?? "?"} people live here, about ${a.vulnerable.toLocaleString()} of them vulnerable.`, go: () => flyTo(a.lat, a.lon, 15.6, 60, 30) });
     }

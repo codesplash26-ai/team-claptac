@@ -98,6 +98,24 @@ def build_forwarder(cfg: dict):
     raise SystemExit(f"Unknown atlas.kind: {kind}")
 
 
+def build_status_reporter(cfg: dict):
+    """POST the gateway's link status next to the readings (http only), for the console's radio panel."""
+    dest = cfg.get("atlas") or {}
+    if dest.get("kind", "http") != "http":
+        return lambda status: None
+    import requests
+
+    url = dest["url"].rsplit("/ingest/", 1)[0] + "/ingest/link-status"
+
+    def report(status: dict) -> None:
+        try:
+            requests.post(url, json=status, timeout=5)
+        except requests.RequestException as exc:  # status is best effort; readings are what matter
+            log.warning("link status not delivered: %s", exc)
+
+    return report
+
+
 def build_radio(cfg: dict):
     from sx1278 import SX1278Link
 
@@ -125,6 +143,9 @@ def main() -> None:
     codec = HmacFrameCodec()
     link = MockLoraLink() if args.mock else build_radio(cfg)
     gateway = LoraGateway(link, codec, key, build_forwarder(cfg), nodes=nodes, areas=areas)
+    report_status = build_status_reporter(cfg)
+    gateway_id = cfg.get("gateway_id", "gateway-01")
+    last_report = 0.0
 
     log.info("LoRa gateway started mock=%s nodes=%s", args.mock, list(nodes))
     seq = 0
@@ -135,10 +156,14 @@ def main() -> None:
                 t = min(1.0, seq / 12)
                 cm = 5 + 25 * t
                 inject_mock_reading(link, codec, key, seq, cm)
+                link.last_rssi_dbm, link.last_snr_db = -88.0 - (seq % 5), 7.5 - (seq % 3)
                 log.info("mock water_level %.1f cm", cm)
             emitted = gateway.poll_once(timeout_s=1.0)
             if emitted:
                 log.info("forwarded %s reading(s)", emitted)
+            if time.monotonic() - last_report >= 10:
+                report_status(gateway.status(gateway_id))
+                last_report = time.monotonic()
             if args.mock:
                 time.sleep(10)
     except KeyboardInterrupt:

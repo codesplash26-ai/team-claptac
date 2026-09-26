@@ -1,6 +1,7 @@
 """ATLAS API: sensor/report ingestion (A) plus the control-boundary routes (D)."""
 
 import os
+import time
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -17,6 +18,7 @@ from atlas.benchmark.api import router as benchmark_router
 from atlas.dashboard.dev.playground import LiveReplay
 from atlas.ingest.feeds import FeedReport
 from atlas.ingest.feeds import to_event as report_event
+from atlas.ingest.lora import LinkStatus
 from atlas.ingest.sensors import SensorReading, to_event
 from atlas.intelligence.api import router as intelligence_router
 from atlas.manager import audit
@@ -72,6 +74,13 @@ def create_app(settings=None):
     @app.post("/ingest/sensor", status_code=202)
     async def ingest_sensor(reading: SensorReading, request: Request):
         return await publish(request, to_event(reading))
+
+    @app.post("/ingest/link-status", status_code=202)
+    async def ingest_link_status(status: LinkStatus, request: Request):
+        """A LoRa gateway's link health (hardware/lora/gateway/run.py). Shown on the console."""
+        links = request.app.state.__dict__.setdefault("links", {})
+        links[status.gateway] = {**status.model_dump(mode="json"), "received_at": time.time()}
+        return {"accepted": status.gateway}
 
     @app.post("/ingest/report", status_code=202)
     async def ingest_report(report: FeedReport, request: Request):

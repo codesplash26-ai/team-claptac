@@ -20,10 +20,10 @@ Everything else keeps its current owner (platform: Aeshan; routing: Sumudu; cont
 
 | Owner | Done | Still to do |
 |---|---|---|
-| Dinuka | Console for disaster managers (plain-language operations pages, 3D situation map), manager (traces, evaluations, access, audit, CLI), control boundary, real data and Ditwah replays, red team, what-if, integration of all four workstreams | LoRa status panel, Docker and CI, landslide and quake scenarios (after the contract decision) |
-| Hasindu | LoRa link: signed frames, SX1278 driver, node and gateway runners, mock radio (PR #11) | Two-radio field test, hardware demo rig |
+| Dinuka | Console for disaster managers (plain-language operations pages, 3D situation map), manager (traces, evaluations, access, audit, CLI), control boundary, real data and Ditwah replays, red team, what-if, integration of all four workstreams | Nothing required. Optional: field-test the landslide and earthquake road rules with real data |
+| Hasindu | LoRa link: signed frames, SX1278 driver, node and gateway runners, mock radio (PR #11); link health on the console | Two-radio bench and range test, airtime budget, hardware demo rig |
 | Aeshan | Event bus, Sentinel, A2/A3/A5, intelligence layer (advice, questions, extraction, providers), event timeline, benchmarks (PRs #12 to #14) | Real-provider testing with a live key |
-| Sumudu | Routing and allocation (A4, A6, A7), ontology and knowledge graph, entity guard, evidence index (PR #15) | Other hazards in the planners (needs a team decision); Sinhala and Tamil place names |
+| Sumudu | Routing and allocation (A4, A6, A7), ontology and knowledge graph, entity guard, evidence index (PR #15) | Sinhala and Tamil place names (native-speaker review) |
 
 The detailed checklist for each person is in their workstream doc; tick items there as they land.
 

@@ -18,7 +18,7 @@ from fastapi import FastAPI, Request
 
 MUTATING = {"POST", "PUT", "PATCH", "DELETE"}
 # Mutating routes that are deliberately not behind a token: sensors and field radios have no user.
-PUBLIC_MUTATING = {"/ingest/sensor", "/ingest/report"}
+PUBLIC_MUTATING = {"/ingest/sensor", "/ingest/report", "/ingest/link-status"}
 SENSITIVE_READS = {"/am/v1/audit", "/am/v1/orgs/{org}/projects/{project}/traces/{trace_id}/otlp"}
 
 

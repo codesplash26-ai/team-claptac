@@ -56,6 +56,13 @@ Rules
    matching COP subjects where they exist. (Sumudu)
    *Settled: `road:` is canonical, `edge:` is accepted and rewritten; full table in
    `docs/knowledge-graph.md`.*
+6a. **The manager and its additions** (Dinuka; merged in PRs #9 and #10). Additive, no event changes:
+   `EventBus.suspend(name, by, reason)` and `resume(name, by)` with an `agent_state` table (delivery to a
+   suspended agent waits; nothing is lost; a held plan that has gone stale is refused by the Gateway);
+   ledger kind `audit` (every change through the API: who, role, route, result, never a body or a token);
+   route permissions and roles in `atlas/manager/rbac.py` (tokens in `ATLAS_TOKENS`); the manager API
+   at `/am/v1`, described in `docs/manager_openapi.json` (a test fails if it drifts).
+   `/ingest/link-status` accepts a LoRa gateway's link report (`atlas/ingest/lora.py::LinkStatus`).
 6. **Bus cause-and-effect.** A small `event_causes` table written by the bus beside the ledger (not in
    event content, because identical events can be produced from different parents). Dinuka implements,
    Aeshan reviews.

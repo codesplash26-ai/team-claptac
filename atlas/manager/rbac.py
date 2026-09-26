@@ -77,8 +77,11 @@ ALL = READS | {
 
 ROLES: dict[str, frozenset[str]] = {
     "admin": frozenset(ALL),
-    # the Human Incident Commander: decides, and follows the incident, but does not run experiments
-    "commander": frozenset(READS | {APPROVAL_DECIDE, MISSION_UPDATE, AGENT_SUSPEND, AGENT_RESUME}),
+    # the Human Incident Commander: decides, follows the incident and runs practice drills, but does not
+    # run experiments or red-team the system
+    "commander": frozenset(
+        READS | {APPROVAL_DECIDE, MISSION_UPDATE, AGENT_SUSPEND, AGENT_RESUME, SCENARIO_RUN}
+    ),
     # builds and tests the system
     "developer": frozenset(
         READS

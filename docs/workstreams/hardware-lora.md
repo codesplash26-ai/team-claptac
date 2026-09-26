@@ -20,14 +20,15 @@ is not verified.
 
 ## Tasks, in order
 - [ ] Order breakout boards and 433 MHz antennas; bench-test one module with the SPI library of your choice.
+- [x] Link health reported to the console (`LoraGateway.status`, `/ingest/link-status`, Overview → Field radio).
 - [ ] Confirm or change the frame layout in `protocol.md`; tell the team if anything in `docs/contracts.md` moves.
-- [ ] `atlas/ingest/lora.py`: codec (encode/decode/HMAC), `LoraGateway.poll_once`, duplicate and gap handling, ACKs.
-- [ ] Tests using `MockLoraLink`: round trip, bad signature dropped, duplicate dropped, oversize refused.
-- [ ] Gateway service: radio in, existing ingest out (`run_mqtt_listener`'s callback shape or POST `/ingest/sensor`).
-- [ ] Node firmware: batch readings, `age_seconds` instead of a clock, retry until ACK, offline buffering (reuse `hardware/pi/outbox.py`).
+- [x] `atlas/ingest/lora.py`: codec (encode/decode/HMAC), `LoraGateway.poll_once`, duplicate and gap handling, ACKs.
+- [x] Tests using `MockLoraLink`: round trip, bad signature dropped, duplicate dropped, oversize refused.
+- [x] Gateway service: radio in, existing ingest out (`run_mqtt_listener`'s callback shape or POST `/ingest/sensor`).
+- [x] Node firmware: batch readings, `age_seconds` instead of a clock, retry until ACK, offline buffering (reuse `hardware/pi/outbox.py`).
 - [ ] Field report and mission ack uplinks; settle open decisions 1 and 2 in `docs/contracts.md` with Dinuka.
 - [ ] Range test and airtime budget (spreading factor vs range vs how often a node may send). Record numbers in `hardware/lora/README.md`.
-- [ ] Demo fallback: mock node with `flood_ramp` must produce the same messages.
+- [x] Demo fallback: mock node with `flood_ramp` must produce the same messages.
 
 ## Use meanwhile
 `MockLoraLink`, `hardware/pi/sensor_node.py` with `driver: mock`. Nothing else in ATLAS is waiting for you.

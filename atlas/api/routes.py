@@ -308,6 +308,18 @@ async def sensors(request: Request):
     return sensor_panel(control_of(request).runtime)
 
 
+@router.get("/links", dependencies=requires(rbac.RUN_READ))
+async def links(request: Request):
+    """Each LoRa gateway's last report, with how long ago it arrived (a silent gateway is a problem)."""
+    import time
+
+    now = time.time()
+    return [
+        {**report, "age_seconds": round(now - report["received_at"], 1)}
+        for report in getattr(request.app.state, "links", {}).values()
+    ]
+
+
 @router.get("/dashboard", response_class=HTMLResponse, dependencies=requires(rbac.RUN_READ))
 async def dashboard(request: Request):
     control = control_of(request)
