@@ -1,24 +1,100 @@
 # ATLAS ontology: the vocabulary agents and the LLM may use. (Owner: Sumudu)
+#
 # The validator (atlas/knowledge/ontology.py) rejects any claim whose subject, predicate or object is
-# not defined here. This file is a starting skeleton; extend it.
+# not defined here. It fails closed: a word that is not in this file is not a fact. Loaded and
+# cross-checked at start (atlas/knowledge/ontology.py::OntologyDefinition), so a typo in a class or a
+# relation is an error at load time, not a silent hole.
+#
+# Ids are `class:key` (docs/contracts.md decision 5). `road:<u>-<v>` is the canonical road id; the COP
+# and the routing agents write `edge:<u>-<v>`, which is accepted and normalised (id_aliases).
+#
+# Sections
+#   classes     kinds of thing; `prefix` is the id prefix; `key_pattern` (optional) is what a key looks like
+#   relations   entity -> entity facts, with `domain` (allowed subject classes) and `range` (allowed
+#               object classes). `dependency: true`  subject cannot work without the object, so if the
+#               object fails the subject is affected. `rollup: true`  if the subject is affected, so is
+#               the object (a part affecting its whole). `attributes` name facts about the link itself.
+#   attributes  entity -> literal facts (a number, a flag, one of a list), with units and bounds
+#   hazards     what can happen; hazard_status says how far the live loop supports each one
 
 classes:
-  Area:      { description: "A named area with a population (a GN division or river bank)" }
-  Road:      { description: "A road segment, id 'road:<u>-<v>' with OSM node ids" }
-  Shelter:   { description: "A place people can be evacuated to" }
-  Gauge:     { description: "A physical sensor node measuring water, rain or soil" }
-  Incident:  { description: "One hazard event being coordinated" }
-  Mission:   { description: "A trackable task for a response team" }
-  Resource:  { description: "A team or vehicle" }
-  Hazard:    { description: "flood, landslide, cyclone, earthquake" }
+  Area:     { prefix: area,     description: "A named area with a population (a GN division or a river bank)" }
+  Road:     { prefix: road,     key_pattern: '^\d+-\d+$', description: "A directed road segment, id 'road:<u>-<v>' with OpenStreetMap node ids" }
+  Junction: { prefix: junction, key_pattern: '^\d+$',     description: "A road junction: an OpenStreetMap node" }
+  Shelter:  { prefix: shelter,  description: "A place people can be evacuated to" }
+  Gauge:    { prefix: gauge,    description: "A physical sensor node measuring water, rain or soil" }
+  Incident: { prefix: incident, description: "One hazard event being coordinated" }
+  Mission:  { prefix: mission,  description: "A trackable task for a response team" }
+  Resource: { prefix: resource, description: "A rescue team or a vehicle" }
+  Group:    { prefix: group,    description: "A group of people to be evacuated together" }
+  Hazard:   { prefix: hazard,   description: "A kind of hazard: see `hazards`" }
+
+# Other spellings of an id prefix that are accepted and rewritten to the canonical class.
+id_aliases:
+  edge: road
 
 relations:
-  located_in:     { domain: [Road, Shelter, Gauge], range: [Area] }
+  # --- where things are
+  located_in:     { domain: [Road, Shelter, Gauge, Junction], range: [Area], description: "Belongs to an area (nearest area centre: a stated assumption)" }
+  located_at:     { domain: [Shelter, Gauge, Resource],       range: [Junction], description: "Sits at, or is based at, a junction" }
   monitors:       { domain: [Gauge], range: [Area] }
-  threatens:      { domain: [Hazard], range: [Area, Road] }
-  reachable_from: { domain: [Shelter], range: [Area], attributes: [minutes, safe] }
   serves:         { domain: [Shelter], range: [Area] }
-  assigned_to:    { domain: [Resource], range: [Mission] }
-  part_of:        { domain: [Mission, Area], range: [Incident] }
+  # --- the road network
+  from_junction:  { domain: [Road], range: [Junction] }
+  to_junction:    { domain: [Road], range: [Junction] }
+  reachable_from: { domain: [Shelter], range: [Area], attributes: [minutes, safe], description: "A safe route exists from the area (derived from A4's routing)" }
+  # --- hazards
+  threatens:      { domain: [Hazard], range: [Area, Road] }
+  about:          { domain: [Incident], range: [Hazard] }
+  # --- response work
+  uses:           { domain: [Mission], range: [Road],    dependency: true, description: "A mission's route passes over this road" }
+  routed_over:    { domain: [Group],   range: [Road],    dependency: true, description: "A group's planned route passes over this road" }
+  destined_for:   { domain: [Mission], range: [Shelter], dependency: true }
+  placed_at:      { domain: [Group],   range: [Shelter], dependency: true }
+  assigned_to:    { domain: [Resource], range: [Mission], dependency: true }
+  evacuates:      { domain: [Mission], range: [Group] }
+  part_of:        { domain: [Mission, Area, Group], range: [Incident], rollup: true }
 
-hazards: [flood, landslide, cyclone, earthquake]
+attributes:
+  # --- what sensors measure (units match SensorReading in atlas/ingest/sensors.py)
+  water_level:   { applies_to: [Gauge, Area], type: number, units: [cm, m], min: 0 }
+  rainfall:      { applies_to: [Gauge, Area], type: number, units: [mm], min: 0 }
+  soil_moisture: { applies_to: [Gauge, Area], type: number, units: ["%"], min: 0, max: 100 }
+  temperature:   { applies_to: [Gauge], type: number, units: [C], min: -90, max: 60 }
+  humidity:      { applies_to: [Gauge], type: number, units: ["%"], min: 0, max: 100 }
+  pressure:      { applies_to: [Gauge], type: number, units: [hPa], min: 300, max: 1100 }
+  tilt:          { applies_to: [Gauge], type: number, units: [deg], min: 0, max: 360 }
+  # --- roads
+  belief_open:   { applies_to: [Road], type: number, units: [], min: 0, max: 1, description: "Belief the road is open (A4)" }
+  closed:        { applies_to: [Road], type: boolean, units: [], description: "Hard closure recorded by A8" }
+  minutes:       { applies_to: [Road, Shelter], type: number, units: [min], min: 0 }
+  safe:          { applies_to: [Shelter], type: boolean, units: [] }
+  elevation:     { applies_to: [Junction, Shelter, Area], type: number, units: [m] }
+  # --- people and places
+  capacity:      { applies_to: [Shelter, Resource], type: integer, units: [people], min: 0 }
+  occupancy:     { applies_to: [Shelter], type: integer, units: [people], min: 0 }
+  population:    { applies_to: [Area], type: integer, units: [people], min: 0 }
+  people:        { applies_to: [Group, Mission], type: integer, units: [people], min: 0 }
+  vulnerable_fraction: { applies_to: [Area], type: number, units: [], min: 0, max: 1 }
+  # --- state
+  risk_level:    { applies_to: [Area], type: enum, values: [normal, watch, warning, severe], units: [], description: "A2's level" }
+  status:        { applies_to: [Mission], type: enum, values: [created, acknowledged, in_progress, completed, failed, cancelled], units: [] }
+  available:     { applies_to: [Resource], type: boolean, units: [] }
+
+hazards: [flood, landslide, cyclone, earthquake, tsunami, drought]
+
+# How far the live loop supports each hazard today (docs/data-and-hazards.md). Only `live` and
+# `partial` hazards can drive a plan; the rest are known to the vocabulary so they can be discussed and
+# replayed as history, but an incident about one is not something the planners can act on yet.
+hazard_status:
+  flood:      { status: live,         signals: [water_level, rainfall] }
+  landslide:  { status: partial,      signals: [rainfall, soil_moisture], note: "A2 labels it; A4 still maps roads from water level only" }
+  cyclone:    { status: partial,      signals: [rainfall], note: "Only through its rain and the river; wind and pressure have no rule" }
+  earthquake: { status: history_only, signals: [] }
+  tsunami:    { status: history_only, signals: [] }
+  drought:    { status: history_only, signals: [] }
+
+# Extra names for entities, beyond the ones generated from data (shelter ids, area names, gauge
+# stations). English only: Sinhala and Tamil names need native-speaker review before they are added.
+aliases:
+  "area:ratnapura-demo-river": ["Kalu Ganga", "Ratnapura riverside"]
