@@ -1,287 +1,234 @@
 # ATLAS — Autonomous Triage, Logical Agentic System
 
-## Aeshan's intelligence layer
-
-The advisor, grounded questions, report previews and evidence viewer now run at
-`/manager/#/intelligence`. Start with `LLM_PROVIDER=none` for an offline demo; replay a flood from
-Playground to generate advice. Models run in a separate worker and cannot change actions.
-
-Configure the provider, API key, model and reasoning/thinking options at
-`/manager/#/llm-settings`. Test the connection, then save to apply it to new intelligence
-requests. Settings persist locally; saved profiles override environment defaults.
-
-Follow inputs, agent executions, reasoning and outcomes at `/manager/#/timeline`.
-The timeline refreshes every two seconds, supports incident/agent/stage filters and history
-playback, and opens recorded explanations, evidence snapshots and causal links for each event.
-
-```bash
-python -m atlas.intelligence.demo --bad-model
-```
-
-See the [intelligence run guide](docs/workstreams/intelligence.md) and
-[verified results and remaining team work](docs/intelligence-verification.md).
-
-## A1 and shared planning implementation
-
-The `Aeshan/A1-MCTS` work adds the local event bus, SQLite COP/ledger, structured
-Sentinel, replay, sensor outbox, and optional PlanU-inspired planning. See
-[the integration guide](docs/reasoning-integration.md) for scope, teammate adapters,
-contract changes, configuration, and recovery limitations. The offline nine-agent and control loop is assembled in `atlas/system.py`; LoRa and the
-domain ontology still have unfinished workstream modules.
-
-Quick verification without hardware or model keys:
-
-```bash
-pip install -r requirements-a1.txt
-python -m pytest -q
-python -m atlas.ingest.simulator data/scenarios/flood.json
-python -m eval.run_reasoning --trials 30
-```
-
-## Routing, shelter, logistics and evaluation (Workstream C)
-
-The `Sumudu/C-Routing-and-Optimization` work adds the belief-weighted cognitive map ported from the
-original engine, real OSM road networks with elevation (Colombo Fort, Ratnapura, Kandy), the
-sensor-to-road mapping, **A4 Evacuation**, **A6 Logistics**, **A7 Shelter** (CP-SAT), and the A/B/C
-evaluation. See [the integration guide](docs/routing-integration.md) for the interfaces other
-workstreams code against, the evaluation findings, the demo script and the open decisions.
-
-```bash
-pip install -r requirements-c.txt
-python -m pytest -q
-python -m eval.run_abc                    # reproduces the proposal's results table (24/24)
-python -m eval.run_abc --site ratnapura   # real network; --pipeline for compute latency
-```
-
-One result to read before the pitch: on the real hilly networks the original engine's uphill penalty
-strands evacuees (Ratnapura flood: 61% reach a shelter against 100% for both baselines), so ATLAS's
-planning agents turn it off. The engine's published grid results are unchanged and reproduce exactly.
-
 > **Team ClapTac** · General Sir John Kotelawala Defence University
 > CodeSplash '26 Agentic AI Phase · Theme 3: AI Disaster Response Coordinator
 
-ATLAS is a disaster-response coordinator for rapid-onset disasters in Sri Lanka, such as floods, landslides and cyclones. It runs on its own and keeps its state between cycles. An always-on **Sentinel** agent watches incoming data. When something significant changes, it wakes an **Incident Commander**, which coordinates nine specialist agents. Every proposed action passes through a **Control Boundary**, and high-consequence actions need a human's sign-off.
+ATLAS helps a disaster-management office run the first hours of a flood or landslide in Sri Lanka.
+It watches river gauges, rainfall, soil moisture and field reports. When something significant
+happens it opens an incident, works out who is at risk, plans evacuation routes and shelter places,
+assigns rescue teams and vehicles, and drafts public alerts in Sinhala, Tamil and English.
 
-The LLM does the orchestration and writes the text. Routes, allocations, priorities and risk scores come from deterministic tools that work on a **belief-weighted cognitive map**.
+It acts on its own for routine work and **asks a person before anything reaches the public or
+commits scarce teams**. Every decision, by an agent or a person, is kept in a record that cannot be
+altered.
+
+It runs on a laptop with no internet, no hardware and no AI key. Real recorded disasters (Cyclone
+Ditwah at Ratnapura, November 2025) can be replayed as practice drills.
 
 ---
 
-## What is running today
-
-The whole loop runs end to end on a laptop, with no hardware and no API key: sensor readings go in, Sentinel and the specialist agents react, the Gateway gates every action, and a human answers the approvals.
-
-| Area | What you get | Read more |
-|---|---|---|
-| **Agents A1–A9** | Sentinel, hazard, commander, evacuation, triage, logistics, shelter, dispatch and comms, all talking over one event bus. | [orchestration](docs/orchestration.md) |
-| **Control boundary** | Deny-by-default policy, per-agent identity, an approvals queue, stale-plan refusal, idempotent execution, and a hash-chained ledger. | [control boundary](docs/control-boundary.md) |
-| **Real data** | Adapters for flood, rainfall, soil, earthquake, tsunami and drought sources, with an offline cache. Includes a replay of Cyclone Ditwah (Nov 2025) at Ratnapura from the real river gauge. | [data and hazards](docs/data-and-hazards.md) |
-| **Agent manager** | A console at `/manager/`: runs and traces, the agent graph, a live registry with suspend and resume, evaluations and monitors, experiments, guardrails and an audit trail. | below |
-| **Command line** | `atlasctl` drives the same API: agents, traces, evaluations, approvals, scenarios, audit. | below |
-| **Stand-out tools** | A red-team suite that attacks the boundary (16 attacks, all caught), a what-if replay that changes one thing and shows the difference, a latency meter, and an uncertainty map. | Playground |
-| **LoRa link** | Planned: the field-node radio path, owned by the hardware workstream. | [roadmap](docs/roadmap.md) |
-
-### The agent manager
+## Try it in two minutes
 
 ```bash
 pip install -r requirements.txt
-uvicorn atlas.api.main:app --reload      # then open http://127.0.0.1:8000/  (redirects to /manager/)
+uvicorn atlas.api.main:app            # then open http://127.0.0.1:8000/
 ```
 
-- **Runs and traces.** Every incident is a trace: a tree of what each agent received, what it decided, and what the Gateway did with it. Traces follow the OpenTelemetry model and export as OTLP/JSON (`GET /am/v1/traces/{id}/otlp`), or push to a collector with `ATLAS_OTLP_ENDPOINT`.
-- **Registry and lifecycle.** Each agent has an owner, version, tools, and the data it reads and writes. Suspend one and its work waits; resume it and the work is done in order. Nothing is lost, and the Gateway refuses any held plan that has gone stale.
-- **Evaluations.** About eighteen checks score traces, at the level of a single span, a whole incident, or one agent. The critical ones are safety rules: nothing executes without authorisation, no plan is used after its data changed, and so on. Monitors run them on live traces on a schedule. Experiments replay a scenario with a change (a stricter policy, a lost sensor, a human who never answers) and report what regressed.
-- **Access and audit.** Routes require a named permission. Roles are admin, commander, developer, ai_lead, platform_engineer and viewer, set with `ATLAS_TOKENS` (see `.env.example`). Every change is written to the ledger automatically, with who, what and the result, and never a secret.
-- **API contract.** The API is described in [docs/manager_openapi.json](docs/manager_openapi.json), and a test fails if it drifts from the code. After changing an endpoint, run `python -m atlas.manager.openapi`.
+1. Open **Practice drills** and start *Ratnapura, Cyclone Ditwah floods, November 2025*.
+2. Watch the **Overview** and the **Map**: the river rises past the danger line and an incident opens.
+3. Go to **Decisions**: ATLAS asks before sending the evacuation alert. Type your name and approve.
+4. See the alert, in three languages, under **Alerts & reports**.
+
+A step-by-step demo script, with what each screen shows, is in [docs/demo-guide.md](docs/demo-guide.md).
+
+---
+
+## The console
+
+The console has two parts. The first is for the people running the response and is written in
+plain language. The second is for the people building and checking the system.
+
+**Operations** (what a district officer uses)
+
+| Page | What it is for |
+|---|---|
+| **Overview** | What is happening now, and what needs you: open incidents, decisions waiting, missions, sensors against their danger lines, the latest situation report. |
+| **Map** | A live 3D view of the area: streets or satellite, hills in 3D, live rain radar, roads coloured by how likely they are to be passable, evacuation routes, shelters, teams and sensors. Click anything to follow it. A guided tour flies through the situation, and a fly-along follows an evacuation route. |
+| **Decisions** | Actions ATLAS will not take without a person: what it wants to do, why, and why it needs you. Approve or reject; your name is recorded. |
+| **Alerts & reports** | Public alerts that went out (Sinhala, Tamil, English, and a standard CAP file for warning systems) and the situation reports for the operations room. |
+| **Teams & missions** | Work sent to rescue teams and vehicles, with buttons to record what a team reports by radio. |
+| **Ask ATLAS** | Questions in plain words. Answers come only from what the system has recorded; anything it cannot back up is struck out. |
+| **Practice drills** | Replay a real past disaster, and a one-click test of the safety rules. |
+
+**For technical staff** (collapsed by default): runs and traces, the event timeline, the agent graph,
+the agents (with pause and resume), AI advice with evidence, automatic evaluations, ten benchmark
+exercises, the playground (what-if and red team), metrics, the safety rules, the audit log, data
+sources and AI model settings.
+
+A command line drives the same API:
 
 ```bash
 python -m atlas.manager.cli agents list
-python -m atlas.manager.cli scenario start flood --speed 60
-python -m atlas.manager.cli traces list
+python -m atlas.manager.cli scenario start ratnapura_ditwah_2025 --speed 30
+python -m atlas.manager.cli approvals list
 python -m atlas.manager.cli eval run          # exits 2 on a critical safety failure, so CI can gate on it
 ```
-
-### Working on the project
-
-The code is split so each person has one place to work: see [where to find your work](#where-to-find-your-work) and [docs/workstreams](docs/workstreams). Changes to the shared contracts (`atlas/core/events.py`, the sensor format, `docs/contracts.md`) need everyone's approval.
 
 ---
 
 ## How it works
 
 ```
-Feeds ──► A1 Sentinel ──(anomaly > threshold)──► TRIGGER
-                                                   │
-                         A2 Hazard & Vulnerability ┤
-                                                   ▼
-                              A3 Incident Commander (LLM)
-                     ┌──────────┬─────────┬──────────┬──────────┐
-                     ▼          ▼         ▼          ▼
-                A4 Evacuation A5 Triage A6 Logistics A7 Shelter
-                     └──────────┴────┬────┴──────────┘
-                                     ▼  reconciled plan
-                    ┌──── CONTROL BOUNDARY ────────────────────┐
-                    │ Policy Engine → Action Gateway ──► Human │
-                    │                     │   (high-consequence)│
-                    └─────────────────────┼────────────────────┘
-                                          ▼
-                          A8 Dispatch      A9 Public Comms / SITREP
-                                          │
-                     Action Ledger → Knowledge Graph → COP → A1 (loop)
+ Sensors (Pi / LoRa), weather and river feeds, field reports
+        │
+        ▼
+ A1 Sentinel ── checks, de-duplicates, scores ──► trigger
+        │
+        ▼
+ A2 Hazard & vulnerability ──► A3 Incident Commander (the only agent that delegates)
+                                   │ asks, in order
+                     ┌─────────────┼──────────────┬──────────────┐
+                     ▼             ▼              ▼              ▼
+              A5 Triage     A4 Evacuation   A7 Shelter    A6 Logistics
+                     └─────────────┴──────┬───────┴──────────────┘
+                                          ▼ one reconciled plan
+                    ┌──────────── CONTROL BOUNDARY ─────────────┐
+                    │ Policy engine → Action Gateway → a person │
+                    │  (anything high-consequence waits here)   │
+                    └──────────────────────┬────────────────────┘
+                                           ▼
+                        A8 Dispatch (missions)   A9 Public alerts and reports
+                                           │
+      Ledger (append-only, hash-chained) · Common operating picture · Knowledge graph
+                                           │
+                  Intelligence advisor (reads only; every claim checked against the records)
 ```
 
-| Layer | Agents / components |
-|---|---|
-| Sense & Verify | A1 Sentinel (Multimodal Intake & Verification), A2 Hazard & Vulnerability Intelligence |
-| Plan & Coordinate | A3 Incident Commander, A4 Evacuation & Access, A5 Rescue & Needs Triage, A6 Resource & Logistics, A7 Shelter & Relief |
-| Act & Communicate | A8 Dispatch & Mission Execution, A9 Public Communications & SITREP |
-| Control Boundary (not agents) | Policy & Authority Engine, Action Gateway, Human Incident Commander, Append-only Action Ledger |
-| Shared memory | Common Operating Picture (COP), typed event bus, evidence store, temporal knowledge graph |
+- **Agents never message each other directly.** They publish typed events on one bus; every event,
+  its cause and its timing are recorded, so any decision can be traced back to the reading that
+  started it.
+- **Only A3 delegates; only A8 and A9 act, and only after the Gateway authorises.** Every action has
+  an idempotency key, so a retry never sends the same order twice.
+- **Numbers come from tools, not from a language model.** Routes (NetworkX on real OpenStreetMap
+  roads with elevation), shelter placement (OR-Tools CP-SAT), priorities and risk levels are
+  deterministic and auditable. The AI model, when one is configured, only advises and writes text,
+  and runs outside the decision path.
+- **The system replans** when new evidence arrives, within a bounded number of retries, then
+  escalates to a person instead of looping.
 
-**Coordination rules**
-- Agents never send messages to each other directly. They only use the event bus and the COP.
-- Only A3 can delegate work. Specialist agents never delegate to each other.
-- Only A8 and A9 carry out actions, and only after the Action Gateway authorizes them.
-- Every action is written to the append-only ledger with an idempotency key, whether it was taken, blocked or escalated.
-
-**Autonomy level:** Level 3 (high autonomy). Routine actions run and are logged. High-consequence actions, such as district-wide alerts, committing scarce resources or closing major routes, always go to a human.
+**Autonomy: level 3.** Routine work runs and is logged. A person must approve every evacuation or
+district-wide alert, any mission that commits more than two teams or vehicles, cancelling a
+mission, and closing a major road. A missing or malformed detail counts as high-consequence.
 
 ---
 
-## Tech stack
+## What is built
 
-| Area | Tech |
+| Area | What it does | Read more |
+|---|---|---|
+| **Agents A1–A9** | The full loop above, persistent across restarts, with per-incident state and bounded replanning. | [orchestration](docs/orchestration.md) |
+| **Control boundary** | Deny-by-default policy, per-agent identity, approvals, refusal of plans built on out-of-date information, idempotent execution, hash-chained ledger. | [control boundary](docs/control-boundary.md) |
+| **Knowledge graph and ontology** | A typed world graph of roads, junctions, shelters, gauges, missions, groups and incidents. It rejects claims about things that do not exist, and answers "what depends on this road?". | [knowledge graph](docs/knowledge-graph.md) |
+| **Intelligence** | Advice after each planning round, questions in plain words and field-report extraction. Every claim is checked against recorded evidence, and sentences naming unknown places are flagged. Works offline; OpenAI or Anthropic can be configured. | [intelligence](docs/workstreams/intelligence.md) |
+| **Real data** | River, rainfall and soil sources with an offline cache, plus history for earthquakes, tsunami and drought. Two replays of Cyclone Ditwah at Ratnapura from real records. | [data and hazards](docs/data-and-hazards.md) |
+| **Field sensors and LoRa** | A Raspberry Pi node over MQTT, and a LoRa radio link (SX1278) whose signed frames become the same sensor readings. Bad signatures and replays are dropped. A mock radio for demos. | [hardware](hardware/README.md), [LoRa](hardware/lora/README.md) |
+| **Public alerts** | CAP 1.2 alerts from fixed, checked phrasing in Sinhala, Tamil and English. | `atlas/agents/a9_comms.py` |
+| **Observability** | Every incident is a trace (OpenTelemetry model, OTLP export); an event timeline; about eighteen automatic evaluators, with the safety-critical ones gating CI. | [manager API](docs/manager_openapi.json) |
+| **Testing tools** | A red-team suite (16 attempts to break the rules), what-if replays, ten seeded benchmark exercises, and the A/B/C routing evaluation. | [benchmarks](docs/simulation-benchmark.md) |
+| **Access and audit** | Named permissions per route; roles admin, commander, developer, ai_lead, platform_engineer, viewer; every change is audited automatically, never with a secret. | `.env.example` |
+
+### Results we can reproduce
+
+| Check | Result | Command |
+|---|---|---|
+| Automated tests | 1,049 pass | `pytest` |
+| Red team: attempts to bypass the rules | 16 of 16 handled correctly | Practice drills → Test the safety rules |
+| Benchmark exercises (10 tasks × 3 seeds) | 30 of 30 pass | `python -m atlas.benchmark run --seeds 42,43,44` |
+| Proposal's routing results table | 24 of 24 numbers reproduced | `python -m eval.run_abc` |
+| Safety evaluators on a Ditwah replay | 34 of 34 checks pass, 0 critical failures | Technical → Evaluations |
+
+Numbers on the benchmark and drills come from real agents running on synthetic or replayed data with
+scripted human and field responses. They show the software behaves as designed; they are not a
+field trial.
+
+---
+
+## Proposal and what we built
+
+We built what the proposal describes: a perceive, reason, plan, validate and communicate loop on the
+Ratnapura road network, with a live map, situation reports, evacuation alerts and a human-approval
+gate. Where we changed the technology, this is why:
+
+| Proposal | Built | Why |
+|---|---|---|
+| Six agents | Nine agents plus a control boundary | Planning split into evacuation, triage, logistics and shelter, each checkable on its own (the proposal's section 11 anticipated this). |
+| Flask + Folium dashboard | FastAPI + a React console with a MapLibre 3D map; the Folium responder page is still at `/dashboard` | Typed API contracts, live updates and a map usable by non-technical staff. |
+| RDFLib / OWL ontology | A YAML ontology validated at load time, over a NetworkX world graph | The same checks (types, relations, units, evidence) with fewer moving parts; migration to a graph store remains possible. |
+| LangGraph orchestration | A small asyncio event bus with recorded causes | The proposal named a custom orchestrator as the fallback. Ours makes every hand-off persistent and replayable, which the audit trail needs. |
+| LLM on the reasoning path | Deterministic tools decide; the AI model advises and writes text, checked against records | Works with no internet or key, and a model error cannot move a vehicle. |
+| Vector database | Not needed yet | Reports are short and structured enough to extract directly. |
+| — | LoRa field link, real Ditwah replays, red team, benchmarks, 3D map | Added during development. |
+
+---
+
+## Configuration
+
+Copy `.env.example` to `.env`. Nothing is required for the demo. The main settings:
+
+| Setting | Purpose |
 |---|---|
-| Language | Python 3.11+ |
-| Cognitive map / routing | NetworkX, NumPy, SciPy, OSMnx, Open-Elevation |
-| Geospatial | GeoPandas (PostGIS later) |
-| Optimization | OR-Tools CP-SAT |
-| LLM | LLM with tool-calling, used for orchestration and text only |
-| Backend | FastAPI |
-| Dashboard | Folium map + responder dashboard |
-| Storage | SQLite for the COP and ledger (Postgres later) |
-| Alerting | CAP 1.2; Sinhala, Tamil and English |
-| Hardware | Raspberry Pi sensor node (water level, rainfall, BME280, soil moisture) over MQTT (Mosquitto) |
-| Deploy | Docker on a cloud VM or lab server |
+| `ATLAS_SITE` | Which road network and shelters to load (`ratnapura`, `kandy`, `colombo_fort`). |
+| `LLM_PROVIDER`, `LLM_API_KEY`, `LLM_MODEL` | Optional AI model for advice and text; can also be set in the console (Technical → AI model settings). |
+| `ATLAS_TOKENS` | Access codes and roles. With none set the console runs in open demo mode. |
+| `ATLAS_OTLP_ENDPOINT` | Send traces to any OpenTelemetry collector. |
+| `LORA_HMAC_KEY` | Shared key for signed LoRa frames. Never commit a real one. |
+
+The map uses public, keyless services: OpenStreetMap tiles, Esri World Imagery, AWS open terrain
+tiles and RainViewer radar. With no internet, the ATLAS layers (roads, routes, shelters, teams,
+sensors) still draw.
 
 ---
 
 ## Project structure
 
 ```
-team-claptac/
-├── atlas/
-│   ├── core/              # Shared contracts: events, event bus, COP, config
-│   │   ├── events.py      #   ← typed event + action schemas (team-wide contract)
-│   │   ├── event_bus.py
-│   │   ├── cop.py
-│   │   └── config.py
-│   ├── memory/            # Action ledger, temporal knowledge graph, evidence store
-│   ├── agents/
-│   │   ├── base.py        #   ← Agent base class
-│   │   ├── a1_sentinel.py … a9_comms.py
-│   ├── control/           # Policy engine, action gateway, human approval queue
-│   ├── tools/
-│   │   ├── cognitive_map/ #   ← existing belief-weighted routing engine goes here
-│   │   ├── llm.py, geo.py, optimisation.py, cap.py, translation.py, ocr_stt.py
-│   ├── ingest/            # Feed adapters, sensor ingest (MQTT/HTTP), scenario replayer
-│   ├── api/               # FastAPI app
-│   └── dashboard/         # Folium map + responder dashboard
-├── hardware/              # Raspberry Pi sensor node
-│   ├── pi/                #   sensor_node.py, sensor drivers, config, systemd unit
-│   └── mosquitto/         #   MQTT broker config
-├── config/policy.yaml     # Per-agent permissions and consequence thresholds
-├── data/                  # osm/ graphs, scenarios/, reference/ (vulnerability, shelters)
-├── eval/                  # Metrics + A/B/C scenario evaluation
-├── tests/
-├── docs/
-├── requirements.txt
-└── .env.example
+atlas/
+  core/          events (team contract), event bus, COP, config
+  agents/        A1 Sentinel … A9 Comms
+  orchestration/ A3's reconciliation and planning helpers
+  control/       policy engine, Action Gateway, approvals
+  knowledge/     ontology, world graph, entity guard, evidence index
+  intelligence/  advisor, questions, extraction, providers and settings
+  ingest/        sensors (MQTT/HTTP), LoRa gateway, scenario replayer
+  datasets/      real data adapters and cache
+  manager/       registry, traces, evaluations, access, audit, CLI
+  benchmark/     seeded benchmark exercises
+  api/           FastAPI routes
+  dashboard/     developer views and the built console (static/manager)
+frontend/        the console (React + TypeScript + MapLibre)
+hardware/        Raspberry Pi node, LoRa node and gateway
+config/          policy.yaml, ontology.yaml, sentinel.yaml, reasoning.yaml
+data/            road networks, scenarios, reference data, benchmarks
+eval/            A/B/C routing evaluation
+docs/            design, contracts, workstreams, demo guide
+tests/
 ```
-
----
 
 ## Where to find your work
 
 | Workstream | Owner | Start here |
 |---|---|---|
 | Hardware and LoRa | Hasindu | [docs/workstreams/hardware-lora.md](docs/workstreams/hardware-lora.md), `hardware/lora/` |
-| UI, data and integration | Dinuka | [docs/workstreams/ui-and-data.md](docs/workstreams/ui-and-data.md), `atlas/dashboard/`, `atlas/datasets/` |
-| Intelligence layer | Aeshan | [docs/workstreams/intelligence.md](docs/workstreams/intelligence.md), `atlas/intelligence/` |
-| Ontology and graph | Sumudu | [docs/workstreams/ontology-graph.md](docs/workstreams/ontology-graph.md), `atlas/knowledge/` |
+| UI, data, control boundary and integration | Dinuka | [docs/workstreams/ui-and-data.md](docs/workstreams/ui-and-data.md), `frontend/`, `atlas/control/`, `atlas/datasets/` |
+| Intelligence layer and platform | Aeshan | [docs/workstreams/intelligence.md](docs/workstreams/intelligence.md), `atlas/intelligence/`, `atlas/core/` |
+| Ontology, graph and routing | Sumudu | [docs/workstreams/ontology-graph.md](docs/workstreams/ontology-graph.md), `atlas/knowledge/`, [routing](docs/routing-integration.md) |
 
-The seams between them, with the mock to use until the other side exists, are in
-[docs/contracts.md](docs/contracts.md). The order of work is in [docs/roadmap.md](docs/roadmap.md).
-Anything not built yet raises `NotImplementedError` naming its owner.
+The seams between workstreams are in [docs/contracts.md](docs/contracts.md); what is left is in
+[docs/roadmap.md](docs/roadmap.md).
 
-## Getting started
-
-```bash
-git clone <repo-url> && cd team-claptac
-python -m venv .venv
-.venv\Scripts\activate          # Windows  (source .venv/bin/activate on macOS/Linux)
-pip install -r requirements.txt
-cp .env.example .env            # fill in keys
-```
-
-Run the API and the manager console:
+## Development
 
 ```bash
-uvicorn atlas.api.main:app --reload
+pytest                                        # the whole suite
+ruff check atlas tests
+cd frontend && npm install && npm run build   # rebuilds the console into atlas/dashboard/static/manager/
+python -m atlas.manager.openapi               # after changing a manager endpoint (a test checks it)
 ```
 
-To rebuild the console after editing `frontend/`: `cd frontend && npm install && npm run build` (the build is committed to `atlas/dashboard/static/manager/`).
-
-Run the sensor pipeline (see [hardware/README.md](hardware/README.md) for Pi setup and wiring):
-
-```bash
-mosquitto -c hardware/mosquitto/mosquitto.conf
-```
-
-Run tests:
-
-```bash
-pytest
-```
-
----
-
-## Hardware sensor node
-
-A Raspberry Pi with water-level, rainfall and environmental sensors publishes readings over MQTT. They enter ATLAS as **machine feeds** for A1 Sentinel. The Pi only measures; A1 decides whether a reading is an anomaly. For the demo, a tabletop flood model lets judges watch a rising water level trigger the full loop: Sentinel, then the Incident Commander, then rerouting, then the gated action. A mock mode produces the same messages, as a fallback if the hardware fails. Details: [hardware/README.md](hardware/README.md).
-
----
-
-## Target metrics
-
-| Metric | Target |
-|---|---|
-| Evacuation success rate | ≥ 90% (96% already achieved by the A4 core) |
-| Avg. failed route attempts | < 1.5 |
-| Detection-to-trigger latency | < 2 min |
-| False trigger rate | < 10% |
-| Tool-call success rate | ≥ 95% |
-| Policy-violation catch rate | 100% in red-team tests |
-| Replanning time | < 2 min |
-| Human intervention on routine actions | < 15% |
-
----
-
-## Contributing
-
-- Branch from `main` as `<area>/<short-desc>`, for example `agents/a1-anomaly-scoring`.
-- Open a PR that at least one teammate reviews. Any change to `atlas/core/events.py` needs the whole team to agree.
-- Each module owner writes the tests for their module. See [TEAM_PLAN.md](TEAM_PLAN.md) for who owns what.
+- Branch as `<Name>/<Area>` (for example `Dinuka/Console-Polish`) and open a PR for review.
+- Changes to `atlas/core/events.py`, the sensor format or `docs/contracts.md` need the whole team.
+- Each owner writes the tests for their module. See [TEAM_PLAN.md](TEAM_PLAN.md).
 
 ## Team
 
 Dinuka Wickramasinghe (lead) · Sumudu Ratnayake · Hasindu Viduranga · Aeshan Rosa
-
-### Simulation benchmark
-
-Open **Benchmarks** in the manager for ten isolated end-to-end simulations with seeded random inputs, live case timelines, explicit checks and downloadable trace bundles. Run three seeds from the command line with:
-
-```sh
-.venv/bin/python -m atlas.benchmark run --seeds 42,43,44
-```
-
-See [the benchmark guide](docs/simulation-benchmark.md) for scenarios, metrics, persistence and limitations. Copy [the task template](data/benchmarks/task-template.json) to add a scenario; [the JSON schema](data/benchmarks/task.schema.json) validates its contract. Outputs live under `outputs/benchmarks/` and are git-ignored. These runs use actual local agents with synthetic data, scripted field/human responses and offline advice.

@@ -20,10 +20,10 @@ Everything else keeps its current owner (platform: Aeshan; routing: Sumudu; cont
 
 | Owner | Done | Still to do |
 |---|---|---|
-| Dinuka | Dev and manager console, traces, evaluations, RBAC and audit, CLI, real data and Ditwah replay, red-team, what-if | Reasoning panel, ask-the-system box, LoRa panel, Docker and CI, console token field, control-boundary docs; landslide and quake scenarios (after the contract decision) |
-| Hasindu | Scaffold and stubs (`MockLoraLink`) | LoRa link, field node firmware, signed frames, hardware demo |
-| Aeshan | Event bus, Sentinel, ported A2/A3/A5 | Intelligence layer (`Advice`, `nlquery`), reasoning integration |
-| Sumudu | Routing and allocation (A4, A6, A7), ontology and knowledge graph (`docs/knowledge-graph.md`) | Other hazards in the planners (needs a team decision) |
+| Dinuka | Console for disaster managers (plain-language operations pages, 3D situation map), manager (traces, evaluations, access, audit, CLI), control boundary, real data and Ditwah replays, red team, what-if, integration of all four workstreams | LoRa status panel, Docker and CI, landslide and quake scenarios (after the contract decision) |
+| Hasindu | LoRa link: signed frames, SX1278 driver, node and gateway runners, mock radio (PR #11) | Two-radio field test, hardware demo rig |
+| Aeshan | Event bus, Sentinel, A2/A3/A5, intelligence layer (advice, questions, extraction, providers), event timeline, benchmarks (PRs #12 to #14) | Real-provider testing with a live key |
+| Sumudu | Routing and allocation (A4, A6, A7), ontology and knowledge graph, entity guard, evidence index (PR #15) | Other hazards in the planners (needs a team decision); Sinhala and Tamil place names |
 
 The detailed checklist for each person is in their workstream doc; tick items there as they land.
 

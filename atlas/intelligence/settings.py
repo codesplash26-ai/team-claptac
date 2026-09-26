@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import os
 import tempfile
+import time
 from pathlib import Path
 from typing import Literal
 
@@ -199,7 +200,14 @@ class SettingsStore:
                     json.dump(state, stream)
                     stream.flush()
                     os.fsync(stream.fileno())
-                os.replace(tmp, self.path)
+                for attempt in range(40):  # Windows: a sync client or reader can hold the file briefly
+                    try:
+                        os.replace(tmp, self.path)
+                        break
+                    except PermissionError:
+                        if attempt == 39:
+                            raise
+                        time.sleep(0.05)
             finally:
                 if os.path.exists(tmp):
                     os.unlink(tmp)

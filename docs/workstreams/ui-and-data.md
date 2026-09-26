@@ -15,9 +15,9 @@ UI
 - [x] `atlas/dashboard/dev/catalog.py`: an agent card for every agent (purpose, reads, writes, LLM or not, last activity).
 - [x] `/dev` page: agent map with live message counts between agents; message stream with filters; click an event to see its payload and its causal chain; incident timeline.
 - [x] Replay scrubber (play a scenario, pause, step, speed).
-- [ ] Reasoning panel (waiting on Aeshan's `Advice`; no API or UI yet): show Aeshan's `Advice` with accepted and rejected claims (a rejected claim struck out is the proof the guard works).
+- [x] Reasoning panel: Ask ATLAS and Technical → Intelligence show `Advice` with accepted and rejected claims; the entity guard flags prose naming unknown places.
 - [x] Red-team panel (blocked actions) and latency meter (sensor to trigger to plan to alert).
-- [ ] Ask-the-system box (Aeshan's `nlquery`): waiting on the module; no endpoint or UI yet.
+- [x] Ask-the-system box (Ask ATLAS page, on Aeshan's `nlquery`).
 - [x] Responder dashboard polish: hazards and route uncertainty on the map, mission board, approvals.
 - [ ] LoRa panel (can be built on `MockLoraLink` now; no UI yet): node online, last seen, signal strength, frames dropped (Hasindu's data).
 
@@ -33,9 +33,15 @@ Agent manager (added beyond the original list; merged in PRs #9 and #10)
 - [x] Registry with suspend and resume; OpenTelemetry-model traces with OTLP export.
 - [x] Evaluations, monitors and experiments; guardrails view; role-based access; automatic audit trail.
 - [x] `atlasctl` command line and a committed OpenAPI contract with a drift test.
-- [ ] Console: a token field (every page returns 401 once `ATLAS_TOKENS` is set), an OTLP export button and span attributes on Run detail.
-- [ ] Update `docs/control-boundary.md` and `docs/contracts.md` for suspend and resume, roles, the `audit` ledger kind and `/am/v1`.
+- [x] Console sign-in (bottom of the menu).
+- [ ] OTLP export button and span attributes on Run detail.
+- [ ] Update `docs/contracts.md` for suspend and resume, roles, the `audit` ledger kind and `/am/v1`.
 - [ ] Approvals statistics page (approval rate, time to decision).
+
+Console for disaster managers
+- [x] Plain-language operations pages: Overview, Map, Decisions, Alerts & reports, Teams & missions, Ask ATLAS, Practice drills; engineering pages under "For technical staff".
+- [x] 3D situation map (MapLibre, keyless): satellite and streets, terrain, rain radar, click-to-follow cards, guided tour, route fly-along, nearby list, search, shareable views.
+- [x] Demo guide: `docs/demo-guide.md`.
 
 Platform
 - [ ] Dockerfile, CI, reproducibility guide; cover the bus's full-ledger scan on every publish before large replays.

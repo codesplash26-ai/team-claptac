@@ -52,8 +52,11 @@ Rules the Gateway enforces, all visible in the `Decision.reason`:
 Things to know when writing plans:
 
 - **Send every parameter the policy inspects.** `create_mission` needs an integer
-  `resources_committed`; `publish_alert` needs `scope` (`local` or `district`). A missing or
-  malformed value counts as *high*, so it goes to a human. This is deliberate (fail closed).
+  `resources_committed` (more than 2 goes to a human). `publish_alert` needs `scope` (`local` or
+  `district`) and `instruction`: only a local `avoid_area` advisory with no free text runs on its
+  own; every evacuation order and every district-wide alert goes to a human, as the proposal
+  commits. A missing or malformed value counts as *high*, so it goes to a human. This is
+  deliberate (fail closed).
 - Use a stable `idempotency_key` per intended action, not per attempt. Re-submitting the
   same key and content returns the stored decision and does nothing twice.
 - A failed execution comes back as `ACTION_BLOCKED` with `decision.status` of `compensated`

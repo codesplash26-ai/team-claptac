@@ -28,11 +28,23 @@ UNITS = {"water_level": "cm", "rainfall": "mm", "soil_moisture": "%", "temperatu
 OUTPUTS = Path(__file__).resolve().parents[2] / "outputs/benchmarks"
 
 
+def swap(tmp, path, attempts=40):
+    """Atomically put ``tmp`` in place of ``path``. On Windows a reader holding the old file, or a sync
+    client such as OneDrive scanning it, makes the rename fail for a moment; retry briefly."""
+    for attempt in range(attempts):
+        try:
+            return Path(tmp).replace(path)
+        except PermissionError:
+            if attempt == attempts - 1:
+                raise
+            time.sleep(0.05)
+
+
 def write_json(path, value):
     path = Path(path)
     tmp = path.with_suffix(path.suffix + ".tmp")
     tmp.write_text(json.dumps(value, indent=2, allow_nan=False, default=str) + "\n")
-    tmp.replace(path)
+    swap(tmp, path)
 
 
 def append_jsonl(path, items):
@@ -77,14 +89,7 @@ class Recorder:
             conn.backup(out)
         finally:
             out.close()  # `with connect()` only commits; an open file cannot be renamed on Windows
-        for attempt in range(20):  # on Windows a reader holding the old checkpoint blocks the swap
-            try:
-                tmp.replace(self.folder / "state.sqlite")
-                break
-            except PermissionError:
-                if attempt == 19:
-                    raise
-                time.sleep(0.05)
+        swap(tmp, self.folder / "state.sqlite")
 
 
 async def review(system, decision, limit=100):
