@@ -132,3 +132,22 @@ advisor/query/extraction requests use the settings immediately. Existing persist
 Provider references: [OpenAI reasoning](https://developers.openai.com/api/docs/guides/reasoning),
 [OpenAI function calling](https://developers.openai.com/api/docs/guides/function-calling), and
 [Anthropic thinking](https://platform.claude.com/docs/en/build-with-claude/extended-thinking).
+
+## Event timeline
+
+Open `/manager/#/timeline` to follow the ledger from sensor/report inputs through agent work,
+reasoning, decisions and outcomes. The view polls every two seconds and starts with the latest
+200 events in ledger order. Load older pages while paused; filter by incident (including causal
+input ancestors), agent, stage or text. Replay and the scrubber only reveal stored history and
+never execute actions. Stage counts describe the loaded events, not the entire database.
+
+Selecting a card opens payloads, measured handler/executor attempts, input/output details, and
+cause-and-effect links. Work appears after execution is recorded; this is not an in-flight task
+monitor. Event timestamps can be historical during scenario playback, while execution durations
+are measured wall time. The reasoning panel shows recorded decision explanations, model/template
+provenance, claim checks, uncertainty and evidence snapshots. A1/PlanU reasoning events also resolve
+the stored planner record: chosen action, alternative scores, assumptions, simulation count and
+stop reason. Simulation outcomes are labelled as simulated, not observed facts.
+
+Read-only APIs: `/dev/timeline`, `/dev/timeline/{event_id}` and
+`/dev/timeline/{event_id}/planning`, all protected by `trace:read`.

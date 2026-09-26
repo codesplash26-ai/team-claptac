@@ -10,6 +10,10 @@ Configure the provider, API key, model and reasoning/thinking options at
 `/manager/#/llm-settings`. Test the connection, then save to apply it to new intelligence
 requests. Settings persist locally; saved profiles override environment defaults.
 
+Follow inputs, agent executions, reasoning and outcomes at `/manager/#/timeline`.
+The timeline refreshes every two seconds, supports incident/agent/stage filters and history
+playback, and opens recorded explanations, evidence snapshots and causal links for each event.
+
 ```bash
 python -m atlas.intelligence.demo --bad-model
 ```

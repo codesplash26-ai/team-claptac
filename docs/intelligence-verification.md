@@ -62,3 +62,9 @@ loop and aggregate token counts. The rate-limiter regression proves quota waits 
 - Live credentials/provider access, MQTT broker/Pi drills and physical calibration are unverified.
 
 No shared event enum or sensor message schema changed. Published changes are split into reviewable pull requests; live provider calls remain unverified.
+
+## Timeline verification
+
+Timeline coverage checks pagination without gaps/duplicates, incident input ancestry, unrelated event exclusion, measured work across A1–A9, offline advice provenance, read permissions and planner-record ownership. Browser checks exercised recorded events, filters, evidence, replay, scrubbing, input/output inspection and planner alternatives.
+
+Timeline PR isolated checkout: **629 backend tests passed**; production frontend build and scoped Ruff checks passed.
