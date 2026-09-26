@@ -59,7 +59,7 @@ def test_a_human_who_says_no_changes_the_outcome():
     )
     assert out["baseline"]["missions"] == 5 and out["changed"]["missions"] == 0
     assert out["diff"]["missions"] == {"baseline": 5, "variant": 0}
-    assert out["changed"]["actions_by_status"].get("rejected") == 5
+    assert out["changed"]["actions_by_status"].get("rejected") == 6  # 5 missions and the alert
     assert out["changed"]["needs_human"] and not out["baseline"]["needs_human"]
 
 
@@ -68,7 +68,7 @@ def test_an_ignored_escalation_leaves_actions_waiting():
         pg.load_scenario("flood"),
         pg.Variant(label="strict, nobody answers", strict_policy=True, human="ignore"),
     )
-    assert out["changed"]["pending_approvals"] == 5 and out["changed"]["missions"] == 0
+    assert out["changed"]["pending_approvals"] == 6 and out["changed"]["missions"] == 0
 
 
 def test_losing_a_sensor_is_visible_and_an_identical_variant_changes_nothing():

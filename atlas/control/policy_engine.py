@@ -32,6 +32,13 @@ PREDICATES: dict[str, Callable[[dict, Any], bool]] = {
     "scope": lambda params, wanted: (
         params.get("scope") not in _KNOWN_SCOPES or params.get("scope") == wanted
     ),
+    # HIGH unless the alert is local, uses one of the listed advisory instructions and carries no
+    # free text. Every evacuation order and every district-wide alert therefore goes to a human.
+    "unless_local_advisory": lambda params, advisory: not (
+        params.get("scope") == "local"
+        and params.get("instruction") in set(advisory)
+        and not params.get("instruction_text")
+    ),
 }
 
 

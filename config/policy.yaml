@@ -20,7 +20,9 @@ actions:
   publish_sitrep:    { consequence: low }
   create_mission:    { consequence: high, when: { resources_committed_gt: 2 } }
   cancel_mission:    { consequence: high }
-  publish_alert:     { consequence: high, when: { scope: district } }
+  # A public alert goes to a human unless it is a local "avoid the area" advisory. Every evacuation
+  # order does (the proposal's commitment: no public evacuation alert without operator confirmation).
+  publish_alert:     { consequence: high, when: { unless_local_advisory: [avoid_area] } }
   cancel_alert:      { consequence: high }
   close_major_route: { consequence: high }
 

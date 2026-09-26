@@ -10,7 +10,7 @@ from atlas.datasets import scenarios
 from atlas.datasets.catalog import HISTORY_PATH, load_history
 from atlas.ingest.sensors import SensorReading
 from atlas.ingest.simulator import replay
-from tests.conftest import events
+from tests.conftest import approve_alerts, events
 from tests.dev.conftest import system  # noqa: F401
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -50,6 +50,7 @@ async def test_the_real_flood_runs_through_every_agent(system, runtime, clock): 
     await replay(runtime, scenario("ratnapura_ditwah_2025.json"), clock)
     for _ in range(3):
         await system.control.gateway.run_pending()
+        await approve_alerts(system)  # the commander says yes to the evacuation alert
     reasons = {e["payload"]["reason"] for e in events(runtime, "trigger")}
     assert {"soil_moisture", "rainfall", "water_level"} <= reasons  # three independent signals fire
     (incident,) = system.orchestration.commander.incidents()

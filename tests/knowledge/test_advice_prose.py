@@ -37,3 +37,17 @@ async def test_a_broken_guard_flags_the_advice_instead_of_passing_it(live, monke
     )
     service.check_prose(advice)
     assert "could not be checked" in advice.concerns[-1]
+
+
+async def test_a_role_title_is_not_mistaken_for_a_place(live):
+    service = live.intelligence
+    await service.tick()
+    (advice,) = service.list()
+    advice.concerns = [
+        "publish_alert is waiting for the Incident Commander",
+        "Ask the Area Coordinator.",
+    ]
+    advice.summary = "Shelter 99 is ready."
+    service.check_prose(advice)
+    flagged = [c for c in advice.concerns if c.startswith("Not verified")]
+    assert flagged == ["Not verified (no such place is known): 'Shelter 99'."]

@@ -9,7 +9,7 @@ from atlas.ingest.simulator import ReplayClock, replay
 from atlas.runtime import Runtime
 from atlas.system import attach_all
 from atlas.tools.demo import validated_observation
-from tests.conftest import events
+from tests.conftest import approve_alerts, events
 from tests.control.conftest import fast_policy
 from tests.orchestration.conftest import reading, scenario
 
@@ -20,6 +20,7 @@ INCIDENT = "incident:ratnapura-demo-river"
 async def settle(system, rounds=3):
     for _ in range(rounds):  # executors publish events that can start more work
         await system.control.gateway.run_pending()
+        await approve_alerts(system)  # the commander says yes to the evacuation alert
 
 
 async def run_loop(system, runtime, clock, story=RISING):

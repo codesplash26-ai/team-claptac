@@ -14,6 +14,7 @@ from atlas.manager.evaluation.base import (
 )
 from atlas.manager.evaluation.runner import EvalStore, MonitorWorker, evaluate
 from atlas.manager.experiments import run_experiment
+from tests.conftest import approve_alerts
 from tests.manager.conftest import run_flood
 from tests.orchestration.conftest import reading, scenario
 
@@ -26,6 +27,7 @@ async def loop(system, runtime, clock):
     await replay(runtime, RISING, clock)
     for _ in range(3):
         await system.control.gateway.run_pending()
+        await approve_alerts(system)  # the commander says yes to the evacuation alert
 
 
 def by_name(result):

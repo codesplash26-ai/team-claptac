@@ -5,6 +5,7 @@ import pytest
 from atlas.core.events import Event, EventType
 from atlas.dashboard.dev.runs import list_runs, metrics, run_spans, span_detail
 from atlas.ingest.simulator import replay
+from tests.conftest import approve_alerts
 from tests.orchestration.conftest import reading, scenario
 
 RISING = scenario(reading(0, 10), reading(120, 26), reading(130, 26))
@@ -16,6 +17,7 @@ async def loop(system, runtime, clock):
     await replay(runtime, RISING, clock)
     for _ in range(3):
         await system.control.gateway.run_pending()
+        await approve_alerts(system)  # the commander says yes to the evacuation alert
 
 
 async def test_a_run_is_one_incident_with_timings(system, runtime, clock):
@@ -108,5 +110,8 @@ async def test_metrics_summarise_agents_latency_and_control(system, runtime, clo
     assert {"trigger", "plan_proposed", "authorised", "alert_sent"} <= set(latency["milestones"])
     assert latency["milestones"]["plan_proposed"]["sim_seconds_after_trigger"] >= 0
     control = data["control"]
-    assert control["actions"] == 7 and control["autonomy_rate"] == 1.0  # all routine in this story
+    assert (
+        control["actions"] == 7 and control["escalated"] == 1
+    )  # the evacuation alert needed a human
+    assert control["resolved"]["approved"] == 1 and control["autonomy_rate"] == 0.857
     assert data["llm"] == {"calls": 0, "tokens": 0, "cost_usd": 0.0}

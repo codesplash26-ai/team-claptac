@@ -57,6 +57,8 @@ NOT_NAMES = {
     "the", "a", "an", "this", "that", "these", "those", "our", "your", "their", "his", "her", "its",
     "my", "one", "every", "each", "all", "no", "any", "some", "both", "another", "such", "same",
 }  # fmt: skip
+# Job titles: "Incident Commander" or "Area Coordinator" name a person's role, not a place.
+ROLE_WORDS = {"commander", "coordinator", "officer", "operator", "manager", "controller", "lead"}
 PLACE_THEN_NAME = re.compile(rf"\b(?i:{_PLACE})\s+{_PREPOSITION}{_NUMBER_OR_NAME}")
 NAME_THEN_PLACE = re.compile(rf"\b(?:[A-Z][\w'-]+\s+)+(?i:{_PLACE})\b")
 
@@ -345,6 +347,8 @@ def find_mentions(
             phrase = _without_leading_determiners(match.group(0))
             if pattern is NAME_THEN_PLACE and len(phrase.split()) < 2:
                 continue  # "The river": a determiner and a place word, not a named place
+            if pattern is PLACE_THEN_NAME and phrase.split()[-1].lower() in ROLE_WORDS:
+                continue  # "Incident Commander": a role, not a place
             taken.append(match.span())
             out.unresolved.append(phrase)
     seen: dict[str, str] = {}

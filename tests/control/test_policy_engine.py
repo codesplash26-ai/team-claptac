@@ -61,16 +61,21 @@ def test_resource_threshold_fails_closed(committed, expected):
 
 
 @pytest.mark.parametrize(
-    "scope,expected",
+    "params,expected",
     [
-        ("local", Verdict.ALLOW),
-        ("district", Verdict.ESCALATE),
-        (None, Verdict.ESCALATE),
-        ("national", Verdict.ESCALATE),
+        ({"scope": "local", "instruction": "avoid_area"}, Verdict.ALLOW),  # local advisory only
+        ({"scope": "local", "instruction": "evacuate"}, Verdict.ESCALATE),  # every evacuation order
+        ({"scope": "district", "instruction": "avoid_area"}, Verdict.ESCALATE),
+        (
+            {"scope": "local", "instruction": "avoid_area", "instruction_text": "Go now"},
+            Verdict.ESCALATE,
+        ),
+        ({"scope": "local"}, Verdict.ESCALATE),  # missing instruction fails closed
+        ({}, Verdict.ESCALATE),
+        ({"scope": "national", "instruction": "avoid_area"}, Verdict.ESCALATE),
     ],
 )
-def test_alert_scope_fails_closed(scope, expected):
-    params = {} if scope is None else {"scope": scope}
+def test_alerts_go_to_a_human_unless_a_local_advisory(params, expected):
     action = act("a9_comms", "publish_alert", params)
     assert ENGINE.evaluate(action).verdict is expected
 

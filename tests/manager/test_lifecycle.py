@@ -7,7 +7,7 @@ from atlas.ingest.simulator import ReplayClock, replay
 from atlas.manager.registry import NotFound, Registry
 from atlas.runtime import Runtime
 from atlas.system import attach_all
-from tests.conftest import events
+from tests.conftest import approve_alerts, events
 from tests.control.conftest import fast_policy
 from tests.orchestration.conftest import reading, scenario
 
@@ -90,6 +90,7 @@ async def test_suspending_an_executor_leaves_authorised_actions_waiting(
     await replay(runtime, RISING, clock)
     for _ in range(3):
         await system.control.gateway.run_pending()
+        await approve_alerts(system)  # authorised by the commander, then held by the suspension
     assert system.control.dispatch.list() and not system.control.comms.list_alerts()
     assert reg.agent("a9_comms").pending == 2  # the alert and the sitrep, authorised and held
     await reg.resume("a9_comms", by="ops")

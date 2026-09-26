@@ -155,7 +155,7 @@ def test_alerts_cap_download_and_sitreps(client):
             "a1",
             "a9_comms",
             "publish_alert",
-            {"area": "Ratnapura", "event": "flood", "scope": "local"},
+            {"area": "Ratnapura", "event": "flood", "scope": "local", "instruction": "avoid_area"},
         ),
         action("s1", "a9_comms", "publish_sitrep", {}),
     )
