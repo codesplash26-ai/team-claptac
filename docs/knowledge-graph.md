@@ -1,7 +1,7 @@
 # Ontology and world knowledge graph
 
-Owner: Sumudu. Code in `atlas/knowledge/`, vocabulary in `config/ontology.yaml`, routes in
-`atlas/api/knowledge_routes.py`. Brief: `docs/workstreams/ontology-graph.md`.
+Code in `atlas/knowledge/`, vocabulary in `config/ontology.yaml`, routes in
+`atlas/api/knowledge_routes.py`.
 
 The point: the intelligence layer may only say things that are well formed, about things that exist, and
 backed by evidence that exists. Four pieces do that.
@@ -66,14 +66,14 @@ have several.
 | `fake_evidence` | a cited evidence id does not exist (only if `evidence_exists` is given) |
 | `no_evidence` | none cited (only if `require_evidence` is set) |
 
-`Claim` gained an optional `unit` (default `None`). Aeshan's `ground()` adds its own `no_evidence`, so
+`Claim` has an optional `unit` (default `None`). The intelligence layer's `ground()` adds its own `no_evidence`, so
 `YamlOntology` leaves evidence to it by default; pass `evidence_exists=` and `require_evidence=True` to
 have the ontology check it instead (a claim could then get the same code twice).
 
 ```python
 world = WorldProjector.from_system(system).world()
 ontology = YamlOntology.load(graph=world)
-advice = ground(advice, ontology, EvidenceIndex(runtime).exists)   # Aeshan's function, unchanged
+advice = ground(advice, ontology, EvidenceIndex(runtime).exists)   # atlas/intelligence/grounding.py
 ```
 
 ## The world graph
@@ -179,32 +179,13 @@ The two POST routes only read; they are POSTs because they take a body, and are 
 - **The world is rebuilt, not updated.** Fine for a few thousand entities; the fingerprint keeps repeat
   reads cheap.
 
-## Decision record: other hazards (contracts decision 3)
+## Hazards
 
-Earthquake, tsunami and drought are in the vocabulary (`hazards`, `hazard_status: history_only`) and **not**
-in the live loop. Decided while planning this work: vocabulary only.
-
-- **Why.** The Sentinel understands water level, rainfall and soil moisture. A quake or tsunami replayed
-  today would trigger a flood-shaped plan (`docs/data-and-hazards.md`), which would mislead an operator.
-- **What this means.** A claim or an incident can name `hazard:earthquake` without being rejected as
-  unknown, and the world graph says the planners cannot act on it (`hazard_status`).
-- **What would change it.** A `Trigger` hazard field, new `SensorType`s with an A1 rule each, and A2 and A4
-  mappings. Each is a contract change for the whole team. Rainfall and soil moisture already reach A2
-  (landslide is `partial`); A4 still maps roads from water level only.
-- **Decision 5 (ids)** is settled by the table above.
-
-**Update: landslide and earthquake are now live** (`hazard_status: live`). The Sentinel tags triggers
-with a hazard, A2 tracks the dominant hazard per area, and A4 maps slope hazards onto steep roads. See
-`docs/data-and-hazards.md`. Tsunami and drought remain `history_only`.
-
-## Contract changes to tell everyone about
-
-1. `Claim` gains an optional `unit: str | None = None`. Existing callers are unaffected.
-2. `road:<u>-<v>` is the canonical road id; `edge:<u>-<v>` is accepted and rewritten. A4 and A8 still write
-   what they wrote.
-3. `link()` takes an optional `context`; the graph gains additive methods (`entities`, `facts`, `impact_report`,
-   `neighbourhood`). The `Ontology` and `WorldGraph` protocols are unchanged.
-4. One line and one import in `atlas/api/main.py` register the router (Dinuka's file).
+Flood, landslide and earthquake are `live`: the Sentinel triggers on them, A2 tracks the dominant hazard
+per area, and A4 maps them onto roads (`docs/data-and-hazards.md`). Cyclone is `partial` (through its
+rain and the river). Tsunami and drought are in the vocabulary as `history_only`: a claim or an incident
+can name them without being rejected as unknown, and the world graph says the planners cannot act on
+them.
 
 ## Try it
 

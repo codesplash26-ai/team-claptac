@@ -1,6 +1,6 @@
 # LoRa link (Ra-02 / SX1278, 433 MHz)
 
-Owner: Hasindu. Plan: `docs/workstreams/hardware-lora.md`. Frame format: `protocol.md`.
+Frame format: `protocol.md`. Gateway: `gateway/`, node: `node/`, codec: `atlas/ingest/lora.py`.
 
 ```
 Sensors -> node (Pi + Ra-02) ~~ 433 MHz ~~> gateway (Pi + Ra-02) -> atlas/ingest/lora.py -> ATLAS

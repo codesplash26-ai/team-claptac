@@ -1,4 +1,4 @@
-"""Assemble Workstream B's agents (A2, A3, A5) onto a Runtime.
+"""Assemble the orchestration agents (A2, A3, A5) onto a Runtime.
 
     orchestration = attach_orchestration(runtime)     # before ``await runtime.start()``
 

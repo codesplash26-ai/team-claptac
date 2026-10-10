@@ -75,7 +75,7 @@ class Ontology(Protocol):
 
 
 class PermissiveOntology:
-    """Accepts every claim. A placeholder so other workstreams are not blocked. Not for production."""
+    """Accepts every claim. A placeholder for tests. Not for production."""
 
     def validate(self, claim: Claim) -> list[Violation]:
         return []

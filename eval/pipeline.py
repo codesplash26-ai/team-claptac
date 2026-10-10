@@ -1,4 +1,4 @@
-"""Compute latency of Workstream C's part of the response loop, on the real Ratnapura network.
+"""Compute latency of the planning part of the response loop (A4, A6, A7), on the real Ratnapura network.
 
 Times the real code paths through a real `Runtime` (in-memory database, simulated clock):
 

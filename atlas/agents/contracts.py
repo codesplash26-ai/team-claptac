@@ -1,7 +1,6 @@
 """Payload contracts between A3 (Incident Commander) and the specialist planners (A4-A7).
 
-PROPOSED by Workstream C for Hasindu (B, A3) and Dinuka (D) to confirm. These are typed payloads
-for event types that already exist in `core/events.py` (TASK_ASSIGNED, CANDIDATE_PLAN); nothing in
+Typed payloads for event types that already exist in `core/events.py` (TASK_ASSIGNED, CANDIDATE_PLAN); nothing in
 the core contract changes.
 
     A3 --TASK_ASSIGNED{assignee: "a4_evacuation", ...EvacuationTask}--> A4

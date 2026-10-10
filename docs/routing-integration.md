@@ -1,7 +1,7 @@
-# Routing, shelter, logistics and evaluation (Workstream C)
+# Routing, shelter, logistics and evaluation
 
-Workstream C is Sumudu's. This is the contract other workstreams integrate against, and the record of
-what the evaluation found.
+A4 Evacuation, A6 Logistics and A7 Shelter on real road networks, the belief-weighted cognitive map they
+share, and what the evaluation against the baselines found.
 
 ## Scope and status
 
@@ -18,14 +18,14 @@ Implemented and tested:
 | Optimisers | `atlas/tools/optimisation.py` | Deterministic, with a greedy fallback |
 | Evaluation | `eval/` | Proposal-table gate, real networks, latency |
 
-Not done, and not claimed: the Incident Commander (A3) and triage (A5) are Hasindu's; no reservation
+Not covered here: the Incident Commander (A3) and triage (A5) are in `docs/orchestration.md`. No reservation
 accounting (see "Occupancy and availability"); reference data (shelters, fleets) is synthetic.
 
 ## Quick start
 
 ```bash
 python -m venv .venv && source .venv/bin/activate      # Windows: .venv\Scripts\activate
-pip install -r requirements-c.txt
+pip install -r requirements.txt
 python -m pytest -q
 python -m eval.run_abc                                 # reproduce the proposal's table (gate)
 python -m eval.run_abc --site ratnapura                # real network, both uphill settings
@@ -34,7 +34,7 @@ python -m atlas.tools.geo build --all                  # rebuild the road graphs
 python -m atlas.tools.reference generate               # regenerate synthetic shelters/fleet
 ```
 
-`requirements-c.txt` installs from prebuilt wheels on Python 3.14; the project minimum is 3.11.
+The project needs Python 3.11 or newer.
 
 ## What the evaluation found
 
@@ -136,7 +136,7 @@ Every plan carries `snapshot_version` and `valid_until`. Put them in the `Propos
 alerts fire only when jobs are unserved for lack of units, never because roads are blocked, since more
 units cannot fix a flooded road.
 
-`RoutePlan.to_commander_state(people)` reshapes A4's plan for Aeshan's `CommanderAdapter`. It omits
+`RoutePlan.to_commander_state(people)` reshapes A4's plan for the planner's `CommanderAdapter`. It omits
 unsafe routes, so under `no_safe_route` the adapter finds nothing to choose and returns no action, which
 is the cue to escalate.
 
@@ -166,28 +166,15 @@ Register before `start()`: startup recovery redelivers pending events, including
 to whoever is registered. A4's handler does database work only and never touches the network; graphs
 load from the committed cache.
 
-## Demo script (Ratnapura)
-
-The tabletop container stands in for the Kalu Ganga. `data/reference/sensor_map.yaml` records the
-calibration; `tests/tools/test_sensor_map.py` asserts it.
-
-| Water level | What happens |
-|---|---|
-| 25 cm | The Sentinel's alarm. 51 roads flood; A4 announces them. `ratnapura-shelter-02` (a hill shelter at 90 m whose only approach crosses the valley) becomes unreachable and is dropped; the other three shelters stay reachable from the depot. |
-| 30 cm | The valley floods. Residents such as `DEMO_ORIGIN` (`atlas/tools/demo.py`) must reroute from shelter-01 to shelter-03. The depot is cut off from every shelter: `no_safe_route`, escalate to the human commander. |
-
-Keep the demo between about 20 and 30 cm; the fallback is the mock node's `flood_ramp`. The flood scale
-(0.20 m of water per sensor cm) is a demo assumption. SRTM elevation is whole metres, so flooding moves
-in steps.
-
-## Occupancy and availability (open interface)
+## Occupancy and availability
 
 A plan reserves nothing. Shelter occupancy and unit availability change only through
 `record_occupancy` and `record_availability`, so two plans made before anything is recorded see the same
 free places. That is why A3 must submit one reconciled plan, and replan when the COP version moves.
 Recording is not wired to anything yet: A8's `create_mission` carries `resources_committed` and a
 destination but no headcount, so it cannot update occupancy. Agreeing that (a `people` parameter, and
-who calls the recorders on `MISSION_STATUS`) is the main open item with Dinuka and Hasindu.
+who calls the recorders on `MISSION_STATUS`) is not built yet; the map shows the people expected at each
+shelter from active missions instead.
 
 ## Assumptions and limits
 
@@ -205,7 +192,7 @@ who calls the recorders on `MISSION_STATUS`) is the main open item with Dinuka a
 - The evaluation shares one random stream across agent types (inherited), so small differences
   between rows are noise.
 
-## Deviations from the proposal (for the pitch)
+## Deviations from the proposal
 
 - **Elevation source:** OpenTopoData SRTM 30 m replaces Open-Elevation. The Open-Elevation endpoint
   fails TLS verification (expired certificate); certificate checking is not disabled. Both are
@@ -213,16 +200,4 @@ who calls the recorders on `MISSION_STATUS`) is the main open item with Dinuka a
 - **Uphill penalty:** removed from ATLAS planning (section 5 lists "elevation-aware travel-time
   estimation"). Elevation is used for flooding and shelter choice instead.
 - **Real-network claim:** see result 3 above.
-- **Backend:** FastAPI (section 6.1) rather than Flask (6.2), unchanged from the team plan.
-
-## Handoffs
-
-- **Hasindu (A3, A5):** confirm the payloads in `atlas/agents/contracts.py`. A5's triage ranking maps to
-  `RescueJob.priority` (a relative value, higher first). A7's `resupply_requests` become A6 vehicle jobs
-  in your glue. Treat `no_safe_route` / `no_shelter` / `none_served` as escalate.
-- **Dinuka:** who records occupancy and availability from missions (above); `RoutePlan` and
-  `Placement.route_nodes` give A8 a route as node ids, and `RoadGraph.route_geojson` /
-  `edges_geojson` (`atlas/tools/geo.py`) draw them and road beliefs on the Folium map.
-- **Aeshan:** `area_id` `ratnapura-demo-river` must stay identical in the Pi config, `flood.json` and
-  `sensor_map.yaml` (a test enforces it). Per-edge COP writes are fine at this size; a `COP.put_many`
-  would only matter for much larger graphs.
+- **Backend:** FastAPI (section 6.1) rather than Flask (6.2).

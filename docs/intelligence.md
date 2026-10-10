@@ -1,7 +1,9 @@
-# Intelligence layer (Aeshan)
+# Intelligence layer
 
-The screenshot assignment supersedes the older ownership table in `TEAM_PLAN.md`: Aeshan owns
-`atlas/intelligence/`, the shared planner, LLM wrapper and ported A2/A3/A5 orchestration.
+Advice after each planning round, questions in plain words, and field-report extraction, on top of the
+agents. Code in `atlas/intelligence/`, with the LLM client (`atlas/tools/llm.py`) and the shared planner
+(`atlas/reasoning/`). The response loop never depends on it: with no model or no network it falls back
+to grounded template advice.
 
 ## Implemented
 
@@ -19,7 +21,7 @@ The screenshot assignment supersedes the older ownership table in `TEAM_PLAN.md`
   confidence and observation time. “Verified” means supported by that recorded snapshot, not verified
   in the physical world.
 - Read-only `search_facts` and `graph_neighbors` tools. The latter exposes explicit references between
-  known snapshot entities; it does not invent topology or replace Sumudu's domain graph.
+  known snapshot entities; it does not invent topology (the world graph is in `docs/knowledge-graph.md`).
 - Natural-language questions through `POST /intelligence/ask`; offline mode uses keyword retrieval.
   Answers include accepted/rejected claims and evidence references.
 - Field-report previews through `POST /intelligence/extract`: exact area ids/names/aliases, literal
@@ -37,16 +39,10 @@ The screenshot assignment supersedes the older ownership table in `TEAM_PLAN.md`
 
 ## Run locally
 
-From the repository root:
-
-```bash
-source .venv/bin/activate
-LLM_PROVIDER=none uvicorn atlas.api.main:app --host 127.0.0.1 --port 8000
-```
-
-Open `http://127.0.0.1:8000/manager/#/intelligence`. In **Playground**, replay the synthetic flood, then
-return to **Intelligence**. For the persisted real-gauge scenario choose Ratnapura / Cyclone Ditwah.
-No API key or radio is needed. The reference shelters, fleet and populations are demonstration data.
+Start ATLAS as the README describes (`docker compose up --build`, or
+`LLM_PROVIDER=none uvicorn atlas.api.main:app`). In **Practice drills**, start a drill, then open
+**Ask ATLAS** for the plain view, or **For technical staff → Intelligence (advanced)**
+(`/manager/#/intelligence`) for claims, evidence and traces. No API key or radio is needed. The reference shelters, fleet and populations are demonstration data.
 
 Offline terminal demos, including a deliberately bad fake model:
 
@@ -75,7 +71,7 @@ also count. Completed-cycle advice is reused across restarts. Token usage covers
 rounds; dollar cost is not estimated. Interactive queries have provider rate limits and timeouts,
 but do not consume an incident's worker budget.
 
-## API handoff
+## API
 
 | Endpoint | Purpose |
 |---|---|
@@ -85,24 +81,22 @@ but do not consume an incident's worker budget.
 | `POST /intelligence/extract` | `{ "node_id": "operator", "text": "ratnapura-demo-river: 12 people stranded" }` |
 
 Routes reuse `run:read` / `trace:read` permissions and existing token configuration. Report preview
-never submits a field report; the team's field-ingestion contract remains an open integration item.
+never submits a field report.
 
-## Remaining integration limits
+## Known limits
 
-- Sumudu's `YamlOntology` and entity linker remain stubs. The intelligence layer ships with a strict
-  **snapshot adapter**, never `PermissiveOntology`; full hazard/relation semantics, aliases and temporal
-  graph impact queries still need the ontology workstream.
+- The advisor's free text (summary, concerns, questions) is checked by the knowledge graph's entity
+  guard: a sentence naming a place that does not exist is flagged, not shown as fact. The guard is a
+  heuristic and reports what it cannot place rather than guessing.
 - The planner's independent-edge probabilities, static shelter capacity and synthetic reward model
   are illustrative. Enabling shadow comparison is not an operational forecast or automatic replan.
 - Field extraction is deliberately conservative English parsing, with source claims for review.
-  General multilingual extraction, trusted sender validation and submission to A5 remain separate work.
-- LoRa decoding, signing, retry/ACK and physical range tests remain Hasindu's unfinished implementation.
-
-See [verification report](../intelligence-verification.md) for what was actually run.
+  General multilingual extraction, trusted sender validation and submission to A5 are not built.
+- Live provider calls were tested only with fakes and an HTTP mock transport.
 
 ## Configure the LLM in the dashboard
 
-Open **LLM settings** in the sidebar (`/manager/#/llm-settings`). Choose Offline, OpenAI or Anthropic;
+Open **For technical staff → AI model settings** (`/manager/#/llm-settings`). Choose Offline, OpenAI or Anthropic;
 enter the exact API model id and API key; choose thinking options; then **Save and apply**. New
 advisor/query/extraction requests use the settings immediately. Existing persisted advice is retained.
 
@@ -135,7 +129,7 @@ Provider references: [OpenAI reasoning](https://developers.openai.com/api/docs/g
 
 ## Event timeline
 
-Open `/manager/#/timeline` to follow the ledger from sensor/report inputs through agent work,
+Open **For technical staff → Event timeline** (`/manager/#/timeline`) to follow the ledger from sensor/report inputs through agent work,
 reasoning, decisions and outcomes. The view polls every two seconds and starts with the latest
 200 events in ledger order. Load older pages while paused; filter by incident (including causal
 input ancestors), agent, stage or text. Replay and the scrubber only reveal stored history and

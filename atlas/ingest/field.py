@@ -7,11 +7,10 @@ Two things that are not sensor readings:
 * ``MissionAck``: a team acknowledges a mission, reports progress or an exception. This maps onto A8's
   field-update methods (``acknowledge``, ``report_progress``, ``report_exception``, ``complete``).
 
-OPEN DECISIONS (settle with Dinuka before wiring, see docs/contracts.md):
-  1. Do these become new EventTypes (needs the whole team's approval, ``core/events.py``), or do the API
-     routes call A5/A8 directly the way ``/missions/{id}/acknowledge`` already does?
-  2. How does a LoRa node learn which mission id it is acknowledging? (A8 mission ids are derived from
-     the action's idempotency key; see ``atlas.agents.a8_dispatch.mission_id``.)
+How they reach the agents today: mission updates go through A8's mission routes
+(``/missions/{id}/acknowledge`` and friends). The LoRa gateway decodes field reports and mission acks and
+hands them to optional callbacks; they are not new event types. A node acknowledging a mission needs its
+id, which A8 derives from the action's idempotency key (``atlas.agents.a8_dispatch.mission_id``).
 """
 
 from __future__ import annotations

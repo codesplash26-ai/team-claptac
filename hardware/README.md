@@ -98,7 +98,7 @@ In `config.yaml`, replace the hardware sensors with `driver: mock` entries. They
 ## Demo setup (tabletop flood model)
 
 1. Mount the ultrasonic sensor above a clear container that represents the river, with `mount_height_cm` set to the distance from the sensor to the container floor.
-2. Put the node's `area_id` on a road edge next to the river in the Ratnapura OSM graph (Workstream C maps it).
+2. Put the node's `area_id` on a road edge next to the river in the Ratnapura OSM graph (`data/reference/sensor_map.yaml`).
 3. Pour in water. The water level crosses the A1 threshold, A1 emits a trigger, A3 wakes up, and A4 reroutes around the flooded edge. The dashboard shows the live reading and the new route.
 4. **Fallback:** if the hardware fails on the day, switch the node to `mock` + `flood_ramp`. The same messages flow through the same pipeline.
 

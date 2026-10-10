@@ -6,9 +6,9 @@
     queries.py    impact ("what does this closure affect?") and neighbourhood views
     linking.py    turn free text or ids into ontology entities, and scan prose for invented ones
     guard.py      the check that stops a model inventing entities in claims or in wording
-    evidence.py   does this evidence id exist? (the function Aeshan's grounding asks for)
+    evidence.py   does this evidence id exist? (the function the intelligence layer's grounding asks for)
 
-Not to be confused with ``atlas/memory/knowledge_graph.py``, which is Aeshan's audit projection of the
+Not to be confused with ``atlas/memory/knowledge_graph.py``, which is the audit projection of the
 ledger ("what depended on what"). This package models the *world*, not the audit trail.
 
 Full description: ``docs/knowledge-graph.md``.

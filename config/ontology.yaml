@@ -5,7 +5,7 @@
 # cross-checked at start (atlas/knowledge/ontology.py::OntologyDefinition), so a typo in a class or a
 # relation is an error at load time, not a silent hole.
 #
-# Ids are `class:key` (docs/contracts.md decision 5). `road:<u>-<v>` is the canonical road id; the COP
+# Ids are `class:key` (docs/knowledge-graph.md). `road:<u>-<v>` is the canonical road id; the COP
 # and the routing agents write `edge:<u>-<v>`, which is accepted and normalised (id_aliases).
 #
 # Sections

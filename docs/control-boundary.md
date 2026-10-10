@@ -1,6 +1,6 @@
 # Control boundary, A8 Dispatch, A9 Comms, API and dashboard
 
-Workstream D. This is the contract other workstreams integrate against.
+How ATLAS turns a plan into action safely: the policy engine and Action Gateway decide, a person approves anything high-consequence, and only then do A8 (missions) and A9 (public alerts and reports) act. Every phase is written to the ledger.
 
 ## The flow
 
@@ -24,9 +24,9 @@ lock. So the Gateway is split in two:
 A8 and A9 are **not** bus subscribers. The Gateway calls them, so nothing can reach them
 without passing policy.
 
-## For Hasindu (A3): proposing actions
+## Proposing actions (A3)
 
-Emit one `PLAN_PROPOSED` event from your handler:
+A3 emits one `PLAN_PROPOSED` event per plan:
 
 ```python
 Event(type=EventType.PLAN_PROPOSED, source="a3_incident_commander", incident_id=iid,
@@ -78,7 +78,7 @@ Things to know when writing plans:
 Mission ids are `mission_id(idempotency_key)` from `atlas.agents.a8_dispatch`, so A3 can
 refer to a mission it created without waiting for the receipt.
 
-## For Aeshan (A) and Sumudu (C)
+## Integration notes
 
 - Everything is written through `Runtime`'s `Database`, `Ledger` and `EventBus`; nothing
   here touches their internals. Ledger records use kind `action`, ids
@@ -86,8 +86,7 @@ refer to a mission it created without waiting for the receipt.
 - `attach_control(runtime)` must run **before** `runtime.start()` (startup recovery
   redelivers pending events). `create_app` already does this.
 - The sensor panel reads raw sensor `OBSERVATION` events from the ledger and
-  `Sentinel.sensor_status()`. Hazard geometry on the map needs C's sensor-to-edge mapping;
-  today it draws sensors and mission routes only.
+  `Sentinel.sensor_status()`.
 
 ## Human review
 

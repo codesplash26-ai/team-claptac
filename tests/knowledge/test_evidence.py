@@ -174,7 +174,7 @@ async def test_a_hash_one_character_off_a_real_one_is_not_evidence(index, runtim
         "data/reference",
         "data/reference/",
         "data/reference/nope.json",
-        "docs/roadmap.md",  # a real file, but not in a folder that holds reference data
+        "docs/control-boundary.md",  # a real file, but not in a folder that holds reference data
     ],
 )
 async def test_paths_cannot_be_used_to_probe_files_outside_the_reference_folders(index, hostile):

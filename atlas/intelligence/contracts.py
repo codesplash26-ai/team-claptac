@@ -1,4 +1,4 @@
-"""What the intelligence layer produces.  (Owner: Aeshan; Dinuka's UI reads these)
+"""What the intelligence layer produces.  (Owner: Aeshan; the console reads these)
 
 Published to the bus as ``REASONING_COMPLETED`` events (the type already exists) with
 ``Advice.model_dump(mode="json")`` as the payload, and stored so the dashboard can show, for every

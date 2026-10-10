@@ -1,9 +1,8 @@
-# Who reviews what. Contract files need everyone: tag the team on those PRs.
+# Who reviews what.
 
 /hardware/                       @HasinduNimesh
 /atlas/ingest/lora.py            @HasinduNimesh
 /atlas/ingest/field.py           @HasinduNimesh
-/docs/workstreams/hardware-lora.md @HasinduNimesh
 
 /atlas/dashboard/                @Wicky2002
 /atlas/api/                      @Wicky2002

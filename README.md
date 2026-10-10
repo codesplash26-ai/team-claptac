@@ -50,8 +50,7 @@ Then, in the console:
 3. Go to **Decisions**: ATLAS asks before warning the public. Type a name and approve.
 4. See the alert in Sinhala, Tamil and English under **Alerts & reports**.
 
-Also try the landslide and earthquake drills. A click-by-click script with what each screen shows is
-in [docs/demo-guide.md](docs/demo-guide.md).
+Also try the landslide and earthquake drills.
 
 **Useful commands**
 
@@ -221,7 +220,7 @@ mission, and closing a major road. A missing or malformed detail counts as high-
 | **Agents A1–A9** | The full loop above for floods, landslides and earthquakes, persistent across restarts, with per-incident state and bounded replanning. | [orchestration](docs/orchestration.md) |
 | **Control boundary** | Deny-by-default policy, per-agent identity, approvals, refusal of plans built on out-of-date information, idempotent execution, hash-chained ledger. | [control boundary](docs/control-boundary.md) |
 | **Knowledge graph and ontology** | A typed world graph of roads, junctions, shelters, gauges, missions, groups and incidents. It rejects claims about things that do not exist, and answers "what depends on this road?". | [knowledge graph](docs/knowledge-graph.md) |
-| **Intelligence** | Advice after each planning round, questions in plain words and field-report extraction. Every claim is checked against recorded evidence, and sentences naming unknown places are flagged. Works offline; OpenAI or Anthropic can be configured. | [intelligence](docs/workstreams/intelligence.md) |
+| **Intelligence** | Advice after each planning round, questions in plain words and field-report extraction. Every claim is checked against recorded evidence, and sentences naming unknown places are flagged. Works offline; OpenAI or Anthropic can be configured. | [intelligence](docs/intelligence.md) |
 | **Real data** | River, rainfall and soil sources with an offline cache, plus history for earthquakes, tsunami and drought. Two replays of Cyclone Ditwah at Ratnapura from real records. | [data and hazards](docs/data-and-hazards.md) |
 | **Field sensors and LoRa** | Raspberry Pi sensor nodes (river level, rain, soil, slope tilt) send over MQTT, or over a LoRa radio link (SX1278, 433 MHz) where there is no mobile signal. The gateway checks each frame's signature, drops repeats and forwards the same sensor readings; its link health (signal, messages, gaps) shows on the console. A mock radio for demos. | [hardware](hardware/README.md), [LoRa](hardware/lora/README.md) |
 | **Public alerts** | CAP 1.2 alerts from fixed, checked phrasing in Sinhala, Tamil and English. | `atlas/agents/a9_comms.py` |
@@ -302,21 +301,18 @@ hardware/        Raspberry Pi node, LoRa node and gateway
 config/          policy.yaml, ontology.yaml, sentinel.yaml, reasoning.yaml
 data/            road networks, scenarios, reference data, benchmarks
 eval/            A/B/C routing evaluation
-docs/            design, contracts, workstreams, demo guide
+docs/            design of each component, data sources, API contract
 tests/
 ```
 
-## Where to find your work
+## Who built what
 
-| Workstream | Owner | Start here |
+| Area | Built by | Read more |
 |---|---|---|
-| Hardware and LoRa | Hasindu | [docs/workstreams/hardware-lora.md](docs/workstreams/hardware-lora.md), `hardware/lora/` |
-| UI, data, control boundary and integration | Dinuka | [docs/workstreams/ui-and-data.md](docs/workstreams/ui-and-data.md), `frontend/`, `atlas/control/`, `atlas/datasets/` |
-| Intelligence layer and platform | Aeshan | [docs/workstreams/intelligence.md](docs/workstreams/intelligence.md), `atlas/intelligence/`, `atlas/core/` |
-| Ontology, graph and routing | Sumudu | [docs/workstreams/ontology-graph.md](docs/workstreams/ontology-graph.md), `atlas/knowledge/`, [routing](docs/routing-integration.md) |
-
-The seams between workstreams are in [docs/contracts.md](docs/contracts.md); what is left is in
-[docs/roadmap.md](docs/roadmap.md).
+| Field hardware and the LoRa link | Hasindu Viduranga | [hardware](hardware/README.md), [LoRa](hardware/lora/README.md) |
+| Console and map, data sources, control boundary, manager, integration | Dinuka Wickramasinghe | [control boundary](docs/control-boundary.md), [data and hazards](docs/data-and-hazards.md) |
+| Platform, Sentinel, orchestration, intelligence, benchmarks | Aeshan Rosa | [platform](docs/reasoning-integration.md), [orchestration](docs/orchestration.md), [intelligence](docs/intelligence.md), [benchmarks](docs/simulation-benchmark.md) |
+| Routing, shelters, logistics, ontology and knowledge graph | Sumudu Ratnayake | [routing](docs/routing-integration.md), [knowledge graph](docs/knowledge-graph.md) |
 
 ## Development
 
@@ -326,10 +322,6 @@ ruff check atlas tests
 cd frontend && npm install && npm run build   # rebuilds the console into atlas/dashboard/static/manager/
 python -m atlas.manager.openapi               # after changing a manager endpoint (a test checks it)
 ```
-
-- Branch as `<Name>/<Area>` (for example `Dinuka/Console-Polish`) and open a PR for review.
-- Changes to `atlas/core/events.py`, the sensor format or `docs/contracts.md` need the whole team.
-- Each owner writes the tests for their module. See [TEAM_PLAN.md](TEAM_PLAN.md).
 
 ## Team
 

@@ -1,4 +1,4 @@
-"""Assemble Workstream C's planning agents onto a Runtime.
+"""Assemble the planning agents (A4 Evacuation, A6 Logistics, A7 Shelter) onto a Runtime.
 
     routing = attach_routing(runtime, site="ratnapura")     # before ``await runtime.start()``
 

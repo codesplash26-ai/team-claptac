@@ -1,8 +1,7 @@
-# LoRa frame protocol (DRAFT v1)
+# LoRa frame protocol (v1)
 
-Owner: Hasindu. This is a starting proposal: confirm it or change it, then keep
-`atlas/ingest/lora.py` and the node firmware in step. Anything that changes a contract in
-`docs/contracts.md` needs the team's approval.
+The frame format the LoRa nodes and gateway use. `atlas/ingest/lora.py` and the node firmware
+implement it and must stay in step.
 
 ## Goals
 A tiny, authenticated, duplicate-safe message format that fits one radio packet (255 bytes max) and maps

@@ -1,11 +1,9 @@
-# A1 and shared reasoning integration
+# Platform, A1 Sentinel and the shared planner
 
-## Scope and status
+## Scope
 
-This branch implements Aeshan's local platform, structured A1 pipeline, replay,
-durable sensor outbox, and a reusable **PlanU-inspired** planner. It includes an
-A3 route/shelter adapter example, not a completed Incident Commander, routing
-engine, Gateway, dashboard, or external dispatch integration.
+The platform every agent runs on (event bus, common operating picture, ledger, replay), the structured
+A1 Sentinel pipeline, the durable sensor outbox, and a reusable **PlanU-inspired** planner.
 
 The planner uses stochastic action/outcome trees, empirical return distributions,
 UCB exploration, bounded depth, and mean or lower-tail final selection. It is **not
@@ -20,15 +18,14 @@ From the repository root, using Python 3.11 or newer:
 ```bash
 python -m venv .venv
 source .venv/bin/activate
-pip install -r requirements-a1.txt
+pip install -r requirements.txt
 python -m pytest -q
 python -m atlas.ingest.simulator data/scenarios/flood.json
 python -m eval.run_reasoning --trials 30
 uvicorn atlas.api.main:app --reload
 ```
 
-`requirements-a1.txt` is a small development environment; the full team's
-`requirements.txt` remains available. No model key, OSM download, physical Pi, or
+No model key, OSM download, physical Pi, or
 broker is needed for replay, evaluation, or unit tests. Replay uses an in-memory
 database and a simulated clock; the API defaults to SQLite at `data/atlas.db`.
 
@@ -40,7 +37,7 @@ receive equal simulation-count limits, though tree search performs more transiti
 The scenario evaluator is the simple one-step baseline. Include measured latency
 and model calls when comparing methods, not just success rate.
 
-## Existing interfaces and contract changes
+## Interfaces
 
 - `Agent.handle(event) -> list[Event]` is unchanged. An agent returns events; it
   must not call `bus.publish()` recursively from its handler.
@@ -54,11 +51,8 @@ and model calls when comparing methods, not just success rate.
   timezone-aware timestamps are now validated.
 - Canonical `Observation` and `Trigger` schemas live in `core/events.py`.
 - `ProposedAction` gains optional `snapshot_version` and `reasoning_id`. Existing
-  callers need not supply them. D must validate current state and authority at the
+  callers need not supply them. The Gateway validates current state and authority at the
   actual execution boundary; the planner is not an authorization service.
-
-These are proposed shared contracts on this branch and need the team's normal
-review before merging. Other agent implementations are intentionally unchanged.
 
 ## Runtime and persistence
 
@@ -149,7 +143,7 @@ audit_event = record_result(runtime.ledger, result, incident_id)
 
 Use `config/reasoning.yaml` defaults and per-agent overrides. `enabled` is a caller
 switch, not permission to bypass policy. A1 consumes it automatically; other agents
-must opt in. The engine works without an LLM. Hasindu's future shared wrapper can
+must opt in. The engine works without an LLM. An LLM wrapper can
 generate candidates, but every model call must use:
 
 ```python
@@ -210,8 +204,8 @@ uses a stable MQTT session and acknowledges valid messages after bus processing;
 malformed messages are logged and acknowledged to avoid poison-message loops.
 
 The Pi's outbox persists to `buffer_path`, retains stable measurement IDs across
-retries. `runtime.sentinel.sensor_status()` supplies last-seen status for D's sensor
-panel and separates connection liveness from stale measurements arriving in a backlog.
+retries. `runtime.sentinel.sensor_status()` supplies last-seen status for the console's
+sensor panel and separates connection liveness from stale measurements arriving in a backlog.
 The outbox retains readings across
 retries, and removes a message after broker PUBACK or HTTP success. PUBACK means
 broker acceptance, not end-to-end execution. Broker persistence and an established
@@ -223,16 +217,4 @@ When the bounded outbox fills, new readings are explicitly rejected/logged while
 older buffered readings remain; provision capacity for the expected outage.
 Test this policy, reconnect, calibration, systemd paths, and the physical rig on
 the actual Pi. Hardware drivers and broker communication require bench validation.
-Keep the existing mock `flood_ramp` fallback for demo day.
-
-## Workstream handoffs
-
-- **Aeshan:** platform, A1, reasoning engine/contracts, replay, trace storage, hardware.
-- **Hasindu:** A3 integration, LLM wrapper, bounded candidate generation, runtime
-  registration of B's agents, and end-to-end workflow.
-- **Sumudu:** real domain simulation assumptions, sensor-to-map mapping, A4/A6/A7
-  adapters where useful, and held-out evaluation scenarios.
-- **Dinuka:** policy review, final authority/state checks, authenticated API and
-  dashboard integration. Reasoning results must never authorize themselves.
-
-The complete nine-agent response loop remains a team integration milestone.
+The mock node's `flood_ramp` produces the same messages without hardware.
